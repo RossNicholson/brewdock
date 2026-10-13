@@ -1,8 +1,8 @@
 # BrewDock
 
-**A free, native macOS menu bar app for Homebrew.** Browse, install, update, and remove your apps and tools without touching the Terminal.
+**A native macOS menu bar app for Homebrew.** Browse, install, update, and remove your apps and tools without touching the Terminal.
 
-![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue) ![Swift 6](https://img.shields.io/badge/Swift-6.0-orange) ![License: GPL v3](https://img.shields.io/badge/license-GPL--v3-blue) ![Free](https://img.shields.io/badge/price-free-brightgreen)
+![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue) ![Swift 6](https://img.shields.io/badge/Swift-6.0-orange) ![License: GPL v3](https://img.shields.io/badge/license-GPL--v3-blue)
 
 <p align="center">
   <picture>
