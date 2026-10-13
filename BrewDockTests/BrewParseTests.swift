@@ -131,4 +131,15 @@ final class BrewParseTests: XCTestCase {
         XCTAssertEqual(BrewParse.errorSummary(fromStderr: "curl: (6) Could not resolve host\n==> Retrying"), "curl: (6) Could not resolve host")
         XCTAssertNil(BrewParse.errorSummary(fromStderr: "  \n"))
     }
+
+    // MARK: Update notifications
+
+    func testUpdateNotificationMessage() {
+        let one = UpdateNotifier.message(fresh: ["git"], total: 1)
+        XCTAssertEqual(one.title, "1 Homebrew update ready")
+        XCTAssertEqual(one.body, "New: git")
+        let many = UpdateNotifier.message(fresh: ["a", "b", "c", "d", "e"], total: 7)
+        XCTAssertEqual(many.title, "7 Homebrew updates ready")
+        XCTAssertEqual(many.body, "New: a, b, c and 2 more")
+    }
 }

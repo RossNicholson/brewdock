@@ -6,6 +6,8 @@ struct SettingsView: View {
     @State private var launchAtLogin = (SMAppService.mainApp.status == .enabled)
     @State private var loginItemError: String? = nil
     @State private var checkedUpToDate = false
+    @AppStorage(UpdateNotifier.enabledKey) private var notifyAboutUpdates = false
+    @State private var notificationError: String? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -41,6 +43,35 @@ struct SettingsView: View {
             .padding(12)
             .card()
 
+            VStack(alignment: .leading, spacing: 6) {
+                Toggle(isOn: Binding(
+                    get: { notifyAboutUpdates },
+                    set: { setNotifications($0) }
+                )) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Update alerts")
+                            .font(.display(17, relativeTo: .headline))
+                            .textCase(.uppercase)
+                            .foregroundStyle(AppColors.text)
+                        Text("Notify me when new versions are out")
+                            .font(.mono(9.5))
+                            .foregroundStyle(AppColors.secondaryText)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .tint(AppColors.toggle)
+                if let notificationError {
+                    Text(notificationError)
+                        .font(.mono(9.5))
+                        .foregroundStyle(AppColors.destructive)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(12)
+            .card()
+
             if brewService.selfUpdateAvailable {
                 ColorBlockButton(
                     title: brewService.isUpdatingSelf ? "Updating…" : "Update BrewDock",
@@ -67,6 +98,19 @@ struct SettingsView: View {
             }
         }
         .popoverChrome()
+    }
+
+    private func setNotifications(_ enabled: Bool) {
+        notificationError = nil
+        guard enabled else { notifyAboutUpdates = false; return }
+        Task {
+            if await UpdateNotifier.requestPermission() {
+                notifyAboutUpdates = true
+            } else {
+                notifyAboutUpdates = false
+                notificationError = "Allow BrewDock in System Settings → Notifications."
+            }
+        }
     }
 
     private func setLaunchAtLogin(_ enabled: Bool) {

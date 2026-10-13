@@ -1,9 +1,10 @@
 import AppKit
 import SwiftUI
 import Combine
+import UserNotifications
 
 @MainActor
-class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNotificationCenterDelegate {
     private var statusItem: NSStatusItem!
     private var panel: NSPanel!
     private var eventMonitor: Any?
@@ -28,20 +29,52 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
         // Don't shell out to brew when the app is launched as a unit-test host.
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
-        Task { await brewService.checkSelfUpdateSilent() }
+        UNUserNotificationCenter.current().delegate = self
+        Task {
+            await brewService.checkSelfUpdateSilent()
+            // Load packages at launch too, so the menu bar dot shows outdated
+            // packages before the panel is ever opened.
+            await brewService.refresh()
+            announceUpdates()
+        }
         startPeriodicUpdateCheck()
     }
 
-    /// A menu bar app can run for days, so the launch-time check isn't enough to
-    /// notice a new release. Re-check every 6 hours in the background (quietly).
+    /// A menu bar app can run for days, so the launch-time check isn't enough.
+    /// Every 6 hours, fetch Homebrew's latest package index (`brew update`) and
+    /// refresh, so the dot (and optional notification) reflect new versions of
+    /// everything installed, not just BrewDock.
     private func startPeriodicUpdateCheck() {
         updateCheckTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(6 * 60 * 60))
                 guard let self else { return }
                 await self.brewService.checkSelfUpdate(showProgress: false)
+                await self.brewService.refresh(force: true)
+                self.announceUpdates()
             }
         }
+    }
+
+    private func announceUpdates() {
+        let outdated = (brewService.casks + brewService.formulae).filter(\.isOutdated).map(\.name)
+        UpdateNotifier.notifyIfNew(outdated: outdated)
+    }
+
+    // Clicking the notification opens the panel
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                            didReceive response: UNNotificationResponse) async {
+        await MainActor.run { self.showPanel() }
+    }
+
+    // Show the banner even though BrewDock counts as the active app
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                            willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        [.banner, .sound]
+    }
+
+    func showPanel() {
+        if !panel.isVisible { openPanel() }
     }
 
     private func setupUpdateDot() {

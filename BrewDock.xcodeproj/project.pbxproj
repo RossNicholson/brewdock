@@ -25,6 +25,7 @@
 		A028D58D8573DA62145455B8 /* DiscoverPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDA32D50FEC4D1761B3D80C /* DiscoverPackage.swift */; };
 		AD6C949DD52CB525A59ED6EA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6511EB48F677664E54300B /* SettingsView.swift */; };
 		B02CCA1DA9AF6636D16A9C13 /* BarlowCondensed-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6E1EE6219103A06B2753612E /* BarlowCondensed-OFL.txt */; };
+		B7A0F3CB7CEDDF1035CDDA9B /* UpdateNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */; };
 		BF97D9C2737EA6EF061CFAB2 /* BrewParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E590DD931E1D08AEF44F26 /* BrewParse.swift */; };
 		EB1668047B6F2D788991D287 /* BrewDockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A547DD2500FDF4F98DE1FF5 /* BrewDockApp.swift */; };
 		EE938E160CFA88B6094F7F3A /* ServiceRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16969FF28CA92DA2624C50CF /* ServiceRowView.swift */; };
@@ -45,6 +46,7 @@
 		0A547DD2500FDF4F98DE1FF5 /* BrewDockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewDockApp.swift; sourceTree = "<group>"; };
 		12F72C149323E697079D3E03 /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Medium.ttf"; sourceTree = "<group>"; };
 		16969FF28CA92DA2624C50CF /* ServiceRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRowView.swift; sourceTree = "<group>"; };
+		1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNotifier.swift; sourceTree = "<group>"; };
 		250F33E2A3C8FF27E3FB785A /* BrewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewService.swift; sourceTree = "<group>"; };
 		341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageRowView.swift; sourceTree = "<group>"; };
 		36E590DD931E1D08AEF44F26 /* BrewParse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewParse.swift; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */,
 				16969FF28CA92DA2624C50CF /* ServiceRowView.swift */,
 				DA6511EB48F677664E54300B /* SettingsView.swift */,
+				1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */,
 				9F08BEB1A7A1480FDE5C729E /* Fonts */,
 				696A5C4E733F7045BDAFBB16 /* Theme */,
 			);
@@ -257,6 +260,7 @@
 				EE938E160CFA88B6094F7F3A /* ServiceRowView.swift in Sources */,
 				AD6C949DD52CB525A59ED6EA /* SettingsView.swift in Sources */,
 				1315CA64AD162944B7B1A65D /* Theme.swift in Sources */,
+				B7A0F3CB7CEDDF1035CDDA9B /* UpdateNotifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
