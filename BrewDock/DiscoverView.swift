@@ -146,7 +146,7 @@ struct DiscoverTabView: View {
         Group {
             if filtered.isEmpty && homebrewResults.isEmpty && !isSearchingHomebrew {
                 VStack(spacing: 6) {
-                    SymbolTile(symbol: "magnifyingglass", fill: AppColors.lilac, size: 40)
+                    Mascot(size: 64)
                         .padding(.bottom, 4)
                     Text("No matches")
                         .font(.display(20, relativeTo: .title3))

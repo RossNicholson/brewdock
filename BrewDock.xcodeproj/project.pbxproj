@@ -21,6 +21,7 @@
 		7EAD9BC11BB4761667F42A6C /* BarlowCondensed-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 02B442AEAF44CF066B755C83 /* BarlowCondensed-Bold.ttf */; };
 		8307C1100E99F99BD5D5C7F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D3C526889D003BC43FAD7E /* AppDelegate.swift */; };
 		98BBD02CA4ABA5A9F7EC0D12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 771150EC08441ABC3EC1DD1C /* Assets.xcassets */; };
+		98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DAF62F0F9BD3607332230F /* Mascot.swift */; };
 		99F875975481F8F426760A1A /* BrewParseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3999942A157B537C78219A00 /* BrewParseTests.swift */; };
 		A028D58D8573DA62145455B8 /* DiscoverPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDA32D50FEC4D1761B3D80C /* DiscoverPackage.swift */; };
 		AD6C949DD52CB525A59ED6EA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6511EB48F677664E54300B /* SettingsView.swift */; };
@@ -61,6 +62,7 @@
 		8DA48CD12EDF2F8EB20A6C25 /* GeistMono-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-SemiBold.ttf"; sourceTree = "<group>"; };
 		A16265C0D540C22593B7FE55 /* BrewDockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrewDockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A19FBF6417D0E612485E563B /* GeistMono-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "GeistMono-OFL.txt"; sourceTree = "<group>"; };
+		A7DAF62F0F9BD3607332230F /* Mascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mascot.swift; sourceTree = "<group>"; };
 		ACBC1B238338C194118F6083 /* BrewfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewfileView.swift; sourceTree = "<group>"; };
 		C3A0505003D5710B085C84B5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		DA6511EB48F677664E54300B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 		696A5C4E733F7045BDAFBB16 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				A7DAF62F0F9BD3607332230F /* Mascot.swift */,
 				C3A0505003D5710B085C84B5 /* Theme.swift */,
 			);
 			path = Theme;
@@ -255,6 +258,7 @@
 				A028D58D8573DA62145455B8 /* DiscoverPackage.swift in Sources */,
 				31B9AA09C82A37530619A2BF /* DiscoverView.swift in Sources */,
 				0340713FE26CEDF0E4EDD2A0 /* FormulaIcons.swift in Sources */,
+				98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */,
 				20DE48E19430760FBA2321E3 /* MenuBarView.swift in Sources */,
 				14E6F6389CC75707C9F058BC /* PackageRowView.swift in Sources */,
 				EE938E160CFA88B6094F7F3A /* ServiceRowView.swift in Sources */,

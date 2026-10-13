@@ -318,8 +318,8 @@ struct MenuBarView: View {
 
     private var emptyView: some View {
         VStack(spacing: 6) {
-            SymbolTile(symbol: searchText.isEmpty ? "tray" : "magnifyingglass",
-                       fill: AppColors.lilac, size: 40)
+            Mascot(mood: searchText.isEmpty ? .sleepy : .happy, size: 64,
+                   disc: searchText.isEmpty ? AppColors.lilac : AppColors.butter)
                 .padding(.bottom, 4)
             Text(searchText.isEmpty ? "Nothing here yet" : "No matches")
                 .font(.display(20, relativeTo: .title3))
@@ -423,7 +423,7 @@ struct MenuBarView: View {
                     title: "BrewDock",
                     subtitle: "Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")\nMade by Ross Nicholson"
                 )
-                SymbolTile(symbol: "mug.fill", fill: AppColors.butter, size: 40)
+                Mascot(size: 56)
             }
 
             ColorBlockButton(title: "Get help", detail: "Bugs, questions and feature requests", fill: AppColors.mint) {
