@@ -29,8 +29,8 @@ struct PackageRowView: View {
         .contentShape(Rectangle())
         .onTapGesture { launch() }
         .animation(.easeOut(duration: 0.12), value: isHovered)
-        .alert("Quit \(package.name)?", isPresented: $showingUninstallAlert) {
-            Button("Quit & Uninstall", role: .destructive) {
+        .alert("Uninstall \(package.name)?", isPresented: $showingUninstallAlert) {
+            Button(package.runningApplication != nil && !package.isBrewDock ? "Quit & Uninstall" : "Uninstall", role: .destructive) {
                 // BrewDock uninstalling itself: the service hands off to a detached
                 // helper and quits, so don't terminate ourselves first.
                 let app = package.isBrewDock ? nil : package.runningApplication
@@ -44,8 +44,18 @@ struct PackageRowView: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("\(package.name) is currently running. It needs to quit before it can be uninstalled.")
+            Text(uninstallMessage)
         }
+    }
+
+    private var uninstallMessage: String {
+        if package.isBrewDock {
+            return "BrewDock will quit and remove itself."
+        }
+        if package.runningApplication != nil {
+            return "\(package.name) is running. It will be quit first, then removed from your Mac."
+        }
+        return "This removes \(package.name) from your Mac."
     }
 
     private var packageIcon: some View {
@@ -97,11 +107,7 @@ struct PackageRowView: View {
                     }
                 }
                 RoundIconButton(symbol: "trash", fill: AppColors.peach, foreground: AppColors.ink, help: "Uninstall") {
-                    if package.runningApplication != nil {
-                        showingUninstallAlert = true
-                    } else {
-                        Task { await brewService.uninstall(package) }
-                    }
+                    showingUninstallAlert = true
                 }
                 RoundIconButton(symbol: "arrow.up.right", help: package.type == .formula || package.isCLIOnly ? "Open in Terminal" : "Open") {
                     launch()
