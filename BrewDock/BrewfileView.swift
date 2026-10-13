@@ -73,8 +73,9 @@ struct BrewfileView: View {
 
     private func exportBrewfile() {
         let panel = NSSavePanel()
+        // No allowedContentTypes: restricting to plain text makes macOS save
+        // "Brewfile.txt", but brew bundle expects a file named just Brewfile.
         panel.nameFieldStringValue = "Brewfile"
-        panel.allowedContentTypes = [.plainText]
         panel.canCreateDirectories = true
         guard panel.runModal() == .OK, let url = panel.url else { return }
         statusMessage = nil

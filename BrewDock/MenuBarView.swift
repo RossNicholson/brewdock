@@ -100,14 +100,15 @@ struct MenuBarView: View {
                 Task { await brewService.refreshServices() }
             }
         }
-        .onChange(of: brewService.lastError) { err in
-            guard let err else { return }
+        .onChange(of: brewService.errorSerial) { serial in
+            guard let err = brewService.lastError else { return }
             withAnimation(.spring(duration: 0.3)) { toastMessage = err }
             Task {
                 // Longer messages (with brew's reason) stay up long enough to read
                 let seconds = min(8, 3 + Double(err.count) / 40)
                 try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-                guard brewService.lastError == err else { return }
+                // A newer error took over the toast; let its own timer clear it
+                guard brewService.errorSerial == serial else { return }
                 withAnimation(.easeOut) { toastMessage = nil }
                 brewService.lastError = nil
             }

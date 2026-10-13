@@ -64,25 +64,6 @@ struct HomebrewService: Identifiable, Hashable {
     enum Status: String {
         case started, stopped, error, none = "none", unknown
 
-        var color: Color {
-            switch self {
-            case .started: return .green
-            case .error: return .red
-            case .stopped, .none: return Color(nsColor: .secondaryLabelColor)
-            case .unknown: return .orange
-            }
-        }
-
-        var symbol: String {
-            switch self {
-            case .started: return "circle.fill"
-            case .error: return "exclamationmark.circle.fill"
-            case .stopped: return "circle"
-            case .none: return "minus.circle"
-            case .unknown: return "questionmark.circle"
-            }
-        }
-
         var displayLabel: String {
             self == .none ? "not started" : rawValue
         }
@@ -116,7 +97,12 @@ class BrewService: ObservableObject {
     private var greedyFlags: [String] {
         UserDefaults.standard.bool(forKey: Self.includeAutoUpdatingKey) ? ["--greedy-auto-updates"] : []
     }
-    @Published var lastError: String? = nil
+    /// Message for the error toast. Each assignment bumps `errorSerial`, so the
+    /// same message twice in a row still shows (and restarts the timer).
+    @Published var lastError: String? = nil {
+        didSet { if lastError != nil { errorSerial &+= 1 } }
+    }
+    @Published private(set) var errorSerial = 0
     @Published var isBrewfileWorking = false
     @Published var selfUpdateAvailable: Bool = false
     @Published var isCheckingSelfUpdate: Bool = false
