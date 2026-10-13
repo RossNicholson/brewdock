@@ -41,6 +41,9 @@ struct PackageRowView: View {
             if package.isOutdated { Task { await brewService.upgrade(package) } }
         }
         .accessibilityAction(named: "Uninstall") { showingUninstallAlert = true }
+        .accessibilityAction(named: package.isHeld ? "Allow updates" : "Don't update") {
+            Task { await brewService.setHeld(package, !package.isHeld) }
+        }
         .alert("Uninstall \(package.name)?", isPresented: $showingUninstallAlert) {
             Button(package.runningApplication != nil && !package.isBrewDock ? "Quit & Uninstall" : "Uninstall", role: .destructive) {
                 // BrewDock uninstalling itself: the service hands off to a detached
@@ -67,6 +70,7 @@ struct PackageRowView: View {
     private var accessibilitySummary: String {
         var parts = [package.name, "version \(package.version)"]
         if package.isOutdated { parts.append("update available") }
+        if package.isHeld { parts.append("held, won't update") }
         if isUpdating { parts.append("updating") }
         if isRemoving { parts.append("removing") }
         return parts.joined(separator: ", ")
@@ -81,6 +85,9 @@ struct PackageRowView: View {
         }
         if let url = package.appURL {
             Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
+        }
+        Button(package.isHeld ? "Allow updates" : "Don't update") {
+            Task { await brewService.setHeld(package, !package.isHeld) }
         }
         Divider()
         Button("Uninstall…") { showingUninstallAlert = true }
@@ -120,6 +127,10 @@ struct PackageRowView: View {
                     .lineLimit(1)
                 if package.isOutdated {
                     TagPill(text: "Update")
+                }
+                if package.isHeld {
+                    TagPill(text: "Held", fill: AppColors.lilac)
+                        .help("Won't be updated. Right-click → Allow updates to change this.")
                 }
             }
             Text(package.version)

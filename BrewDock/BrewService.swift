@@ -10,6 +10,10 @@ struct BrewPackage: Identifiable {
     var isOutdated: Bool = false
     /// A formula Homebrew installed only because something else needs it
     var isDependency: Bool = false
+    /// "Don't update": a pinned formula (brew pin) or a cask held in BrewDock.
+    /// Held packages never count as outdated, so Update all, the update count,
+    /// the menu bar dot and notifications all skip them.
+    var isHeld: Bool = false
     var resolvedAppPath: String? = nil
     var appIcon: NSImage? = nil  // cached once during refresh — not recomputed on every redraw
 
@@ -103,6 +107,12 @@ class BrewService: ObservableObject {
     /// Settings toggle: also treat casks that update themselves (Chrome, Slack…)
     /// as outdated. Homebrew skips them by default.
     nonisolated static let includeAutoUpdatingKey = "includeAutoUpdatingApps"
+    /// Casks the user chose not to update (Homebrew can only pin formulae)
+    nonisolated static let heldCasksKey = "heldCasks"
+    private var heldCasks: Set<String> {
+        get { Set(UserDefaults.standard.stringArray(forKey: Self.heldCasksKey) ?? []) }
+        set { UserDefaults.standard.set(newValue.sorted(), forKey: Self.heldCasksKey) }
+    }
     private var greedyFlags: [String] {
         UserDefaults.standard.bool(forKey: Self.includeAutoUpdatingKey) ? ["--greedy-auto-updates"] : []
     }
@@ -156,10 +166,13 @@ class BrewService: ObservableObject {
         async let formulaResult = brew(["list", "--formula", "--versions"])
         async let outdatedResult = brew(["outdated", "--quiet"] + greedyFlags)
         async let requestedResult = brew(["list", "--formula", "--installed-on-request"])
+        async let pinnedResult = brew(["list", "--pinned"])
 
-        let (caskRes, formulaRes, outdatedRes, requestedRes) = await (caskResult, formulaResult, outdatedResult, requestedResult)
+        let (caskRes, formulaRes, outdatedRes, requestedRes, pinnedRes) =
+            await (caskResult, formulaResult, outdatedResult, requestedResult, pinnedResult)
 
-        outdatedNames = Set(outdatedRes.output.lines)
+        let held = heldCasks.union(pinnedRes.output.lines)
+        outdatedNames = Set(outdatedRes.output.lines).subtracting(held)
         let listedUntrusted = [caskRes, formulaRes, outdatedRes]
             .flatMap { BrewParse.untrustedTargets(fromStderr: $0.errorOutput) }
         untrusted = (listedUntrusted + untrustedFromActions).reduce(into: []) { if !$0.contains($1) { $0.append($1) } }
@@ -185,14 +198,14 @@ class BrewService: ObservableObject {
             }
         }
 
-        self.casks = parsedCasks
+        self.casks = parsedCasks.map { var p = $0; p.isHeld = held.contains(p.name); return p }
         var parsedFormulae = BrewParse.packages(from: formulaRes.output, type: .formula, outdated: outdatedNames)
         // Mark dependencies, unless brew couldn't say (then show everything as yours)
         if requestedRes.exitCode == 0 {
             let requested = Set(requestedRes.output.lines)
             parsedFormulae = parsedFormulae.map { var p = $0; p.isDependency = !requested.contains(p.name); return p }
         }
-        self.formulae = parsedFormulae
+        self.formulae = parsedFormulae.map { var p = $0; p.isHeld = held.contains(p.name); return p }
         lastRefresh = Date()
     }
 
@@ -259,6 +272,22 @@ class BrewService: ObservableObject {
                 appPathMisses.insert(token)
             }
         }
+    }
+
+    /// "Don't update" / "Allow updates". Formulae use `brew pin`, which the
+    /// command line respects too; casks can't be pinned, so BrewDock holds them.
+    func setHeld(_ package: BrewPackage, _ held: Bool) async {
+        if package.type == .formula {
+            let result = await brew([held ? "pin" : "unpin", package.name])
+            if result.exitCode != 0 {
+                lastError = result.failureMessage("Couldn't \(held ? "hold" : "release") \(package.name)")
+            }
+        } else if held {
+            heldCasks.insert(package.name)
+        } else {
+            heldCasks.remove(package.name)
+        }
+        await refresh(force: true)
     }
 
     /// Line handler that turns brew output into a progress label for `key`
