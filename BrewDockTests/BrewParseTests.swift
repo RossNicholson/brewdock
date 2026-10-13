@@ -164,4 +164,16 @@ final class BrewParseTests: XCTestCase {
             XCTAssertEqual(BrewParse.progressLabel(fromLine: line), expected, line)
         }
     }
+
+    // MARK: brew cleanup
+
+    func testCleanupSize() {
+        let dry = """
+        Would remove: /opt/homebrew/Library/Homebrew/vendor/portable-ruby/4.0.6 (1,707 files, 34.6MB)
+        ==> This operation would free approximately 644.8MB of disk space.
+        """
+        XCTAssertEqual(BrewParse.cleanupSize(fromOutput: dry), "644.8 MB")
+        XCTAssertEqual(BrewParse.cleanupSize(fromOutput: "==> This operation has freed approximately 1.2GB of disk space."), "1.2 GB")
+        XCTAssertNil(BrewParse.cleanupSize(fromOutput: ""))
+    }
 }

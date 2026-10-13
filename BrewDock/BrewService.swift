@@ -401,6 +401,19 @@ class BrewService: ObservableObject {
         return (true, "Cleanup complete.")
     }
 
+    /// How much `brew cleanup --prune=all` would free (old versions and every
+    /// cached download), e.g. "644.8 MB", or nil if nothing.
+    func measureCleanup() async -> String? {
+        let result = await brew(["cleanup", "--dry-run", "--prune=all"], timeout: 120)
+        return BrewParse.cleanupSize(fromOutput: result.output)
+    }
+
+    func cleanup() async -> (success: Bool, message: String) {
+        let result = await brew(["cleanup", "--prune=all"], timeout: nil)
+        guard result.exitCode == 0 else { return (false, result.failureMessage("Cleanup failed")) }
+        return (true, BrewParse.cleanupSize(fromOutput: result.output).map { "Freed \($0)" } ?? "All tidy")
+    }
+
     func refreshServices() async {
         guard !isLoadingServices else { return }
         isLoadingServices = true

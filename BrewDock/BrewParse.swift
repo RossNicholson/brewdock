@@ -115,4 +115,16 @@ enum BrewParse {
         default: return nil
         }
     }
+
+    /// The size in brew cleanup's summary line, "…would free approximately
+    /// 644.8MB of disk space." (dry run) or "…has freed approximately 1.2GB…",
+    /// formatted as "644.8 MB". Nil when there's nothing to free.
+    static func cleanupSize(fromOutput output: String) -> String? {
+        guard let line = output.lines.last(where: { $0.contains("approximately") }),
+              let match = line.range(of: #"approximately\s+([0-9.,]+)\s*([KMGT]?B)"#, options: .regularExpression)
+        else { return nil }
+        let words = line[match].split(separator: " ").dropFirst().joined()
+        guard let unitStart = words.firstIndex(where: { $0.isLetter }) else { return nil }
+        return "\(words[..<unitStart]) \(words[unitStart...])"
+    }
 }

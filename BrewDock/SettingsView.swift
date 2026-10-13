@@ -8,6 +8,11 @@ struct SettingsView: View {
     @State private var checkedUpToDate = false
     @AppStorage(UpdateNotifier.enabledKey) private var notifyAboutUpdates = false
     @State private var notificationError: String? = nil
+    @State private var cleanup: CleanupState = .measuring
+
+    private enum CleanupState: Equatable {
+        case measuring, reclaimable(String), nothing, cleaning, done(String), failed(String)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -72,6 +77,8 @@ struct SettingsView: View {
             .padding(12)
             .card()
 
+            cleanupCard
+
             if brewService.selfUpdateAvailable {
                 ColorBlockButton(
                     title: brewService.isUpdatingSelf ? "Updating…" : "Update BrewDock",
@@ -98,6 +105,40 @@ struct SettingsView: View {
             }
         }
         .popoverChrome()
+        .task { await measureCleanup() }
+    }
+
+    /// "Free up space": measured when Settings opens, cleaned on click
+    private var cleanupCard: some View {
+        let detail: String
+        switch cleanup {
+        case .measuring: detail = "Checking old versions and downloads…"
+        case .reclaimable(let size): detail = "Old versions and downloads use \(size)"
+        case .nothing: detail = "Nothing to clean up"
+        case .cleaning: detail = "Cleaning up…"
+        case .done(let message): detail = message
+        case .failed(let message): detail = message
+        }
+        let canClean: Bool
+        if case .reclaimable = cleanup { canClean = true } else { canClean = false }
+        return ColorBlockButton(
+            title: "Free up space",
+            detail: detail,
+            fill: { if case .failed = cleanup { return AppColors.coral }; if case .done = cleanup { return AppColors.mint }; return AppColors.lilac }(),
+            symbol: { if case .done = cleanup { return "checkmark" }; return "sparkles" }()
+        ) {
+            Task {
+                cleanup = .cleaning
+                let (ok, message) = await brewService.cleanup()
+                cleanup = ok ? .done(message) : .failed(message)
+            }
+        }
+        .disabled(!canClean)
+    }
+
+    private func measureCleanup() async {
+        cleanup = .measuring
+        cleanup = await brewService.measureCleanup().map { .reclaimable($0) } ?? .nothing
     }
 
     private func setNotifications(_ enabled: Bool) {
