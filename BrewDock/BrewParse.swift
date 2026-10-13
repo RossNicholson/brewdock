@@ -152,4 +152,40 @@ enum BrewParse {
         }
         return result
     }
+
+    /// Packages Homebrew 7 refused to load because their tap isn't trusted:
+    /// "Refusing to load cask user/tap/foo from untrusted tap user/tap."
+    static func untrustedTargets(fromStderr stderr: String) -> [UntrustedTarget] {
+        var targets: [UntrustedTarget] = []
+        for line in stderr.lines {
+            guard let range = line.range(of: #"Refusing to load (cask|formula) \S+ from untrusted tap"#,
+                                         options: .regularExpression) else { continue }
+            let words = line[range].split(separator: " ")
+            guard words.count >= 5 else { continue }
+            let target = UntrustedTarget(kind: words[3] == "cask" ? .cask : .formula, name: String(words[4]))
+            if !targets.contains(target) { targets.append(target) }
+        }
+        return targets
+    }
+
+    /// Installed casks read straight from the Caskroom folder (token → version
+    /// folders). Used when `brew list --cask` fails, e.g. because one installed
+    /// cask comes from an untrusted tap and brew refuses to list any of them.
+    static func caskroomPackages(_ entries: [String: [String]], outdated: Set<String>) -> [BrewPackage] {
+        entries.keys.sorted().map { token in
+            let versions = (entries[token] ?? []).filter { !$0.hasPrefix(".") }.sorted()
+            return BrewPackage(name: token, version: versions.joined(separator: " "), type: .cask,
+                               isOutdated: outdated.contains(token))
+        }
+    }
+}
+
+/// A package from a tap Homebrew 7 hasn't been told to trust yet
+struct UntrustedTarget: Hashable {
+    let kind: BrewPackage.PackageType
+    /// Fully qualified, e.g. "rossnicholson/tap/clawdbar"
+    let name: String
+
+    var shortName: String { name.split(separator: "/").last.map(String.init) ?? name }
+    var tap: String { name.split(separator: "/").prefix(2).joined(separator: "/") }
 }

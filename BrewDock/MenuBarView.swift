@@ -9,6 +9,7 @@ struct MenuBarView: View {
     @State private var showingBrewfile = false
     @State private var toastMessage: String? = nil
     @FocusState private var searchFocused: Bool
+    @State private var trustToConfirm: UntrustedTarget? = nil
 
     init(initialTab: Tab = .apps) {
         _selectedTab = State(initialValue: initialTab)
@@ -43,6 +44,12 @@ struct MenuBarView: View {
         VStack(spacing: 0) {
             dragHandle
             header
+            if let target = brewService.untrusted.first {
+                trustBanner(target)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 10)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
             if showsUpdateBanner {
                 updateBanner
                     .padding(.horizontal, 14)
@@ -57,6 +64,15 @@ struct MenuBarView: View {
         .frame(minWidth: 280, minHeight: 300)
         .background(AppColors.ground)
         .animation(.easeInOut(duration: 0.2), value: showsUpdateBanner)
+        .animation(.easeInOut(duration: 0.2), value: brewService.untrusted)
+        .alert("Trust \(trustToConfirm?.shortName ?? "")?",
+               isPresented: Binding(get: { trustToConfirm != nil }, set: { if !$0 { trustToConfirm = nil } }),
+               presenting: trustToConfirm) { target in
+            Button("Trust") { Task { await brewService.trust(target) } }
+            Button("Cancel", role: .cancel) {}
+        } message: { target in
+            Text("\(target.shortName) comes from \(target.tap), which isn't an official Homebrew tap. Homebrew 7 needs your OK before it will install, update or list it. Only trust taps from developers you know.")
+        }
         .overlay(alignment: .bottom) {
             if let msg = toastMessage {
                 Text(msg)
@@ -134,6 +150,41 @@ struct MenuBarView: View {
 
     private var showsUpdateBanner: Bool {
         outdatedCount > 0 && (selectedTab == .apps || selectedTab == .tools)
+    }
+
+    /// Lilac block shown when Homebrew 7 refuses a package from an untrusted tap
+    private func trustBanner(_ target: UntrustedTarget) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: "checkmark.shield.fill")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(AppColors.ink)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Trust needed")
+                    .font(.display(18, relativeTo: .headline))
+                    .textCase(.uppercase)
+                Text("Homebrew needs your OK for \(target.shortName) from \(target.tap)")
+                    .font(.mono(9.5))
+                    .opacity(0.75)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(AppColors.ink)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                trustToConfirm = target
+            } label: {
+                Text("Trust")
+                    .font(.mono(10.5, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(AppColors.ink, in: Capsule())
+            }
+            .buttonStyle(PressableStyle())
+        }
+        .padding(.leading, 14)
+        .padding(.trailing, 10)
+        .padding(.vertical, 10)
+        .background(AppColors.lilac, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     /// Peach colour block offering to update everything, like the big call-to-action
@@ -355,11 +406,11 @@ struct MenuBarView: View {
                 switch selectedTab {
                 case .services:
                     let running = brewService.services.filter { $0.status == .started }.count
-                    Text("\(brewService.services.count) services · \(running) running")
+                    Text("\(plural(brewService.services.count, "service")) · \(running) running")
                 case .discover:
                     Text("\(DiscoverCatalog.all.count) packages to discover")
                 default:
-                    Text("\(brewService.casks.count) apps · \(brewService.formulae.count) tools")
+                    Text("\(plural(brewService.casks.count, "app")) · \(plural(brewService.formulae.count, "tool"))")
                 }
             }
             .font(.mono(9.5))
@@ -452,6 +503,11 @@ struct MenuBarView: View {
         }
         .popoverChrome()
     }
+}
+
+/// "1 app", "2 apps"
+func plural(_ count: Int, _ noun: String) -> String {
+    "\(count) \(noun)\(count == 1 ? "" : "s")"
 }
 
 private extension Array where Element == BrewPackage {

@@ -199,4 +199,32 @@ final class BrewParseTests: XCTestCase {
         let pkg = DiscoverPackage(searchResult: "user/tap/foo", displayName: "foo", description: "", type: .formula)
         XCTAssertTrue(pkg.matches(installedName: "foo"))
     }
+
+    // MARK: Untrusted taps (Homebrew 7)
+
+    func testUntrustedTargets() {
+        let stderr = """
+        Error: Refusing to load cask rossnicholson/tap/brewdock from untrusted tap rossnicholson/tap.
+        Run `brew trust --cask rossnicholson/tap/brewdock` or `brew trust rossnicholson/tap` to trust it.
+        """
+        let targets = BrewParse.untrustedTargets(fromStderr: stderr)
+        XCTAssertEqual(targets, [UntrustedTarget(kind: .cask, name: "rossnicholson/tap/brewdock")])
+        XCTAssertEqual(targets.first?.shortName, "brewdock")
+        XCTAssertEqual(targets.first?.tap, "rossnicholson/tap")
+        XCTAssertEqual(BrewParse.untrustedTargets(fromStderr: "Error: Refusing to load formula me/x/foo from untrusted tap me/x.").first?.kind, .formula)
+        XCTAssertTrue(BrewParse.untrustedTargets(fromStderr: "Error: No formulae found").isEmpty)
+    }
+
+    func testCaskroomFallback() {
+        let pkgs = BrewParse.caskroomPackages(["vlc": ["3.0.21", ".metadata"], "brewdock": ["1.2.0"]], outdated: ["vlc"])
+        XCTAssertEqual(pkgs.map(\.name), ["brewdock", "vlc"])
+        XCTAssertEqual(pkgs[1].version, "3.0.21")
+        XCTAssertTrue(pkgs[1].isOutdated)
+    }
+
+    func testSelfDetectedByShortOrFullName() {
+        XCTAssertTrue(BrewService.listsSelf("rossnicholson/tap/brewdock\n"))
+        XCTAssertTrue(BrewService.listsSelf("brewdock"))
+        XCTAssertFalse(BrewService.listsSelf("brewdockextra"))
+    }
 }

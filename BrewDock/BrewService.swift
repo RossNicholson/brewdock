@@ -110,6 +110,16 @@ class BrewService: ObservableObject {
     @Published var isCheckingSelfUpdate: Bool = false
     @Published var isUpdatingSelf: Bool = false
     nonisolated static let selfCaskName = "brewdock"
+    /// BrewDock's cask by its full name. Homebrew 7 refuses short-name commands
+    /// for casks from untrusted taps, but runs (and trusts) a fully named one,
+    /// so the update check and self-update always use this.
+    nonisolated static let selfCaskFullName = "rossnicholson/tap/brewdock"
+    /// Packages Homebrew refused to load until their tap is trusted (Homebrew 7+)
+    @Published var untrusted: [UntrustedTarget] = []
+    /// Untrusted packages found by a failed action (kept across refreshes)
+    private var untrustedFromActions: [UntrustedTarget] = []
+    /// Action to run again once its package is trusted, keyed by full name
+    private var retryAfterTrust: [String: @MainActor () async -> Void] = [:]
     private var outdatedNames: Set<String> = []
     private var lastRefresh: Date = .distantPast
     /// A forced refresh requested while one was already running; it runs again
@@ -147,10 +157,21 @@ class BrewService: ObservableObject {
         let (caskRes, formulaRes, outdatedRes) = await (caskResult, formulaResult, outdatedResult)
 
         outdatedNames = Set(outdatedRes.output.lines)
+        let listedUntrusted = [caskRes, formulaRes, outdatedRes]
+            .flatMap { BrewParse.untrustedTargets(fromStderr: $0.errorOutput) }
+        untrusted = (listedUntrusted + untrustedFromActions).reduce(into: []) { if !$0.contains($1) { $0.append($1) } }
+
         var parsedCasks = BrewParse.packages(from: caskRes.output, type: .cask, outdated: outdatedNames)
+        // brew refuses to list any casks while one installed cask is untrusted;
+        // read the Caskroom folder instead so the Apps tab still works.
+        if caskRes.exitCode != 0 && parsedCasks.isEmpty && !listedUntrusted.isEmpty {
+            parsedCasks = BrewParse.caskroomPackages(caskroomEntries(), outdated: outdatedNames)
+        }
 
         if !parsedCasks.isEmpty {
-            await resolveAppPaths(forCaskNames: parsedCasks.map(\.name))
+            // `brew info` would refuse the whole batch over one untrusted cask
+            let untrustedNames = Set(untrusted.map(\.shortName))
+            await resolveAppPaths(forCaskNames: parsedCasks.map(\.name).filter { !untrustedNames.contains($0) })
             parsedCasks = parsedCasks.map { pkg in
                 var p = pkg
                 if let path = appPathCache[pkg.name] {
@@ -164,6 +185,45 @@ class BrewService: ObservableObject {
         self.casks = parsedCasks
         self.formulae = BrewParse.packages(from: formulaRes.output, type: .formula, outdated: outdatedNames)
         lastRefresh = Date()
+    }
+
+    /// Caskroom contents: token → version folder names
+    private func caskroomEntries() -> [String: [String]] {
+        let prefix = ((brewPath as NSString).deletingLastPathComponent as NSString).deletingLastPathComponent
+        let caskroom = (prefix as NSString).appendingPathComponent("Caskroom")
+        let fm = FileManager.default
+        var entries: [String: [String]] = [:]
+        for token in (try? fm.contentsOfDirectory(atPath: caskroom)) ?? [] where !token.hasPrefix(".") {
+            entries[token] = (try? fm.contentsOfDirectory(atPath: (caskroom as NSString).appendingPathComponent(token))) ?? []
+        }
+        return entries
+    }
+
+    /// If brew refused `result` because of an untrusted tap, remember the package
+    /// (shown as a banner) and the action to retry once it's trusted.
+    private func noteUntrusted(_ result: BrewResult, retry: @escaping @MainActor () async -> Void) -> Bool {
+        let targets = BrewParse.untrustedTargets(fromStderr: result.errorOutput)
+        guard let first = targets.first else { return false }
+        for target in targets where !untrustedFromActions.contains(target) { untrustedFromActions.append(target) }
+        for target in targets where !untrusted.contains(target) { untrusted.append(target) }
+        retryAfterTrust[first.name] = retry
+        lastError = "\(first.shortName) needs trusting first — see the banner"
+        return true
+    }
+
+    /// Runs `brew trust` for one package (the user confirmed in the banner), then
+    /// refreshes and retries whatever action was refused.
+    func trust(_ target: UntrustedTarget) async {
+        let result = await brew(["trust", target.kind == .cask ? "--cask" : "--formula", target.name], timeout: 60)
+        guard result.exitCode == 0 else {
+            lastError = result.failureMessage("Couldn't trust \(target.shortName)")
+            return
+        }
+        untrustedFromActions.removeAll { $0 == target }
+        untrusted.removeAll { $0 == target }
+        let retry = retryAfterTrust.removeValue(forKey: target.name)
+        await refresh(force: true)
+        await retry?()
     }
 
     /// Populate `appPathCache` for any cask tokens we don't yet know, by asking
@@ -208,6 +268,7 @@ class BrewService: ObservableObject {
         let flags = package.type == .cask ? ["--cask"] + greedyFlags : ["--formula"]
         let result = await brew(["upgrade"] + flags + [package.name], timeout: nil,
                                 onLine: reportProgress(to: package.name))
+        if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.upgrade(package) }) { return }
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't update \(package.name)") }
         await refresh(force: true)
     }
@@ -218,6 +279,7 @@ class BrewService: ObservableObject {
         let flag = package.type == .cask ? "--cask" : "--formula"
         let result = await brew(["install", flag, package.installToken], timeout: nil,
                                 onLine: reportProgress(to: package.id))
+        if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.install(package) }) { return }
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't install \(package.displayName)") }
         await refresh(force: true)
     }
@@ -232,14 +294,15 @@ class BrewService: ObservableObject {
         let flag = package.type == .cask ? "--cask" : "--formula"
         let result = await brew(["uninstall", flag, package.name], timeout: nil,
                                 onLine: reportProgress(to: package.name))
+        if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.uninstall(package) }) { return }
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't uninstall \(package.name)") }
         await refresh(force: true)
     }
 
     // Called on launch — quick check against local cache, no network fetch
     func checkSelfUpdateSilent() async {
-        let result = await brew(["outdated", "--cask", "brewdock"])
-        selfUpdateAvailable = result.output.lines.contains { $0.trimmingCharacters(in: .whitespaces) == "brewdock" }
+        let result = await brew(["outdated", "--cask", Self.selfCaskFullName])
+        selfUpdateAvailable = Self.listsSelf(result.output)
     }
 
     // Called when the user explicitly clicks "Check for Updates" — runs brew update first.
@@ -248,8 +311,16 @@ class BrewService: ObservableObject {
         if showProgress { isCheckingSelfUpdate = true }
         defer { if showProgress { isCheckingSelfUpdate = false } }
         _ = await brew(["update"], timeout: 60)
-        let result = await brew(["outdated", "--cask", "brewdock"])
-        selfUpdateAvailable = result.output.lines.contains { $0.trimmingCharacters(in: .whitespaces) == "brewdock" }
+        let result = await brew(["outdated", "--cask", Self.selfCaskFullName])
+        selfUpdateAvailable = Self.listsSelf(result.output)
+    }
+
+    /// Whether `brew outdated` output names BrewDock (short or full name)
+    nonisolated static func listsSelf(_ output: String) -> Bool {
+        output.lines.contains {
+            let line = $0.trimmingCharacters(in: .whitespaces)
+            return line == selfCaskName || line == selfCaskFullName
+        }
     }
 
     func updateSelf() async {
@@ -302,8 +373,8 @@ class BrewService: ObservableObject {
             kill -0 \(pid) 2>/dev/null || break
             sleep 0.5
         done
-        echo "[$(date)] running brew \(command.rawValue) --cask \(Self.selfCaskName)" >> "$LOG"
-        "\(brewPath)" \(command.rawValue) --cask \(Self.selfCaskName) >> "$LOG" 2>&1
+        echo "[$(date)] running brew \(command.rawValue) --cask \(Self.selfCaskFullName)" >> "$LOG"
+        "\(brewPath)" \(command.rawValue) --cask \(Self.selfCaskFullName) >> "$LOG" 2>&1
         status=$?
         echo "[$(date)] brew exited with status $status" >> "$LOG"
         if [ "$status" -eq 0 ]; then
@@ -353,6 +424,10 @@ class BrewService: ObservableObject {
         if !outdatedCasks.isEmpty {
             let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
                                     onLine: reportProgress(to: Self.allUpdatesKey))
+            if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.upgradeAll() }) {
+                updatingPackages.subtract(outdatedCasks + outdatedFormulae)
+                return
+            }
             if result.exitCode != 0 { failure = failure ?? result }
         }
         updatingPackages.subtract(outdatedCasks + outdatedFormulae)
