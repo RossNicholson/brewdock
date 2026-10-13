@@ -4,14 +4,22 @@
 
 ![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue) ![Swift 6](https://img.shields.io/badge/Swift-6.0-orange) ![License: GPL v3](https://img.shields.io/badge/license-GPL--v3-blue) ![Free](https://img.shields.io/badge/price-free-brightgreen)
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/screenshot-dark.png">
+    <img src="docs/screenshot-light.png" alt="BrewDock's menu bar panel listing installed apps, with an Updates ready banner" width="380">
+  </picture>
+</p>
+
 ---
 
-- **Apps** — all your Homebrew casks with real icons. Click to launch, hover to update or uninstall.
+- **Apps** — all your Homebrew casks with real icons. Click to launch; hover or right-click to update or uninstall.
 - **Tools** — all your formulae. Click to open in Terminal or iTerm2.
 - **Services** — start, stop, and restart Homebrew services on hover.
-- **Discover** — browse 150+ curated packages across 10 categories and install with one click.
+- **Discover** — browse 230+ curated packages across 10 categories and install with one click.
 - **Updates** — badge shows how many packages are outdated. Update one or all at once.
-- 100% native SwiftUI — no Electron, no bloat. Liquid Glass UI on macOS 26 Tahoe.
+- **Brewfile** — back up your setup, restore it on a new Mac, or see what's missing.
+- 100% native SwiftUI — no Electron, no bloat. Light and dark mode.
 
 ---
 
