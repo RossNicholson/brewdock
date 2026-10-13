@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>Homebrew in your menu bar.</strong><br>
-  Browse, install, update and remove your Mac apps and tools without opening the Terminal.
+  A free, open-source Homebrew GUI for macOS. Browse, install, update and remove your Mac apps and tools without opening the Terminal.
 </p>
 
 <p align="center">
@@ -120,6 +120,9 @@ BrewDock collects nothing: no analytics, no accounts, no tracking. It runs the `
 ---
 
 ## FAQ
+
+**Is BrewDock a Cakebrew alternative?**
+Yes. Like Cakebrew, it's a free Homebrew GUI for the Mac. BrewDock lives in the menu bar rather than a window, and it also manages casks, Homebrew services, Brewfiles and Homebrew 7's trusted taps.
 
 **Homebrew says it's "refusing to load" a cask from an untrusted tap.**
 Homebrew 7 needs you to trust casks from taps other than its own. BrewDock shows a *Trust needed* banner naming the cask and its tap. Click **Trust** to allow it, and BrewDock retries whatever was refused.
