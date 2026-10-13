@@ -229,4 +229,23 @@ final class BrewParseTests: XCTestCase {
         XCTAssertTrue(BrewService.listsSelf("brewdock"))
         XCTAssertFalse(BrewService.listsSelf("brewdockextra"))
     }
+
+    // MARK: brew bundle cleanup
+
+    func testCleanupCandidatesIgnoresHeadingsAndCachePaths() {
+        let out = """
+        Would uninstall formulae:
+        cowsay
+        Would uninstall casks:
+        firefox vlc
+        Would untap:
+        someone/tap
+        Would `brew cleanup`:
+        Would remove: /Users/me/Library/Caches/Homebrew/bootsnap/abc (1,894 files, 16.9MB)
+        Run `brew bundle cleanup --force` to make these changes.
+        """
+        XCTAssertEqual(BrewParse.cleanupCandidates(fromOutput: out),
+                       ["cowsay", "firefox", "vlc", "someone/tap (tap)"])
+        XCTAssertTrue(BrewParse.cleanupCandidates(fromOutput: "Would `brew cleanup`:\nWould remove: /x").isEmpty)
+    }
 }

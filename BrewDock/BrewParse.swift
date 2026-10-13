@@ -181,6 +181,34 @@ enum BrewParse {
                                isOutdated: outdated.contains(token))
         }
     }
+    /// Packages a `brew bundle cleanup` dry run would remove. Its output mixes
+    /// section headings and cache paths in with the names:
+    ///
+    ///     Would uninstall formulae:
+    ///     cowsay
+    ///     Would `brew cleanup`:
+    ///     Would remove: /Users/…/Caches/…
+    ///
+    /// so take only the names under the "Would uninstall…" and "Would untap"
+    /// headings. Taps are labelled, since they aren't packages.
+    static func cleanupCandidates(fromOutput output: String) -> [String] {
+        var candidates: [String] = []
+        var section: String? = nil
+        for raw in output.lines {
+            let line = raw.trimmingCharacters(in: .whitespaces)
+            if line.hasPrefix("Would ") || line.hasPrefix("Run ") {
+                if line.hasPrefix("Would uninstall") { section = "package" }
+                else if line.hasPrefix("Would untap") { section = "tap" }
+                else { section = nil }
+                continue
+            }
+            guard let section else { continue }
+            for name in line.split(whereSeparator: { $0 == " " || $0 == "," }).map(String.init) where !name.isEmpty {
+                candidates.append(section == "tap" ? "\(name) (tap)" : name)
+            }
+        }
+        return candidates
+    }
 }
 
 /// A package from a tap Homebrew 7 hasn't been told to trust yet

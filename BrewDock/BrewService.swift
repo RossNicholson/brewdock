@@ -517,7 +517,7 @@ class BrewService: ObservableObject {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }
         let result = await brew(["bundle", "cleanup", "--file=\(path)"])
-        return result.output.lines.filter { !$0.isEmpty }
+        return BrewParse.cleanupCandidates(fromOutput: result.output)
     }
 
     func brewfileCleanup(at path: String) async -> (success: Bool, message: String) {
