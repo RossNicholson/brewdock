@@ -29,8 +29,11 @@
 
 ```bash
 brew tap RossNicholson/tap
+brew trust --cask rossnicholson/tap/brewdock
 brew install --cask brewdock
 ```
+
+Homebrew 7 asks you to trust casks from other taps before installing them. On older versions, skip the `brew trust` line.
 
 **Requirements:** macOS 13+ · [Homebrew](https://brew.sh) installed · Apple Silicon or Intel
 
