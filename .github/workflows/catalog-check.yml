@@ -1,0 +1,53 @@
+name: Catalog check
+
+# Every Monday, check the Discover catalog against Homebrew's API and open
+# (or comment on) an issue if a package was renamed, removed, disabled or
+# deprecated. Same check as `make check-catalog`.
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Discover catalog against Homebrew
+        id: check
+        run: |
+          set +e
+          scripts/check-catalog.sh > report.txt 2>&1
+          status=$?
+          cat report.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          # 1 = catalog problems (reported below); anything else = the check broke
+          [ "$status" -eq 0 ] || [ "$status" -eq 1 ]
+
+      - name: Open or update an issue
+        if: steps.check.outputs.status == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Discover catalog needs updating"
+          {
+            echo "The weekly catalog check found Discover packages Homebrew has renamed, removed, disabled or deprecated:"
+            echo
+            echo '```'
+            cat report.txt
+            echo '```'
+            echo
+            echo "Fix them in \`BrewDock/DiscoverPackage.swift\`, then run \`make check-catalog\` to confirm."
+          } > body.md
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file body.md
+          else
+            gh issue create --title "$title" --body-file body.md
+          fi
