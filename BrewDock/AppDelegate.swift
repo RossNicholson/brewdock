@@ -60,7 +60,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
     }
 
     private func announceUpdates() {
-        let outdated = (brewService.casks + brewService.formulae).filter(\.isOutdated).map(\.name)
+        // Apps and the tools you installed first, dependencies last
+        let packages = brewService.casks + brewService.formulae.filter { !$0.isDependency }
+            + brewService.formulae.filter(\.isDependency)
+        let outdated = packages.filter(\.isOutdated).map(\.name)
         UpdateNotifier.notifyIfNew(outdated: outdated)
     }
 

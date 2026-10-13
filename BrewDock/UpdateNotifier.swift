@@ -19,7 +19,8 @@ enum UpdateNotifier {
         (try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])) ?? false
     }
 
-    /// Call after a refresh with the currently outdated package names.
+    /// Call after a refresh with the currently outdated package names, most
+    /// interesting first (the notification names the first few).
     static func notifyIfNew(outdated: [String]) {
         let defaults = UserDefaults.standard
         let current = Set(outdated)
@@ -28,7 +29,8 @@ enum UpdateNotifier {
         // goes out of date again is announced again.
         defaults.set(Array(current), forKey: announcedKey)
 
-        let fresh = current.subtracting(announced).sorted()
+        var seen = Set<String>()
+        let fresh = outdated.filter { !announced.contains($0) && seen.insert($0).inserted }
         guard isEnabled, !fresh.isEmpty else { return }
 
         let message = message(fresh: fresh, total: current.count)
