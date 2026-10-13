@@ -8,6 +8,7 @@ struct MenuBarView: View {
     @State private var showingAbout = false
     @State private var showingBrewfile = false
     @State private var toastMessage: String? = nil
+    @State private var toastIsError = true
     @FocusState private var searchFocused: Bool
     @State private var trustToConfirm: UntrustedTarget? = nil
     @State private var showDependencies = false
@@ -66,6 +67,19 @@ struct MenuBarView: View {
         .background(AppColors.ground)
         .animation(.easeInOut(duration: 0.2), value: showsUpdateBanner)
         .animation(.easeInOut(duration: 0.2), value: brewService.untrusted)
+        .alert(
+            "Remove \(plural(brewService.cleanupProposal?.packages.count ?? 0, "package"))?",
+            isPresented: Binding(get: { brewService.cleanupProposal != nil },
+                                 set: { if !$0 { brewService.cleanupProposal = nil } }),
+            presenting: brewService.cleanupProposal
+        ) { proposal in
+            Button("Remove", role: .destructive) {
+                Task { brewService.report(await brewService.brewfileCleanup(at: proposal.path)) }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: { proposal in
+            Text("These aren't in your Brewfile and will be uninstalled:\n" + proposal.packages.joined(separator: "\n"))
+        }
         .alert("Trust \(trustToConfirm?.shortName ?? "")?",
                isPresented: Binding(get: { trustToConfirm != nil }, set: { if !$0 { trustToConfirm = nil } }),
                presenting: trustToConfirm) { target in
@@ -84,7 +98,8 @@ struct MenuBarView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(AppColors.coral, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .background(toastIsError ? AppColors.coral : AppColors.mint,
+                                in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                     .padding(.horizontal, 18)
                     .padding(.bottom, 44)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -100,17 +115,20 @@ struct MenuBarView: View {
                 Task { await brewService.refreshServices() }
             }
         }
-        .onChange(of: brewService.errorSerial) { serial in
-            guard let err = brewService.lastError else { return }
+        .onChange(of: brewService.toastSerial) { serial in
+            let isError = brewService.toastIsError
+            guard let err = isError ? brewService.lastError : brewService.lastNotice else { return }
+            toastIsError = isError
             withAnimation(.spring(duration: 0.3)) { toastMessage = err }
             Task {
                 // Longer messages (with brew's reason) stay up long enough to read
                 let seconds = min(8, 3 + Double(err.count) / 40)
                 try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
                 // A newer error took over the toast; let its own timer clear it
-                guard brewService.errorSerial == serial else { return }
+                guard brewService.toastSerial == serial else { return }
                 withAnimation(.easeOut) { toastMessage = nil }
                 brewService.lastError = nil
+                brewService.lastNotice = nil
             }
         }
     }

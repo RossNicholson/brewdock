@@ -6,9 +6,6 @@ struct BrewfileView: View {
     @EnvironmentObject var brewService: BrewService
     @State private var statusMessage: String? = nil
     @State private var statusIsSuccess = false
-    @State private var cleanupPreview: [String] = []
-    @State private var showCleanupConfirm = false
-    @State private var pendingCleanupPath: String? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -52,23 +49,6 @@ struct BrewfileView: View {
             }
         }
         .popoverChrome()
-        .confirmationDialog(
-            "Remove \(cleanupPreview.count) package\(cleanupPreview.count == 1 ? "" : "s")?",
-            isPresented: $showCleanupConfirm,
-            titleVisibility: .visible
-        ) {
-            Button("Remove", role: .destructive) {
-                guard let path = pendingCleanupPath else { return }
-                Task {
-                    let (ok, msg) = await brewService.brewfileCleanup(at: path)
-                    statusIsSuccess = ok
-                    statusMessage = msg
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text(cleanupPreview.joined(separator: "\n"))
-        }
     }
 
     private func exportBrewfile() {
@@ -83,6 +63,9 @@ struct BrewfileView: View {
             let (ok, msg) = await brewService.brewfileDump(to: url.path)
             statusIsSuccess = ok
             statusMessage = msg
+            // The popover usually closed when the file picker opened, so also
+            // show the result in the main panel
+            brewService.report((ok, msg))
         }
     }
 
@@ -98,6 +81,9 @@ struct BrewfileView: View {
             let (ok, msg) = await brewService.brewfileInstall(from: url.path)
             statusIsSuccess = ok
             statusMessage = msg
+            // The popover usually closed when the file picker opened, so also
+            // show the result in the main panel
+            brewService.report((ok, msg))
         }
     }
 
@@ -113,6 +99,9 @@ struct BrewfileView: View {
             let (ok, msg) = await brewService.brewfileCheck(at: url.path)
             statusIsSuccess = ok
             statusMessage = msg
+            // The popover usually closed when the file picker opened, so also
+            // show the result in the main panel
+            brewService.report((ok, msg))
         }
     }
 
@@ -129,10 +118,9 @@ struct BrewfileView: View {
             if packages.isEmpty {
                 statusIsSuccess = true
                 statusMessage = "Nothing to clean up."
+                brewService.report((true, "Nothing to clean up."))
             } else {
-                cleanupPreview = packages
-                pendingCleanupPath = url.path
-                showCleanupConfirm = true
+                brewService.cleanupProposal = .init(path: url.path, packages: packages)
             }
         }
     }

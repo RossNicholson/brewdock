@@ -97,12 +97,32 @@ class BrewService: ObservableObject {
     private var greedyFlags: [String] {
         UserDefaults.standard.bool(forKey: Self.includeAutoUpdatingKey) ? ["--greedy-auto-updates"] : []
     }
-    /// Message for the error toast. Each assignment bumps `errorSerial`, so the
-    /// same message twice in a row still shows (and restarts the timer).
+    /// Message for the toast at the bottom of the panel: `lastError` in coral,
+    /// `lastNotice` (successes) in mint. Each assignment bumps `toastSerial`, so
+    /// the same message twice in a row still shows (and restarts the timer).
     @Published var lastError: String? = nil {
-        didSet { if lastError != nil { errorSerial &+= 1 } }
+        didSet { if lastError != nil { toastIsError = true; toastSerial &+= 1 } }
     }
-    @Published private(set) var errorSerial = 0
+    @Published var lastNotice: String? = nil {
+        didSet { if lastNotice != nil { toastIsError = false; toastSerial &+= 1 } }
+    }
+    @Published private(set) var toastSerial = 0
+    private(set) var toastIsError = true
+
+    /// "Remove unlisted" packages waiting for the user to confirm. Shown by the
+    /// main panel: the Brewfile popover closes as soon as the file picker opens.
+    @Published var cleanupProposal: CleanupProposal? = nil
+
+    struct CleanupProposal: Identifiable {
+        let id = UUID()
+        let path: String
+        let packages: [String]
+    }
+
+    /// Reports a Brewfile result in the panel's toast
+    func report(_ result: (success: Bool, message: String)) {
+        if result.success { lastNotice = result.message } else { lastError = result.message }
+    }
     @Published var isBrewfileWorking = false
     @Published var selfUpdateAvailable: Bool = false
     @Published var isCheckingSelfUpdate: Bool = false
@@ -185,6 +205,9 @@ class BrewService: ObservableObject {
         }
 
         self.casks = parsedCasks.map { var p = $0; p.isHeld = held.contains(p.name); return p }
+        // Keep Settings in step with the list: if the list shows BrewDock as
+        // outdated, offer the update without waiting for the next check.
+        if self.casks.contains(where: { $0.isBrewDock && $0.isOutdated }) { selfUpdateAvailable = true }
         var parsedFormulae = BrewParse.packages(from: formulaRes.output, type: .formula, outdated: outdatedNames)
         // Mark dependencies, unless brew couldn't say (then show everything as yours)
         if requestedRes.exitCode == 0 {
