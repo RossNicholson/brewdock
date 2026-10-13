@@ -83,10 +83,13 @@ enum BrewParse {
         // Download finished (Homebrew 5+ prints these on stderr): "✔︎ Bottle jq (1.7.1)"
         // Compare the scalar: "✔︎" carries a variation selector, so it's a different Character
         if line.unicodeScalars.first == "\u{2714}" {
-            let words = line.split(separator: " ")
-            guard words.count >= 3 else { return "Downloaded" }
-            return "Downloaded \(words[2])"
+            // "✔︎ Bottle Manifest jq (…)" is metadata, not the download itself
+            let words = line.split(separator: " ").dropFirst(2)
+            guard let name = words.first, name != "Manifest" else { return nil }
+            return "Downloaded \(name)"
         }
+        // Formula uninstalls print this without the "==> " prefix
+        if line.hasPrefix("Uninstalling /") { return "Uninstalling…" }
         guard line.hasPrefix("==> ") else { return nil }
         let words = line.dropFirst(4).split(separator: " ").map(String.init)
         guard let verb = words.first else { return nil }

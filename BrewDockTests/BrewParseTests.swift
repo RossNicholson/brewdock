@@ -151,6 +151,8 @@ final class BrewParseTests: XCTestCase {
             ("==> Fetching downloads for: jq", "Downloading…"),
             ("==> Fetching jq from homebrew/core", "Fetching jq…"),
             ("✔︎ Bottle jq (1.7.1)", "Downloaded jq"),
+            ("✔︎ Bottle Manifest jq (1.7.1)", nil),
+            ("Uninstalling /opt/homebrew/Cellar/cowsay/3.04_1... (64 files, 107KB)", "Uninstalling…"),
             ("==> Pouring jq--1.7.1.arm64_sequoia.bottle.tar.gz", "Unpacking…"),
             ("==> Installing Cask firefox", "Installing firefox…"),
             ("==> Upgrading 2 outdated packages:", nil),
