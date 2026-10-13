@@ -9,6 +9,7 @@ struct SettingsView: View {
     @AppStorage(UpdateNotifier.enabledKey) private var notifyAboutUpdates = false
     @State private var notificationError: String? = nil
     @State private var cleanup: CleanupState = .measuring
+    @AppStorage(BrewService.includeAutoUpdatingKey) private var includeAutoUpdating = false
 
     private enum CleanupState: Equatable {
         case measuring, reclaimable(String), nothing, cleaning, done(String), failed(String)
@@ -72,6 +73,30 @@ struct SettingsView: View {
                         .font(.mono(9.5))
                         .foregroundStyle(AppColors.destructive)
                         .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(12)
+            .card()
+
+            VStack(alignment: .leading, spacing: 6) {
+                Toggle(isOn: $includeAutoUpdating) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Self-updating apps")
+                            .font(.display(17, relativeTo: .headline))
+                            .textCase(.uppercase)
+                            .foregroundStyle(AppColors.text)
+                        Text("Include apps like Chrome and Slack that update themselves")
+                            .font(.mono(9.5))
+                            .foregroundStyle(AppColors.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .tint(AppColors.toggle)
+                .onChange(of: includeAutoUpdating) { _ in
+                    Task { await brewService.refresh(force: true) }
                 }
             }
             .padding(12)

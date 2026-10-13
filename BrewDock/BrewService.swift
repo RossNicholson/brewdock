@@ -98,6 +98,12 @@ class BrewService: ObservableObject {
     /// "Downloading…". `allUpdatesKey` holds "Update all" progress.
     @Published var progress: [String: String] = [:]
     nonisolated static let allUpdatesKey = "*all*"
+    /// Settings toggle: also treat casks that update themselves (Chrome, Slack…)
+    /// as outdated. Homebrew skips them by default.
+    nonisolated static let includeAutoUpdatingKey = "includeAutoUpdatingApps"
+    private var greedyFlags: [String] {
+        UserDefaults.standard.bool(forKey: Self.includeAutoUpdatingKey) ? ["--greedy-auto-updates"] : []
+    }
     @Published var lastError: String? = nil
     @Published var isBrewfileWorking = false
     @Published var selfUpdateAvailable: Bool = false
@@ -136,7 +142,7 @@ class BrewService: ObservableObject {
     private func loadPackages() async {
         async let caskResult    = brew(["list", "--cask", "--versions"])
         async let formulaResult = brew(["list", "--formula", "--versions"])
-        async let outdatedResult = brew(["outdated", "--quiet"])
+        async let outdatedResult = brew(["outdated", "--quiet"] + greedyFlags)
 
         let (caskRes, formulaRes, outdatedRes) = await (caskResult, formulaResult, outdatedResult)
 
@@ -199,8 +205,8 @@ class BrewService: ObservableObject {
         if package.isBrewDock { await updateSelf(); return }
         updatingPackages.insert(package.name)
         defer { updatingPackages.remove(package.name) }
-        let flag = package.type == .cask ? "--cask" : "--formula"
-        let result = await brew(["upgrade", flag, package.name], timeout: nil,
+        let flags = package.type == .cask ? ["--cask"] + greedyFlags : ["--formula"]
+        let result = await brew(["upgrade"] + flags + [package.name], timeout: nil,
                                 onLine: reportProgress(to: package.name))
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't update \(package.name)") }
         await refresh(force: true)
@@ -345,7 +351,7 @@ class BrewService: ObservableObject {
             if result.exitCode != 0 { failure = result }
         }
         if !outdatedCasks.isEmpty {
-            let result = await brew(["upgrade", "--cask"] + outdatedCasks, timeout: nil,
+            let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
                                     onLine: reportProgress(to: Self.allUpdatesKey))
             if result.exitCode != 0 { failure = failure ?? result }
         }
