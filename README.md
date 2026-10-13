@@ -30,7 +30,7 @@ brew install --cask brewdock
 
 Bug reports, feature requests, and PRs welcome — open an issue or start a discussion.
 
-To build from source: `brew install xcodegen && xcodegen generate`, then open `BrewDock.xcodeproj` and press `Cmd+R`. No `.xcodeproj` is checked in.
+To build from source: `brew install xcodegen && xcodegen generate`, then open `BrewDock.xcodeproj` and press `Cmd+R`. The checked-in `.xcodeproj` is generated from `project.yml`, so re-run `xcodegen generate` after editing that file.
 
 ---
 
