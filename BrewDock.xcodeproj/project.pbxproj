@@ -19,6 +19,7 @@
 		70CB4817C8A875C139DBCA64 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DC1A8B467DEE0A79CC21E49B /* GeistMono-Regular.ttf */; };
 		7303A7F7DD62D2F062BD9C1B /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12F72C149323E697079D3E03 /* GeistMono-Medium.ttf */; };
 		7EAD9BC11BB4761667F42A6C /* BarlowCondensed-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 02B442AEAF44CF066B755C83 /* BarlowCondensed-Bold.ttf */; };
+		7F00D81CA723FFF931934C7C /* GlobalHotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */; };
 		8307C1100E99F99BD5D5C7F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D3C526889D003BC43FAD7E /* AppDelegate.swift */; };
 		98BBD02CA4ABA5A9F7EC0D12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 771150EC08441ABC3EC1DD1C /* Assets.xcassets */; };
 		98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DAF62F0F9BD3607332230F /* Mascot.swift */; };
@@ -64,6 +65,7 @@
 		A19FBF6417D0E612485E563B /* GeistMono-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "GeistMono-OFL.txt"; sourceTree = "<group>"; };
 		A7DAF62F0F9BD3607332230F /* Mascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mascot.swift; sourceTree = "<group>"; };
 		ACBC1B238338C194118F6083 /* BrewfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewfileView.swift; sourceTree = "<group>"; };
+		BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotKey.swift; sourceTree = "<group>"; };
 		C3A0505003D5710B085C84B5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		DA6511EB48F677664E54300B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		DC1A8B467DEE0A79CC21E49B /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Regular.ttf"; sourceTree = "<group>"; };
@@ -95,6 +97,7 @@
 				FCDA32D50FEC4D1761B3D80C /* DiscoverPackage.swift */,
 				E6DE9A086D90E815A39C88A5 /* DiscoverView.swift */,
 				503440E86E47889F134F948C /* FormulaIcons.swift */,
+				BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */,
 				7CDD1D41DE8EB6E1E2E6722C /* Info.plist */,
 				8A346F38852F4B702A7A516C /* MenuBarView.swift */,
 				341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */,
@@ -258,6 +261,7 @@
 				A028D58D8573DA62145455B8 /* DiscoverPackage.swift in Sources */,
 				31B9AA09C82A37530619A2BF /* DiscoverView.swift in Sources */,
 				0340713FE26CEDF0E4EDD2A0 /* FormulaIcons.swift in Sources */,
+				7F00D81CA723FFF931934C7C /* GlobalHotKey.swift in Sources */,
 				98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */,
 				20DE48E19430760FBA2321E3 /* MenuBarView.swift in Sources */,
 				14E6F6389CC75707C9F058BC /* PackageRowView.swift in Sources */,

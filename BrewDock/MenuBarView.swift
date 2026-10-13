@@ -8,6 +8,7 @@ struct MenuBarView: View {
     @State private var showingAbout = false
     @State private var showingBrewfile = false
     @State private var toastMessage: String? = nil
+    @FocusState private var searchFocused: Bool
 
     init(initialTab: Tab = .apps) {
         _selectedTab = State(initialValue: initialTab)
@@ -72,6 +73,10 @@ struct MenuBarView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
             }
+        }
+        // Opening the panel (by click or ⌥⌘B) puts the cursor in search
+        .onReceive(NotificationCenter.default.publisher(for: .brewDockPanelOpened)) { _ in
+            searchFocused = true
         }
         .onChange(of: selectedTab) { newTab in
             if newTab == .services && brewService.services.isEmpty {
@@ -175,6 +180,7 @@ struct MenuBarView: View {
                 .foregroundStyle(AppColors.secondaryText)
             TextField(searchPlaceholder, text: $searchText)
                 .textFieldStyle(.plain)
+                .focused($searchFocused)
                 .font(.mono(11.5))
                 .foregroundStyle(AppColors.text)
             if !searchText.isEmpty {

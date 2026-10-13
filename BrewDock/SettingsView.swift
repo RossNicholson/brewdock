@@ -10,6 +10,8 @@ struct SettingsView: View {
     @State private var notificationError: String? = nil
     @State private var cleanup: CleanupState = .measuring
     @AppStorage(BrewService.includeAutoUpdatingKey) private var includeAutoUpdating = false
+    @AppStorage(GlobalHotKey.enabledKey) private var shortcutEnabled = true
+    @State private var shortcutError: String? = nil
 
     private enum CleanupState: Equatable {
         case measuring, reclaimable(String), nothing, cleaning, done(String), failed(String)
@@ -97,6 +99,37 @@ struct SettingsView: View {
                 .tint(AppColors.toggle)
                 .onChange(of: includeAutoUpdating) { _ in
                     Task { await brewService.refresh(force: true) }
+                }
+            }
+            .padding(12)
+            .card()
+
+            VStack(alignment: .leading, spacing: 6) {
+                Toggle(isOn: $shortcutEnabled) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Shortcut \(GlobalHotKey.displayName)")
+                            .font(.display(17, relativeTo: .headline))
+                            .textCase(.uppercase)
+                            .foregroundStyle(AppColors.text)
+                        Text("Open BrewDock from any app. Esc closes it.")
+                            .font(.mono(9.5))
+                            .foregroundStyle(AppColors.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .tint(AppColors.toggle)
+                .onChange(of: shortcutEnabled) { _ in
+                    let ok = (NSApp.delegate as? AppDelegate)?.hotKey.update() ?? true
+                    shortcutError = ok ? nil : "\(GlobalHotKey.displayName) is already used by another app."
+                }
+                if let shortcutError {
+                    Text(shortcutError)
+                        .font(.mono(9.5))
+                        .foregroundStyle(AppColors.destructive)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .padding(12)

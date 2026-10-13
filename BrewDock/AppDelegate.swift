@@ -11,6 +11,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
     private var dotView: NSView?
     private var cancellables = Set<AnyCancellable>()
     private var updateCheckTask: Task<Void, Never>?
+    private var keyMonitor: Any?
+    private(set) lazy var hotKey = GlobalHotKey { [weak self] in self?.togglePanel() }
     let brewService = BrewService()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -26,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
         setupPanel()
         setupUpdateDot()
         observeUpdates()
+        hotKey.update()
 
         // Don't shell out to brew when the app is launched as a unit-test host.
         guard ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
@@ -143,6 +146,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
         // SwiftUI's onAppear only fires the first time the panel is shown, so
         // refresh here (refresh() skips itself if it ran in the last 30s).
         Task { await brewService.refresh() }
+        NotificationCenter.default.post(name: .brewDockPanelOpened, object: nil)
+
+        // Esc closes the panel. A local monitor sees it even while the search
+        // field (whose text view would otherwise swallow Esc) has focus.
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            guard let self, event.keyCode == UInt16(53), event.window === self.panel else { return event }
+            self.closePanel()
+            return nil
+        }
 
         eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
             self?.closePanel()
@@ -154,6 +166,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
         if let monitor = eventMonitor {
             NSEvent.removeMonitor(monitor)
             eventMonitor = nil
+        }
+        if let keyMonitor {
+            NSEvent.removeMonitor(keyMonitor)
+            self.keyMonitor = nil
         }
     }
 
@@ -185,4 +201,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
             self.closePanel()
         }
     }
+}
+
+extension Notification.Name {
+    /// Posted each time the panel opens, so the search field can take focus
+    static let brewDockPanelOpened = Notification.Name("BrewDockPanelOpened")
 }
