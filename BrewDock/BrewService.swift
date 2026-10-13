@@ -8,6 +8,8 @@ struct BrewPackage: Identifiable {
     let version: String
     let type: PackageType
     var isOutdated: Bool = false
+    /// A formula Homebrew installed only because something else needs it
+    var isDependency: Bool = false
     var resolvedAppPath: String? = nil
     var appIcon: NSImage? = nil  // cached once during refresh — not recomputed on every redraw
 
@@ -153,8 +155,9 @@ class BrewService: ObservableObject {
         async let caskResult    = brew(["list", "--cask", "--versions"])
         async let formulaResult = brew(["list", "--formula", "--versions"])
         async let outdatedResult = brew(["outdated", "--quiet"] + greedyFlags)
+        async let requestedResult = brew(["list", "--formula", "--installed-on-request"])
 
-        let (caskRes, formulaRes, outdatedRes) = await (caskResult, formulaResult, outdatedResult)
+        let (caskRes, formulaRes, outdatedRes, requestedRes) = await (caskResult, formulaResult, outdatedResult, requestedResult)
 
         outdatedNames = Set(outdatedRes.output.lines)
         let listedUntrusted = [caskRes, formulaRes, outdatedRes]
@@ -183,7 +186,13 @@ class BrewService: ObservableObject {
         }
 
         self.casks = parsedCasks
-        self.formulae = BrewParse.packages(from: formulaRes.output, type: .formula, outdated: outdatedNames)
+        var parsedFormulae = BrewParse.packages(from: formulaRes.output, type: .formula, outdated: outdatedNames)
+        // Mark dependencies, unless brew couldn't say (then show everything as yours)
+        if requestedRes.exitCode == 0 {
+            let requested = Set(requestedRes.output.lines)
+            parsedFormulae = parsedFormulae.map { var p = $0; p.isDependency = !requested.contains(p.name); return p }
+        }
+        self.formulae = parsedFormulae
         lastRefresh = Date()
     }
 

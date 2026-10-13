@@ -10,6 +10,7 @@ struct MenuBarView: View {
     @State private var toastMessage: String? = nil
     @FocusState private var searchFocused: Bool
     @State private var trustToConfirm: UntrustedTarget? = nil
+    @State private var showDependencies = false
 
     init(initialTab: Tab = .apps) {
         _selectedTab = State(initialValue: initialTab)
@@ -318,10 +319,23 @@ struct MenuBarView: View {
                 emptyView
             } else {
                 CardList {
-                    sectionTitle(selectedTab == .apps ? "Your apps" : "Your tools", count: packages.count)
-                    ForEach(packages) { package in
-                        PackageRowView(package: package)
-                            .environmentObject(brewService)
+                    if selectedTab == .apps {
+                        sectionTitle("Your apps", count: packages.count)
+                        packageRows(packages)
+                    } else {
+                        let mine = packages.filter { !$0.isDependency }
+                        let dependencies = packages.filter(\.isDependency)
+                        if !mine.isEmpty {
+                            sectionTitle("Your tools", count: mine.count)
+                            packageRows(mine)
+                        }
+                        if !dependencies.isEmpty {
+                            dependenciesHeader(dependencies)
+                            // Searching shows matching dependencies without expanding
+                            if showDependencies || !searchText.isEmpty {
+                                packageRows(dependencies)
+                            }
+                        }
                     }
                 }
             }
@@ -345,6 +359,47 @@ struct MenuBarView: View {
                 }
             }
         }
+    }
+
+    private func packageRows(_ packages: [BrewPackage]) -> some View {
+        ForEach(packages) { package in
+            PackageRowView(package: package)
+                .environmentObject(brewService)
+        }
+    }
+
+    /// Collapsible header for formulae installed only as dependencies
+    private func dependenciesHeader(_ dependencies: [BrewPackage]) -> some View {
+        let outdated = dependencies.filter(\.isOutdated).count
+        let expanded = showDependencies || !searchText.isEmpty
+        return Button {
+            withAnimation(.easeInOut(duration: 0.15)) { showDependencies.toggle() }
+        } label: {
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 9, weight: .bold))
+                    .rotationEffect(.degrees(expanded ? 90 : 0))
+                Text("Dependencies")
+                    .font(.display(17, relativeTo: .headline))
+                    .textCase(.uppercase)
+                Spacer()
+                if outdated > 0 {
+                    TagPill(text: plural(outdated, "update"))
+                }
+                Text("\(dependencies.count)")
+                    .font(.mono(10))
+                    .foregroundStyle(AppColors.secondaryText)
+            }
+            .foregroundStyle(AppColors.text)
+            .padding(.horizontal, 2)
+            .padding(.top, 10)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!searchText.isEmpty)
+        .help("Installed automatically because other tools need them")
+        .accessibilityLabel("Dependencies, \(dependencies.count)\(outdated > 0 ? ", \(outdated) with updates" : "")")
+        .accessibilityValue(expanded ? "expanded" : "collapsed")
     }
 
     private func sectionTitle(_ title: String, count: Int, detail: String? = nil) -> some View {
