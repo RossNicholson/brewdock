@@ -15,6 +15,12 @@ struct BrewPackage: Identifiable {
         case cask, formula
     }
 
+    /// BrewDock's own cask. Brew can't upgrade or remove it from a child process,
+    /// because the cask quits the app (and kills that child) partway through.
+    var isBrewDock: Bool {
+        type == .cask && name == BrewService.selfCaskName
+    }
+
     var isCLIOnly: Bool {
         type == .cask && resolvedAppPath == nil
     }
@@ -93,21 +99,37 @@ class BrewService: ObservableObject {
     @Published var selfUpdateAvailable: Bool = false
     @Published var isCheckingSelfUpdate: Bool = false
     @Published var isUpdatingSelf: Bool = false
+    nonisolated static let selfCaskName = "brewdock"
     private var outdatedNames: Set<String> = []
     private var lastRefresh: Date = .distantPast
+    /// A forced refresh requested while one was already running; it runs again
+    /// afterwards so the list reflects changes made mid-refresh.
+    private var refreshQueued = false
     /// Resolved cask token → app bundle path. `brew info` is slow over many casks,
     /// so we only query it for casks we haven't already resolved.
     private var appPathCache: [String: String] = [:]
+    /// Casks `brew info` reported with no app bundle (CLI-only), so we don't ask again.
+    private var appPathMisses: Set<String> = []
     private static let refreshTTL: TimeInterval = 30
 
     func refresh(force: Bool = false) async {
-        guard !isLoading else { return }
+        if isLoading {
+            if force { refreshQueued = true }
+            return
+        }
         // The panel triggers refresh on every open; skip if we refreshed recently
-        // so reopening feels instant. The manual refresh button passes force: true.
+        // so reopening feels instant. The manual refresh button and every
+        // install/update/uninstall pass force: true.
         if !force, Date().timeIntervalSince(lastRefresh) < Self.refreshTTL { return }
         isLoading = true
         defer { isLoading = false }
+        repeat {
+            refreshQueued = false
+            await loadPackages()
+        } while refreshQueued
+    }
 
+    private func loadPackages() async {
         async let caskResult    = brew(["list", "--cask", "--versions"])
         async let formulaResult = brew(["list", "--formula", "--versions"])
         async let outdatedResult = brew(["outdated", "--quiet"])
@@ -137,45 +159,59 @@ class BrewService: ObservableObject {
     /// Populate `appPathCache` for any cask tokens we don't yet know, by asking
     /// `brew info` only about the unknown ones and resolving them against disk.
     private func resolveAppPaths(forCaskNames names: [String]) async {
-        let unknown = names.filter { appPathCache[$0] == nil }
+        let unknown = names.filter { appPathCache[$0] == nil && !appPathMisses.contains($0) }
         guard !unknown.isEmpty else { return }
-        let infoRes = await brew(["info", "--json=v2", "--cask"] + unknown)
-        for (token, appNames) in BrewParse.caskAppNames(fromJSON: infoRes.output) {
-            let candidates = appNames.flatMap { name in
-                ["/Applications/\(name)",
-                 NSString(string: "~/Applications/\(name)").expandingTildeInPath]
+        let infoRes = await brew(["info", "--json=v2", "--cask"] + unknown, timeout: 120)
+        let parsed = BrewParse.caskAppNames(fromJSON: infoRes.output)
+        // A token missing from `parsed` means brew didn't answer (failed or timed
+        // out), so it's retried next refresh. One brew answered for but with no
+        // app on disk (CLI-only) is remembered as a miss.
+        for (token, appNames) in parsed {
+            let candidates = appNames.flatMap { name -> [String] in
+                if name.hasPrefix("/") || name.hasPrefix("~") {
+                    return [NSString(string: name).expandingTildeInPath]
+                }
+                return ["/Applications/\(name)",
+                        NSString(string: "~/Applications/\(name)").expandingTildeInPath]
             }
             if let path = candidates.first(where: { FileManager.default.fileExists(atPath: $0) }) {
                 appPathCache[token] = path
+            } else {
+                appPathMisses.insert(token)
             }
         }
     }
 
     func upgrade(_ package: BrewPackage) async {
+        if package.isBrewDock { await updateSelf(); return }
         updatingPackages.insert(package.name)
         defer { updatingPackages.remove(package.name) }
         let flag = package.type == .cask ? "--cask" : "--formula"
-        let result = await brew(["upgrade", flag, package.name])
+        let result = await brew(["upgrade", flag, package.name], timeout: nil)
         if result.exitCode != 0 { lastError = "Failed to update \(package.name)" }
-        await refresh()
+        await refresh(force: true)
     }
 
     func install(_ package: DiscoverPackage) async {
         installingPackages.insert(package.id)
         defer { installingPackages.remove(package.id) }
         let flag = package.type == .cask ? "--cask" : "--formula"
-        let result = await brew(["install", flag, package.id])
+        let result = await brew(["install", flag, package.installToken], timeout: nil)
         if result.exitCode != 0 { lastError = "Failed to install \(package.displayName)" }
-        await refresh()
+        await refresh(force: true)
     }
 
     func uninstall(_ package: BrewPackage) async {
+        if package.isBrewDock {
+            if !launchDetachedSelfBrew(.uninstall) { lastError = "Couldn't start the uninstaller." }
+            return
+        }
         removingPackages.insert(package.name)
         defer { removingPackages.remove(package.name) }
         let flag = package.type == .cask ? "--cask" : "--formula"
-        let result = await brew(["uninstall", flag, package.name])
+        let result = await brew(["uninstall", flag, package.name], timeout: nil)
         if result.exitCode != 0 { lastError = "Failed to uninstall \(package.name)" }
-        await refresh()
+        await refresh(force: true)
     }
 
     // Called on launch — quick check against local cache, no network fetch
@@ -200,31 +236,37 @@ class BrewService: ObservableObject {
         // the cask's `quit:` directive kills us, and the child brew dies mid-upgrade
         // (its stdout pipe breaks), leaving the app closed and un-updated. Hand the
         // work to a detached helper that outlives us, then quit so it can take over.
-        guard launchDetachedSelfUpdater() else {
+        guard launchDetachedSelfBrew(.upgrade) else {
             isUpdatingSelf = false
             lastError = "Couldn't start the updater."
             return
         }
-        NSApp.terminate(nil)
     }
 
-    /// Writes a self-update script and launches it fully detached (its own null
-    /// stdio, reparented to launchd) so it survives this process quitting. The
-    /// script waits for us to exit, runs `brew upgrade --cask brewdock`, then
-    /// relaunches the freshly installed build.
-    private func launchDetachedSelfUpdater() -> Bool {
+    private enum SelfBrewCommand: String {
+        case upgrade, uninstall
+    }
+
+    /// Writes a script and launches it fully detached (its own null stdio,
+    /// reparented to launchd) so it survives this process quitting, then quits.
+    /// The script waits for us to exit, runs `brew <command> --cask brewdock`,
+    /// and after an upgrade relaunches the freshly installed build.
+    private func launchDetachedSelfBrew(_ command: SelfBrewCommand) -> Bool {
         let fm = FileManager.default
         guard let support = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return false
         }
         let dir = support.appendingPathComponent("BrewDock", isDirectory: true)
         try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
-        let scriptURL = dir.appendingPathComponent("self-update.sh")
-        let logURL = dir.appendingPathComponent("self-update.log")
+        let scriptURL = dir.appendingPathComponent("self-\(command.rawValue).sh")
+        // The log lives outside the BrewDock folder an uninstall `zap` would remove.
+        let logURL = (command == .uninstall ? fm.temporaryDirectory : dir)
+            .appendingPathComponent("brewdock-self-\(command.rawValue).log")
 
         let pid = ProcessInfo.processInfo.processIdentifier
         let appPath = Bundle.main.bundlePath
         let bundleID = Bundle.main.bundleIdentifier ?? "com.rossnicholson.BrewDock"
+        let onSuccess = command == .upgrade ? "open -b \"\(bundleID)\" || open \"\(appPath)\"" : ":"
 
         // Note: `$(...)`, `$LOG`, `$status` are literal shell — only `\(...)` is
         // interpolated by Swift. Paths are quoted to tolerate spaces.
@@ -238,14 +280,14 @@ class BrewService: ObservableObject {
             kill -0 \(pid) 2>/dev/null || break
             sleep 0.5
         done
-        echo "[$(date)] running brew upgrade --cask brewdock" >> "$LOG"
-        "\(brewPath)" upgrade --cask brewdock >> "$LOG" 2>&1
+        echo "[$(date)] running brew \(command.rawValue) --cask \(Self.selfCaskName)" >> "$LOG"
+        "\(brewPath)" \(command.rawValue) --cask \(Self.selfCaskName) >> "$LOG" 2>&1
         status=$?
         echo "[$(date)] brew exited with status $status" >> "$LOG"
         if [ "$status" -eq 0 ]; then
-            open -b "\(bundleID)" || open "\(appPath)"
+            \(onSuccess)
         else
-            osascript -e 'display notification "Update failed — see ~/Library/Application Support/BrewDock/self-update.log" with title "BrewDock"' >/dev/null 2>&1 || true
+            osascript -e 'display notification "BrewDock \(command.rawValue) failed — see \(logURL.path)" with title "BrewDock"' >/dev/null 2>&1 || true
         fi
         """
 
@@ -264,18 +306,36 @@ class BrewService: ObservableObject {
         process.standardError = FileHandle.nullDevice
         do {
             try process.run()
-            return true
         } catch {
             return false
         }
+        NSApp.terminate(nil)
+        return true
     }
 
     func upgradeAll() async {
         // Bug fix: do NOT set isLoading = true here — refresh() owns that flag.
         // Setting it here caused refresh()'s guard to short-circuit, leaving the list stale.
-        let result = await brew(["upgrade"])
-        if result.exitCode != 0 { lastError = "Some updates failed" }
-        await refresh()
+        // Upgrade everything except BrewDock by name: a plain `brew upgrade` would
+        // quit us mid-run. BrewDock goes last, through the detached updater.
+        let outdatedCasks = casks.filter { $0.isOutdated && !$0.isBrewDock }.map(\.name)
+        let outdatedFormulae = formulae.filter(\.isOutdated).map(\.name)
+        let selfOutdated = casks.contains { $0.isOutdated && $0.isBrewDock }
+        updatingPackages.formUnion(outdatedCasks + outdatedFormulae)
+        var failed = false
+        if !outdatedFormulae.isEmpty {
+            failed = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil).exitCode != 0
+        }
+        if !outdatedCasks.isEmpty {
+            failed = await brew(["upgrade", "--cask"] + outdatedCasks, timeout: nil).exitCode != 0 || failed
+        }
+        updatingPackages.subtract(outdatedCasks + outdatedFormulae)
+        if failed { lastError = "Some updates failed" }
+        if selfOutdated && !failed {
+            await updateSelf()
+            return
+        }
+        await refresh(force: true)
     }
 
     func brewfileDump(to path: String) async -> (success: Bool, message: String) {
@@ -289,8 +349,8 @@ class BrewService: ObservableObject {
     func brewfileInstall(from path: String) async -> (success: Bool, message: String) {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }
-        let result = await brew(["bundle", "install", "--file=\(path)"], timeout: 600)
-        if result.exitCode == 0 { await refresh() }
+        let result = await brew(["bundle", "install", "--file=\(path)"], timeout: nil)
+        await refresh(force: true)
         guard result.exitCode == 0 else { return (false, "Some packages failed to install.") }
         return (true, "All packages installed.")
     }
@@ -298,7 +358,7 @@ class BrewService: ObservableObject {
     func brewfileCheck(at path: String) async -> (success: Bool, message: String) {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }
-        let result = await brew(["bundle", "check", "--file=\(path)", "--verbose"])
+        let result = await brew(["bundle", "check", "--file=\(path)", "--verbose"], timeout: 120)
         if result.exitCode == 0 { return (true, "All packages are installed.") }
         let missing = result.output.lines.filter { $0.hasPrefix("x ") }.map { String($0.dropFirst(2)) }
         return (false, missing.isEmpty ? "Some packages are missing." : "Missing: \(missing.joined(separator: ", "))")
@@ -314,8 +374,8 @@ class BrewService: ObservableObject {
     func brewfileCleanup(at path: String) async -> (success: Bool, message: String) {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }
-        let result = await brew(["bundle", "cleanup", "--file=\(path)", "--force"])
-        if result.exitCode == 0 { await refresh() }
+        let result = await brew(["bundle", "cleanup", "--file=\(path)", "--force"], timeout: nil)
+        await refresh(force: true)
         guard result.exitCode == 0 else { return (false, "Cleanup failed.") }
         return (true, "Cleanup complete.")
     }
@@ -343,14 +403,14 @@ class BrewService: ObservableObject {
     private func manageService(_ service: HomebrewService, command: String) async {
         managingServices.insert(service.name)
         defer { managingServices.remove(service.name) }
-        let result = await brew(["services", command, service.name])
+        let result = await brew(["services", command, service.name], timeout: 120)
         if result.exitCode != 0 { lastError = "Failed to \(command) \(service.name)" }
         await refreshServices()
     }
 
 }
 
-private let brewPath: String = {
+let brewPath: String = {
     let candidates = ["/opt/homebrew/bin/brew", "/usr/local/bin/brew"]
     return candidates.first { FileManager.default.fileExists(atPath: $0) } ?? "/opt/homebrew/bin/brew"
 }()
@@ -377,7 +437,9 @@ private let brewEnvironment: [String: String] = {
     return env
 }()
 
-private func brew(_ args: [String], timeout: TimeInterval = 30) async -> BrewResult {
+/// Runs brew and returns its stdout. `timeout: nil` never kills it — used for
+/// installs/upgrades/uninstalls, where killing brew mid-run is worse than waiting.
+private func brew(_ args: [String], timeout: TimeInterval? = 30) async -> BrewResult {
     await withCheckedContinuation { continuation in
         let process = Process()
         process.executableURL = URL(fileURLWithPath: brewPath)
@@ -387,19 +449,27 @@ private func brew(_ args: [String], timeout: TimeInterval = 30) async -> BrewRes
         process.standardOutput = pipe
         process.standardError = FileHandle.nullDevice  // prevent stderr buffer-fill hang
 
-        DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
-            if process.isRunning { process.terminate() }
-        }
-
-        process.terminationHandler = { p in
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            let output = String(data: data, encoding: .utf8) ?? ""
-            continuation.resume(returning: BrewResult(output: output, exitCode: p.terminationStatus))
-        }
         do {
             try process.run()
         } catch {
             continuation.resume(returning: BrewResult(output: "", exitCode: 1))
+            return
+        }
+
+        if let timeout {
+            DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
+                if process.isRunning { process.terminate() }
+            }
+        }
+
+        // Drain stdout while brew runs. Reading only after it exits deadlocks once
+        // the output passes the 64 KB pipe buffer (e.g. `brew info` over ~15 casks):
+        // brew blocks writing, so it never exits until the timeout kills it.
+        DispatchQueue.global().async {
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            let output = String(data: data, encoding: .utf8) ?? ""
+            continuation.resume(returning: BrewResult(output: output, exitCode: process.terminationStatus))
         }
     }
 }

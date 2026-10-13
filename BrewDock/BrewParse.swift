@@ -35,7 +35,10 @@ enum BrewParse {
     }
 
     /// Parse `brew info --json=v2 --cask` into `token → [candidate .app names]`.
-    /// The caller resolves which candidate actually exists on disk.
+    /// Casks with no app artifact (CLI-only) map to `[]`, so callers can tell
+    /// "brew says there's no app" apart from "brew didn't answer". An app moved
+    /// with `target:` is reported under its target name. The caller resolves
+    /// which candidate actually exists on disk.
     static func caskAppNames(fromJSON json: String) -> [String: [String]] {
         guard let data = json.data(using: .utf8),
               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -44,10 +47,13 @@ enum BrewParse {
 
         var result: [String: [String]] = [:]
         for cask in casks {
-            guard let token = cask["token"] as? String,
-                  let artifacts = cask["artifacts"] as? [[String: Any]] else { continue }
-            let apps = artifacts.compactMap { ($0["app"] as? [String])?.first }
-            if !apps.isEmpty { result[token] = apps }
+            guard let token = cask["token"] as? String else { continue }
+            let artifacts = cask["artifacts"] as? [[String: Any]] ?? []
+            result[token] = artifacts.compactMap { artifact -> String? in
+                guard let app = artifact["app"] as? [Any] else { return nil }
+                let target = app.lazy.compactMap { ($0 as? [String: Any])?["target"] as? String }.first
+                return target ?? app.first as? String
+            }
         }
         return result
     }

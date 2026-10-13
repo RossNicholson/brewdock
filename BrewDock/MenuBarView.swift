@@ -64,9 +64,6 @@ struct MenuBarView: View {
                     .allowsHitTesting(false)
             }
         }
-        .onAppear {
-            Task { await brewService.refresh() }
-        }
         .onChange(of: selectedTab) { newTab in
             if newTab == .services && brewService.services.isEmpty {
                 Task { await brewService.refreshServices() }
@@ -202,7 +199,9 @@ struct MenuBarView: View {
     private var packagesContent: some View {
         let packages = selectedTab == .apps ? filteredCasks : filteredFormulae
         return Group {
-            if brewService.isLoading {
+            // Only the first load shows a spinner; later refreshes (e.g. after an
+            // install) update the list in place instead of blanking it.
+            if brewService.isLoading && brewService.casks.isEmpty && brewService.formulae.isEmpty {
                 loadingView(label: "Loading packages…")
             } else if packages.isEmpty {
                 emptyView

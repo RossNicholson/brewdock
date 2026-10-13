@@ -5,8 +5,7 @@ name: Release
 # it sets up a temporary signing keychain and the notary API key, then runs the
 # same script you'd run locally, in --publish mode.
 #
-# To release: bump the version in project.yml, commit, then
-#   git tag vX.Y.Z && git push origin vX.Y.Z
+# To release: make release VERSION=X.Y.Z (bumps, commits, tags and pushes).
 on:
   push:
     tags:

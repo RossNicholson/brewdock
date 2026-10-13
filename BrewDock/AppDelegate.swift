@@ -107,6 +107,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private func openPanel() {
         positionPanel()
         panel.makeKeyAndOrderFront(nil)
+        // SwiftUI's onAppear only fires the first time the panel is shown, so
+        // refresh here (refresh() skips itself if it ran in the last 30s).
+        Task { await brewService.refresh() }
 
         eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
             self?.closePanel()
@@ -139,6 +142,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     func windowDidResignKey(_ notification: Notification) {
-        closePanel()
+        // Wait a tick for the new key window to settle, then stay open if it's
+        // one of ours (a save/open dialog or alert from the Brewfile popover) —
+        // closing would tear down the view still waiting on that dialog.
+        // Clicking another app leaves us with no key window, so the panel closes.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.panel.isVisible else { return }
+            if NSApp.modalWindow != nil || NSApp.keyWindow != nil { return }
+            self.closePanel()
+        }
     }
 }

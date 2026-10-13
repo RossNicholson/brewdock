@@ -150,10 +150,7 @@ struct DiscoverPackageRow: View {
     @EnvironmentObject var brewService: BrewService
 
     var isInstalled: Bool {
-        switch package.type {
-        case .cask:    return brewService.casks.contains    { $0.name == package.id }
-        case .formula: return brewService.formulae.contains { $0.name == package.id }
-        }
+        installedBrewPackage != nil
     }
 
     var isInstalling: Bool {
@@ -162,8 +159,8 @@ struct DiscoverPackageRow: View {
 
     private var installedBrewPackage: BrewPackage? {
         switch package.type {
-        case .cask:    return brewService.casks.first    { $0.name == package.id }
-        case .formula: return brewService.formulae.first { $0.name == package.id }
+        case .cask:    return brewService.casks.first    { package.matches(installedName: $0.name) }
+        case .formula: return brewService.formulae.first { package.matches(installedName: $0.name) }
         }
     }
 

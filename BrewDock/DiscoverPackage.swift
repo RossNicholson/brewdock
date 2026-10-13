@@ -7,6 +7,21 @@ struct DiscoverPackage: Identifiable {
     let category: Category
     let type: BrewPackage.PackageType
     let iconURL: String?
+    /// Third-party tap the package lives in, e.g. "rossnicholson/tap". Installing
+    /// by the tap-qualified name makes brew tap it automatically.
+    var tap: String? = nil
+
+    /// The name to pass to `brew install`.
+    var installToken: String {
+        tap.map { "\($0)/\(id)" } ?? id
+    }
+
+    /// Whether an installed package with this name is this catalog entry. An
+    /// alias like "python" installs a versioned formula ("python@3.15"), so match
+    /// versioned names too.
+    func matches(installedName name: String) -> Bool {
+        name == id || name.hasPrefix(id + "@")
+    }
 
     enum Category: String, CaseIterable {
         case browsers      = "Browsers"
@@ -57,13 +72,14 @@ struct DiscoverPackage: Identifiable {
 }
 
 private extension DiscoverPackage {
-    init(_ id: String, _ displayName: String, _ description: String, _ category: Category, _ type: BrewPackage.PackageType, _ iconURL: String? = nil) {
+    init(_ id: String, _ displayName: String, _ description: String, _ category: Category, _ type: BrewPackage.PackageType, _ iconURL: String? = nil, tap: String? = nil) {
         self.id = id
         self.displayName = displayName
         self.description = description
         self.category = category
         self.type = type
         self.iconURL = iconURL
+        self.tap = tap
     }
 }
 
@@ -75,8 +91,8 @@ enum DiscoverCatalog {
     static let all: [DiscoverPackage] = [
 
         // MARK: Featured
-        .init("clawdbar", "ClawdBar", "macOS menu bar app showing your Claude Code usage limits at a glance", .utilities, .cask),
-        .init("adios", "Adios", "Open-source ad blocker for Safari on macOS", .utilities, .cask),
+        .init("clawdbar", "ClawdBar", "macOS menu bar app showing your Claude Code usage limits at a glance", .utilities, .cask, tap: "rossnicholson/tap"),
+        .init("adios", "Adios", "Open-source ad blocker for Safari on macOS", .utilities, .cask, tap: "rossnicholson/tap"),
 
         // MARK: Browsers
         .init("google-chrome",  "Google Chrome",   "Fast, secure web browser by Google",              .browsers, .cask, icon("chrome.google.com")),
@@ -91,13 +107,12 @@ enum DiscoverCatalog {
         // MARK: Development
         .init("visual-studio-code", "VS Code",           "Lightweight but powerful source code editor",     .development, .cask, icon("code.visualstudio.com")),
         .init("cursor",             "Cursor",            "AI-first code editor",                            .development, .cask, icon("cursor.sh")),
-        .init("windsurf",           "Windsurf",          "AI-powered code editor by Codeium",               .development, .cask, icon("codeium.com")),
+        .init("devin-desktop",      "Devin Desktop",     "Agentic AI code editor (formerly Windsurf)",      .development, .cask, icon("devin.ai")),
         .init("zed",                "Zed",               "High-performance multiplayer code editor",        .development, .cask, icon("zed.dev")),
         .init("iterm2",             "iTerm2",            "Feature-rich terminal emulator for macOS",        .development, .cask, icon("iterm2.com")),
         .init("warp",               "Warp",              "Modern terminal with AI built in",                .development, .cask, icon("warp.dev")),
         .init("ghostty",            "Ghostty",           "Fast, native terminal emulator",                  .development, .cask, icon("ghostty.org")),
         .init("wezterm",            "WezTerm",           "GPU-accelerated cross-platform terminal",         .development, .cask, icon("wezfurlong.org")),
-        .init("alacritty",          "Alacritty",         "Fast, cross-platform OpenGL terminal emulator",   .development, .cask, icon("alacritty.org")),
         .init("kitty",              "Kitty",             "Fast, feature-rich GPU-based terminal emulator",  .development, .cask, icon("sw.kovidgoyal.net")),
         .init("sublime-text",       "Sublime Text",      "Sophisticated text editor for code",              .development, .cask, icon("sublimetext.com")),
         .init("nova",               "Nova",              "Native macOS code editor by Panic",               .development, .cask, icon("nova.app")),
@@ -111,7 +126,7 @@ enum DiscoverCatalog {
         .init("cyberduck",          "Cyberduck",         "FTP, SFTP, and cloud storage browser",            .development, .cask, icon("cyberduck.io")),
         .init("transmit",           "Transmit",          "Fast, reliable file transfer client for Mac",     .development, .cask, icon("panic.com")),
         .init("forklift",           "ForkLift",          "Dual-pane file manager and FTP client",           .development, .cask, icon("binarynights.com")),
-        .init("xcodes",             "Xcodes",            "Install and switch between Xcode versions",       .development, .cask, icon("github.com")),
+        .init("xcodes-app",         "Xcodes",            "Install and switch between Xcode versions",       .development, .cask, icon("github.com")),
         .init("github",             "GitHub Desktop",    "Easy-to-use GitHub GUI client",                   .development, .cask, icon("desktop.github.com")),
         .init("sourcetree",         "Sourcetree",        "Free Git and Mercurial client by Atlassian",      .development, .cask, icon("sourcetreeapp.com")),
         .init("fork",               "Fork",              "Fast and friendly Git client for Mac",            .development, .cask, icon("fork.dev")),
@@ -153,7 +168,7 @@ enum DiscoverCatalog {
         // MARK: AI & ML
         .init("claude",       "Claude",        "Anthropic's Claude AI desktop app",                .ai, .cask, icon("claude.ai")),
         .init("chatgpt",      "ChatGPT",       "Official OpenAI ChatGPT desktop app",             .ai, .cask, icon("chatgpt.com")),
-        .init("ollama",       "Ollama",        "Run large language models locally",                .ai, .cask, icon("ollama.com")),
+        .init("ollama-app",   "Ollama",        "Run large language models locally",                .ai, .cask, icon("ollama.com")),
         .init("lm-studio",    "LM Studio",     "Discover, download and run local LLMs",           .ai, .cask, icon("lmstudio.ai")),
         .init("jan",          "Jan",           "Open source ChatGPT-alternative that runs offline", .ai, .cask, icon("jan.ai")),
         .init("diffusionbee", "DiffusionBee",  "Stable Diffusion app for AI image generation",    .ai, .cask, icon("diffusionbee.com")),
@@ -167,9 +182,9 @@ enum DiscoverCatalog {
         .init("dbeaver-community",  "DBeaver",           "Free universal database management tool",         .databases, .cask, icon("dbeaver.io")),
         .init("beekeeper-studio",   "Beekeeper Studio",  "Cross-platform SQL editor and database manager",  .databases, .cask, icon("beekeeperstudio.io")),
         .init("mongodb-compass",    "MongoDB Compass",   "Official GUI for MongoDB",                        .databases, .cask, icon("mongodb.com")),
-        .init("redisinsight",       "RedisInsight",      "Official GUI for Redis",                          .databases, .cask, icon("redis.com")),
+        .init("redis-insight",      "Redis Insight",     "Official GUI for Redis",                          .databases, .cask, icon("redis.io")),
         .init("pgadmin4",           "pgAdmin 4",         "Feature-rich PostgreSQL administration tool",      .databases, .cask, icon("pgadmin.org")),
-        .init("neo4j",              "Neo4j",             "Leading graph database platform",                  .databases, .cask, icon("neo4j.com")),
+        .init("neo4j-desktop",      "Neo4j Desktop",     "Leading graph database platform",                  .databases, .cask, icon("neo4j.com")),
         .init("dbgate",             "DbGate",            "Open source universal database client",            .databases, .cask, icon("dbgate.org")),
         .init("postgresql",         "PostgreSQL",        "Powerful open source relational database",        .databases, .formula, icon("postgresql.org")),
         .init("mysql",              "MySQL",             "World's most popular open source database",       .databases, .formula, icon("mysql.com")),
@@ -178,15 +193,15 @@ enum DiscoverCatalog {
         .init("sqlite",             "SQLite",            "Lightweight embedded SQL database engine",        .databases, .formula, icon("sqlite.org")),
 
         // MARK: DevOps & Cloud
-        .init("docker",          "Docker",          "Platform for building and running containers",     .devops, .cask, icon("docker.com")),
+        .init("docker-desktop",  "Docker Desktop",          "Platform for building and running containers",     .devops, .cask, icon("docker.com")),
         .init("orbstack",        "OrbStack",        "Fast, light Docker and Linux VM manager",         .devops, .cask, icon("orbstack.dev")),
         .init("rancher",         "Rancher Desktop", "Container management on the desktop",             .devops, .cask, icon("rancherdesktop.io")),
         .init("podman-desktop",  "Podman Desktop",  "Open source container management UI",             .devops, .cask, icon("podman.io")),
         .init("lens",            "Lens",            "The Kubernetes IDE",                              .devops, .cask, icon("k8slens.dev")),
         .init("ngrok",           "ngrok",           "Expose local servers to the internet instantly",  .devops, .cask, icon("ngrok.com")),
-        .init("google-cloud-sdk","Google Cloud SDK", "Command-line tools for Google Cloud",            .devops, .cask, icon("cloud.google.com")),
+        .init("gcloud-cli",      "Google Cloud CLI", "Command-line tools for Google Cloud",            .devops, .cask, icon("cloud.google.com")),
         .init("vagrant",         "Vagrant",         "Build and manage virtual machine environments",   .devops, .cask, icon("vagrantup.com")),
-        .init("kubectl",         "kubectl",         "Kubernetes command-line tool",                    .devops, .formula, icon("kubernetes.io")),
+        .init("kubernetes-cli",  "kubectl",         "Kubernetes command-line tool",                    .devops, .formula, icon("kubernetes.io")),
         .init("helm",            "Helm",            "Package manager for Kubernetes",                  .devops, .formula, icon("helm.sh")),
         .init("k9s",             "k9s",             "Terminal UI for Kubernetes clusters",             .devops, .formula, icon("k9scli.io")),
         .init("k3d",             "k3d",             "Run k3s Kubernetes clusters in Docker",           .devops, .formula, icon("k3d.io")),
@@ -202,22 +217,20 @@ enum DiscoverCatalog {
         .init("act",             "act",             "Run GitHub Actions locally",                      .devops, .formula),
         .init("ansible",         "Ansible",         "Agentless IT automation platform",               .devops, .formula, icon("ansible.com")),
         .init("awscli",          "AWS CLI",         "Amazon Web Services command-line interface",      .devops, .formula, icon("aws.amazon.com")),
-        .init("azure-cli",       "Azure CLI",       "Microsoft Azure command-line interface",          .devops, .formula, icon("azure.microsoft.com")),
+        .init("azure-cli",       "Azure CLI",       "Microsoft Azure command-line interface",          .devops, .cask, icon("azure.microsoft.com")),
         .init("doctl",           "doctl",           "DigitalOcean official command-line tool",         .devops, .formula, icon("digitalocean.com")),
 
         // MARK: Media & Design
         .init("figma",        "Figma",          "Collaborative interface design tool",              .media, .cask, icon("figma.com")),
         .init("sketch",       "Sketch",         "Digital design platform for macOS",                .media, .cask, icon("sketch.com")),
-        .init("affinity-designer", "Affinity Designer", "Professional vector graphics editor",      .media, .cask, icon("affinity.serif.com")),
-        .init("affinity-photo",    "Affinity Photo",    "Professional photo editing software",       .media, .cask, icon("affinity.serif.com")),
-        .init("affinity-publisher","Affinity Publisher", "Professional desktop publishing app",      .media, .cask, icon("affinity.serif.com")),
+        .init("affinity",          "Affinity",          "Photo editing, vector design and layout in one app", .media, .cask, icon("affinity.studio")),
         .init("blender",      "Blender",        "Free and open source 3D creation suite",          .media, .cask, icon("blender.org")),
         .init("obs",          "OBS Studio",     "Free and open source streaming and recording",    .media, .cask, icon("obsproject.com")),
         .init("screenflow",   "ScreenFlow",     "Professional screen recording and video editing", .media, .cask, icon("telestream.net")),
         .init("vlc",          "VLC",            "Free and open source media player",                .media, .cask, icon("videolan.org")),
         .init("iina",         "IINA",           "Modern media player built for macOS",              .media, .cask, icon("iina.io")),
         .init("audacity",     "Audacity",       "Free, open source cross-platform audio editor",   .media, .cask, icon("audacityteam.org")),
-        .init("handbrake",    "HandBrake",      "Open source video transcoder",                     .media, .cask, icon("handbrake.fr")),
+        .init("handbrake-app","HandBrake",      "Open source video transcoder",                     .media, .cask, icon("handbrake.fr")),
         .init("kap",          "Kap",            "Open source screen recorder built with web tech", .media, .cask, icon("getkap.co")),
         .init("losslesscut",  "LosslessCut",    "Lossless video and audio trimming tool",          .media, .cask, icon("mifi.no")),
         .init("imageoptim",   "ImageOptim",     "Optimises images by removing bloated metadata",   .media, .cask, icon("imageoptim.com")),
@@ -234,7 +247,7 @@ enum DiscoverCatalog {
         .init("alfred",            "Alfred",           "Award-winning productivity app for macOS",         .productivity, .cask, icon("alfredapp.com")),
         .init("notion",            "Notion",           "All-in-one workspace for notes and docs",          .productivity, .cask, icon("notion.so")),
         .init("obsidian",          "Obsidian",         "Knowledge base on local Markdown files",           .productivity, .cask, icon("obsidian.md")),
-        .init("todoist",           "Todoist",          "Organise work and life with task management",      .productivity, .cask, icon("todoist.com")),
+        .init("todoist-app",       "Todoist",          "Organise work and life with task management",      .productivity, .cask, icon("todoist.com")),
         .init("fantastical",       "Fantastical",      "Award-winning calendar and tasks app",             .productivity, .cask, icon("flexibits.com")),
         .init("1password",         "1Password",        "Password manager and secure digital wallet",       .productivity, .cask, icon("1password.com")),
         .init("bitwarden",         "Bitwarden",        "Open source password manager",                     .productivity, .cask, icon("bitwarden.com")),
@@ -244,10 +257,10 @@ enum DiscoverCatalog {
         .init("keyboard-maestro",  "Keyboard Maestro", "Powerful keyboard and macro automation tool",      .productivity, .cask, icon("keyboardmaestro.com")),
         .init("popclip",           "PopClip",          "Instant text actions for what you select",         .productivity, .cask, icon("pilotmoon.com")),
         .init("logseq",            "Logseq",           "Privacy-first knowledge management tool",          .productivity, .cask, icon("logseq.com")),
-        .init("linear-linear",     "Linear",           "Modern project management for software teams",     .productivity, .cask, icon("linear.app")),
+        .init("linear",            "Linear",           "Modern project management for software teams",     .productivity, .cask, icon("linear.app")),
         .init("notion-calendar",   "Notion Calendar",  "Smart calendar with Notion integration",           .productivity, .cask, icon("notion.so")),
         .init("netnewswire",       "NetNewsWire",      "Fast, free, open source RSS reader for Mac",       .productivity, .cask, icon("netnewswire.com")),
-        .init("spark",             "Spark",            "Smart email client for Mac",                       .productivity, .cask, icon("sparkmailapp.com")),
+        .init("readdle-spark",     "Spark",            "Smart email client for Mac",                       .productivity, .cask, icon("sparkmailapp.com")),
         .init("textexpander",      "TextExpander",     "Type more with less — powerful text expansion",    .productivity, .cask, icon("textexpander.com")),
         .init("cleanmymac",        "CleanMyMac",       "Mac cleaning and performance optimiser",           .productivity, .cask, icon("macpaw.com")),
         .init("bartender",         "Bartender",        "Take control of your menu bar",                    .productivity, .cask, icon("macbartender.com")),
@@ -261,8 +274,6 @@ enum DiscoverCatalog {
         .init("zoom",             "Zoom",            "Video conferencing and online meetings",      .communication, .cask, icon("zoom.us")),
         .init("microsoft-teams",  "Microsoft Teams", "Chat-based workspace in Microsoft 365",      .communication, .cask, icon("microsoft.com")),
         .init("whatsapp",         "WhatsApp",        "WhatsApp desktop client",                    .communication, .cask, icon("whatsapp.com")),
-        .init("skype",            "Skype",           "Video calling and instant messaging",        .communication, .cask, icon("skype.com")),
-        .init("messenger",        "Messenger",       "Facebook Messenger desktop client",          .communication, .cask, icon("messenger.com")),
         .init("mattermost",       "Mattermost",      "Open source messaging platform for teams",   .communication, .cask, icon("mattermost.com")),
         .init("element",          "Element",         "Secure, decentralised Matrix messaging client", .communication, .cask, icon("element.io")),
         .init("loom",             "Loom",            "Record and share video messages instantly",   .communication, .cask, icon("loom.com")),
@@ -270,7 +281,7 @@ enum DiscoverCatalog {
         .init("webex",            "Webex",           "Cisco's video conferencing platform",         .communication, .cask, icon("webex.com")),
 
         // MARK: Security
-        .init("wireshark",      "Wireshark",      "Network protocol analyser",                    .security, .cask, icon("wireshark.org")),
+        .init("wireshark-app",  "Wireshark",      "Network protocol analyser",                    .security, .cask, icon("wireshark.org")),
         .init("proxyman",       "Proxyman",       "Debug network traffic on macOS",               .security, .cask, icon("proxyman.io")),
         .init("keepassxc",      "KeePassXC",      "Cross-platform open source password manager",  .security, .cask, icon("keepassxc.org")),
         .init("mullvad-vpn",    "Mullvad VPN",    "VPN service focused on privacy and anonymity", .security, .cask, icon("mullvad.net")),
@@ -320,12 +331,12 @@ enum DiscoverCatalog {
         .init("lazygit",         "lazygit",           "Terminal UI for git commands",              .utilities, .formula),
         .init("fd",              "fd",                "Fast and user-friendly find alternative",   .utilities, .formula),
         .init("yazi",            "Yazi",              "Blazing fast terminal file manager",        .utilities, .formula, icon("yazi.rs")),
-        .init("tldr",            "tldr",              "Simplified man pages with examples",        .utilities, .formula, icon("tldr.sh")),
+        .init("tlrc",            "tldr",              "Simplified man pages with examples",        .utilities, .formula, icon("tldr.sh")),
         .init("fzf",             "fzf",               "Command-line fuzzy finder",                 .utilities, .formula),
         .init("ripgrep",         "ripgrep",           "Fast recursive search tool",                .utilities, .formula),
         .init("bat",             "bat",               "cat clone with syntax highlighting",        .utilities, .formula),
         .init("htop",            "htop",              "Interactive process viewer",                .utilities, .formula, icon("htop.dev")),
-        .init("delta",           "delta",             "Syntax-highlighted git diff viewer",        .utilities, .formula, icon("github.com")),
+        .init("git-delta",       "delta",             "Syntax-highlighted git diff viewer",        .utilities, .formula, icon("github.com")),
         .init("duf",             "duf",               "Modern disk usage tool — better df",        .utilities, .formula, icon("github.com")),
         .init("dust",            "dust",              "More intuitive disk usage tool — better du", .utilities, .formula, icon("github.com")),
         .init("glow",            "glow",              "Render Markdown in the terminal",            .utilities, .formula, icon("github.com")),

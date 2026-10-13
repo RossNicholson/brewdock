@@ -80,11 +80,38 @@ final class BrewParseTests: XCTestCase {
         """
         let map = BrewParse.caskAppNames(fromJSON: json)
         XCTAssertEqual(map["iterm2"], ["iTerm.app"])
-        XCTAssertNil(map["clionly"])   // no app artifact -> not included
+        XCTAssertEqual(map["clionly"], [])   // answered, but no app artifact
+        XCTAssertNil(map["not-asked"])
+    }
+
+    func testCaskAppNamesPrefersTarget() {
+        let json = #"{"casks":[{"token":"x","artifacts":[{"app":["Foo.app",{"target":"Bar.app"}]}]}]}"#
+        XCTAssertEqual(BrewParse.caskAppNames(fromJSON: json)["x"], ["Bar.app"])
     }
 
     func testCaskAppNamesEmptyOnGarbage() {
         XCTAssertTrue(BrewParse.caskAppNames(fromJSON: "nope").isEmpty)
         XCTAssertTrue(BrewParse.caskAppNames(fromJSON: "{}").isEmpty)
+    }
+
+    // MARK: Discover catalog
+
+    func testCatalogTokensAreUnique() {
+        let ids = DiscoverCatalog.all.map(\.id)
+        XCTAssertEqual(ids.count, Set(ids).count, "duplicate catalog tokens")
+    }
+
+    func testCatalogMatchesVersionedInstalls() {
+        let python = DiscoverCatalog.all.first { $0.id == "python" }!
+        XCTAssertTrue(python.matches(installedName: "python@3.15"))
+        XCTAssertTrue(python.matches(installedName: "python"))
+        XCTAssertFalse(python.matches(installedName: "python-setuptools"))
+    }
+
+    func testTapPackagesInstallByQualifiedName() {
+        let clawdbar = DiscoverCatalog.all.first { $0.id == "clawdbar" }!
+        XCTAssertEqual(clawdbar.installToken, "rossnicholson/tap/clawdbar")
+        XCTAssertTrue(clawdbar.matches(installedName: "clawdbar"))
+        XCTAssertEqual(DiscoverCatalog.all.first { $0.id == "git" }?.installToken, "git")
     }
 }

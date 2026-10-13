@@ -30,7 +30,9 @@ struct PackageRowView: View {
         .onTapGesture { launch() }
         .alert("Quit \(package.name)?", isPresented: $showingUninstallAlert) {
             Button("Quit & Uninstall", role: .destructive) {
-                let app = package.runningApplication
+                // BrewDock uninstalling itself: the service hands off to a detached
+                // helper and quits, so don't terminate ourselves first.
+                let app = package.isBrewDock ? nil : package.runningApplication
                 app?.terminate()
                 Task {
                     if app != nil {
@@ -155,10 +157,21 @@ struct PackageRowView: View {
             CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-").contains($0)
         })
         let tmp = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("brewdock-\(safeName).command")
+            .appendingPathComponent("brewdock-\(safeName)-\(UUID().uuidString.prefix(8)).command")
         // Single-quote the command to handle names with hyphens, dots, @ etc.
         let safe = command.replacingOccurrences(of: "'", with: "'\\''")
-        let script = "#!/bin/bash\nclear\n'\(safe)'\n"
+        // Library formulae (openssl@3, libpng…) have no command of their own, so
+        // show `brew info` for them instead of "command not found".
+        let script = """
+        #!/bin/bash
+        clear
+        if command -v '\(safe)' >/dev/null 2>&1; then
+            '\(safe)'
+        else
+            '\(brewPath)' info '\(safe)'
+        fi
+
+        """
         do {
             try script.write(to: tmp, atomically: true, encoding: .utf8)
             try FileManager.default.setAttributes(
@@ -173,7 +186,8 @@ struct PackageRowView: View {
             } else {
                 NSWorkspace.shared.open(tmp)
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            // Generous delay: a cold-launching terminal may not read the file for a while.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 60) {
                 try? FileManager.default.removeItem(at: tmp)
             }
         } catch {
