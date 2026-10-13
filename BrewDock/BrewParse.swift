@@ -74,4 +74,45 @@ enum BrewParse {
         if summary.count > 160 { summary = String(summary.prefix(157)) + "…" }
         return summary.isEmpty ? nil : summary
     }
+
+    /// A short progress label for one line of brew install/upgrade/uninstall
+    /// output, or nil for lines that aren't progress. Long names, URLs and
+    /// bottle filenames are dropped so the label fits in a row.
+    static func progressLabel(fromLine raw: String) -> String? {
+        let line = raw.trimmingCharacters(in: .whitespaces)
+        // Download finished (Homebrew 5+ prints these on stderr): "✔︎ Bottle jq (1.7.1)"
+        // Compare the scalar: "✔︎" carries a variation selector, so it's a different Character
+        if line.unicodeScalars.first == "\u{2714}" {
+            let words = line.split(separator: " ")
+            guard words.count >= 3 else { return "Downloaded" }
+            return "Downloaded \(words[2])"
+        }
+        guard line.hasPrefix("==> ") else { return nil }
+        let words = line.dropFirst(4).split(separator: " ").map(String.init)
+        guard let verb = words.first else { return nil }
+        /// The package named after the verb, if it's a plain name (not "2 outdated…")
+        func subject(skipping skip: Set<String> = []) -> String? {
+            guard let word = words.dropFirst().first(where: { !skip.contains($0) }),
+                  word.first?.isNumber == false, !word.hasSuffix(":"), !word.contains("/") else { return nil }
+            return word
+        }
+        switch verb {
+        case "Downloading": return "Downloading…"
+        case "Fetching":
+            if words.dropFirst().first == "downloads" { return "Downloading…" }
+            return subject().map { "Fetching \($0)…" } ?? "Fetching…"
+        case "Pouring": return "Unpacking…"
+        case "Installing": return subject(skipping: ["Cask"]).map { "Installing \($0)…" } ?? "Installing…"
+        case "Upgrading": return subject().map { "Upgrading \($0)…" }
+        case "Moving": return "Moving to Applications…"
+        case "Uninstalling": return "Uninstalling…"
+        case "Removing": return "Removing…"
+        case "Backing": return "Backing up…"
+        case "Purging": return "Cleaning up…"
+        case "Running": return line.contains("cleanup") ? "Cleaning up…" : nil
+        case "Linking": return "Linking…"
+        case "Verifying", "Checking": return "Checking…"
+        default: return nil
+        }
+    }
 }

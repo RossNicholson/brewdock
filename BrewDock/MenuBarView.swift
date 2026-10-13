@@ -143,7 +143,8 @@ struct MenuBarView: View {
                 Text(outdatedCount == 1 ? "Update ready" : "Updates ready")
                     .font(.display(18, relativeTo: .headline))
                     .textCase(.uppercase)
-                Text(busy ? "Updating…" : "Update everything in one go")
+                Text(busy ? (brewService.progress[BrewService.allUpdatesKey] ?? "Updating…") : "Update everything in one go")
+                    .lineLimit(1)
                     .font(.mono(9.5))
                     .opacity(0.75)
             }

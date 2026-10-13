@@ -94,6 +94,10 @@ class BrewService: ObservableObject {
     @Published var removingPackages: Set<String> = []
     @Published var installingPackages: Set<String> = []
     @Published var managingServices: Set<String> = []
+    /// Latest progress label per package being installed/updated/removed, e.g.
+    /// "Downloading…". `allUpdatesKey` holds "Update all" progress.
+    @Published var progress: [String: String] = [:]
+    nonisolated static let allUpdatesKey = "*all*"
     @Published var lastError: String? = nil
     @Published var isBrewfileWorking = false
     @Published var selfUpdateAvailable: Bool = false
@@ -182,12 +186,22 @@ class BrewService: ObservableObject {
         }
     }
 
+    /// Line handler that turns brew output into a progress label for `key`
+    private func reportProgress(to key: String) -> @Sendable (String) -> Void {
+        progress[key] = nil
+        return { line in
+            guard let label = BrewParse.progressLabel(fromLine: line) else { return }
+            Task { @MainActor [weak self] in self?.progress[key] = label }
+        }
+    }
+
     func upgrade(_ package: BrewPackage) async {
         if package.isBrewDock { await updateSelf(); return }
         updatingPackages.insert(package.name)
         defer { updatingPackages.remove(package.name) }
         let flag = package.type == .cask ? "--cask" : "--formula"
-        let result = await brew(["upgrade", flag, package.name], timeout: nil)
+        let result = await brew(["upgrade", flag, package.name], timeout: nil,
+                                onLine: reportProgress(to: package.name))
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't update \(package.name)") }
         await refresh(force: true)
     }
@@ -196,7 +210,8 @@ class BrewService: ObservableObject {
         installingPackages.insert(package.id)
         defer { installingPackages.remove(package.id) }
         let flag = package.type == .cask ? "--cask" : "--formula"
-        let result = await brew(["install", flag, package.installToken], timeout: nil)
+        let result = await brew(["install", flag, package.installToken], timeout: nil,
+                                onLine: reportProgress(to: package.id))
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't install \(package.displayName)") }
         await refresh(force: true)
     }
@@ -209,7 +224,8 @@ class BrewService: ObservableObject {
         removingPackages.insert(package.name)
         defer { removingPackages.remove(package.name) }
         let flag = package.type == .cask ? "--cask" : "--formula"
-        let result = await brew(["uninstall", flag, package.name], timeout: nil)
+        let result = await brew(["uninstall", flag, package.name], timeout: nil,
+                                onLine: reportProgress(to: package.name))
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't uninstall \(package.name)") }
         await refresh(force: true)
     }
@@ -324,11 +340,13 @@ class BrewService: ObservableObject {
         updatingPackages.formUnion(outdatedCasks + outdatedFormulae)
         var failure: BrewResult? = nil
         if !outdatedFormulae.isEmpty {
-            let result = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil)
+            let result = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil,
+                                    onLine: reportProgress(to: Self.allUpdatesKey))
             if result.exitCode != 0 { failure = result }
         }
         if !outdatedCasks.isEmpty {
-            let result = await brew(["upgrade", "--cask"] + outdatedCasks, timeout: nil)
+            let result = await brew(["upgrade", "--cask"] + outdatedCasks, timeout: nil,
+                                    onLine: reportProgress(to: Self.allUpdatesKey))
             if result.exitCode != 0 { failure = failure ?? result }
         }
         updatingPackages.subtract(outdatedCasks + outdatedFormulae)
@@ -452,9 +470,34 @@ private let brewEnvironment: [String: String] = {
     return env
 }()
 
+/// Reads a pipe to the end, calling `onLine` for each complete line as it arrives.
+private func drain(_ handle: FileHandle, onLine: (@Sendable (String) -> Void)?) -> Data {
+    guard let onLine else { return handle.readDataToEndOfFile() }
+    var all = Data()
+    var pending = [UInt8]()
+    while true {
+        let chunk = handle.availableData
+        if chunk.isEmpty { break }
+        all.append(chunk)
+        for byte in chunk {
+            if byte == 0x0A {
+                onLine(String(decoding: pending, as: UTF8.self))
+                pending.removeAll(keepingCapacity: true)
+            } else {
+                pending.append(byte)
+            }
+        }
+    }
+    if !pending.isEmpty { onLine(String(decoding: pending, as: UTF8.self)) }
+    return all
+}
+
 /// Runs brew and returns its stdout. `timeout: nil` never kills it — used for
 /// installs/upgrades/uninstalls, where killing brew mid-run is worse than waiting.
-private func brew(_ args: [String], timeout: TimeInterval? = 30) async -> BrewResult {
+/// `onLine` receives every stdout and stderr line as it's printed (brew reports
+/// download progress on stderr), for live progress.
+private func brew(_ args: [String], timeout: TimeInterval? = 30,
+                  onLine: (@Sendable (String) -> Void)? = nil) async -> BrewResult {
     await withCheckedContinuation { continuation in
         let process = Process()
         process.executableURL = URL(fileURLWithPath: brewPath)
@@ -485,11 +528,11 @@ private func brew(_ args: [String], timeout: TimeInterval? = 30) async -> BrewRe
         let stderrDone = DispatchGroup()
         stderrDone.enter()
         DispatchQueue.global().async {
-            stderrBox.data = errPipe.fileHandleForReading.readDataToEndOfFile()
+            stderrBox.data = drain(errPipe.fileHandleForReading, onLine: onLine)
             stderrDone.leave()
         }
         DispatchQueue.global().async {
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            let data = drain(pipe.fileHandleForReading, onLine: onLine)
             stderrDone.wait()
             process.waitUntilExit()
             continuation.resume(returning: BrewResult(

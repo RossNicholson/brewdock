@@ -242,7 +242,15 @@ struct DiscoverPackageRow: View {
     @ViewBuilder
     private var actionButton: some View {
         if isInstalling {
-            ProgressView().controlSize(.small)
+            HStack(spacing: 6) {
+                Text(brewService.progress[package.id] ?? "Installing…")
+                    .font(.mono(9.5))
+                    .foregroundStyle(AppColors.secondaryText)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: 120, alignment: .trailing)
+                ProgressView().controlSize(.small)
+            }
         } else if isInstalled {
             Image(systemName: "checkmark")
                 .font(.system(size: 11, weight: .bold))

@@ -133,9 +133,12 @@ struct PackageRowView: View {
     private var actions: some View {
         if isUpdating || isRemoving {
             HStack(spacing: 6) {
-                Text(isUpdating ? "Updating" : "Removing")
+                Text(brewService.progress[package.name] ?? (isUpdating ? "Updating…" : "Removing…"))
                     .font(.mono(9.5))
                     .foregroundStyle(AppColors.secondaryText)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .frame(maxWidth: 150, alignment: .trailing)
                 ProgressView().controlSize(.small)
             }
         } else if isHovered {

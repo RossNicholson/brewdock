@@ -142,4 +142,26 @@ final class BrewParseTests: XCTestCase {
         XCTAssertEqual(many.title, "7 Homebrew updates ready")
         XCTAssertEqual(many.body, "New: a, b, c and 2 more")
     }
+
+    // MARK: Install progress
+
+    func testProgressLabels() {
+        let cases: [(String, String?)] = [
+            ("==> Downloading https://ghcr.io/v2/homebrew/core/jq/blobs/sha256:abc", "Downloading…"),
+            ("==> Fetching downloads for: jq", "Downloading…"),
+            ("==> Fetching jq from homebrew/core", "Fetching jq…"),
+            ("✔︎ Bottle jq (1.7.1)", "Downloaded jq"),
+            ("==> Pouring jq--1.7.1.arm64_sequoia.bottle.tar.gz", "Unpacking…"),
+            ("==> Installing Cask firefox", "Installing firefox…"),
+            ("==> Upgrading 2 outdated packages:", nil),
+            ("==> Upgrading node", "Upgrading node…"),
+            ("==> Moving App 'Firefox.app' to '/Applications/Firefox.app'", "Moving to Applications…"),
+            ("==> Running `brew cleanup jq`...", "Cleaning up…"),
+            ("🍺  /opt/homebrew/Cellar/jq/1.7.1: 19 files, 1.2MB", nil),
+            ("Already up-to-date.", nil),
+        ]
+        for (line, expected) in cases {
+            XCTAssertEqual(BrewParse.progressLabel(fromLine: line), expected, line)
+        }
+    }
 }
