@@ -36,6 +36,12 @@ brew install --cask brewdock
 
 Homebrew 7 asks you to trust casks from other taps before installing them. On older versions, skip the `brew trust` line.
 
+**Updating from BrewDock 1.2 or earlier on Homebrew 7?** If "Update BrewDock" fails, update once from Terminal; 1.3 and later handle this themselves:
+
+```bash
+brew upgrade --cask rossnicholson/tap/brewdock
+```
+
 **Requirements:** macOS 13+ · [Homebrew](https://brew.sh) installed · Apple Silicon or Intel
 
 ---
