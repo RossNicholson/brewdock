@@ -197,6 +197,17 @@ struct DiscoverPackageRow: View {
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
         .card()
+        .contextMenu {
+            Button(isInstalled ? "Installed" : "Install \(package.displayName)") { install() }
+                .disabled(isInstalled || isInstalling)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(package.displayName), \(package.type == .cask ? "app" : "tool"), \(package.description)\(isInstalled ? ", installed" : "")")
+        .accessibilityAction(named: "Install") { if !isInstalled { install() } }
+    }
+
+    private func install() {
+        Task { await brewService.install(package) }
     }
 
     @ViewBuilder
@@ -242,7 +253,7 @@ struct DiscoverPackageRow: View {
                 .accessibilityLabel("Installed")
         } else {
             RoundIconButton(symbol: "plus", help: "Install \(package.displayName)") {
-                Task { await brewService.install(package) }
+                install()
             }
         }
     }

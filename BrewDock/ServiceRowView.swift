@@ -22,7 +22,33 @@ struct ServiceRowView: View {
         .onHover { isHovered = $0 }
         .contentShape(Rectangle())
         .animation(.easeOut(duration: 0.12), value: isHovered)
+        .contextMenu { serviceMenu }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(service.name), \(service.status.displayLabel)")
+        .accessibilityAction(named: "Start") { start() }
+        .accessibilityAction(named: "Stop") { stop() }
+        .accessibilityAction(named: "Restart") { restart() }
     }
+
+    @ViewBuilder
+    private var serviceMenu: some View {
+        switch service.status {
+        case .started:
+            Button("Stop") { stop() }
+            Button("Restart") { restart() }
+        case .stopped, .none:
+            Button("Start") { start() }
+        case .error:
+            Button("Start") { start() }
+            Button("Restart") { restart() }
+        case .unknown:
+            Button("Restart") { restart() }
+        }
+    }
+
+    private func start() { Task { await brewService.startService(service) } }
+    private func stop() { Task { await brewService.stopService(service) } }
+    private func restart() { Task { await brewService.restartService(service) } }
 
     private var statusIcon: some View {
         SymbolTile(symbol: "gearshape.2.fill", fill: service.status.pastel)
@@ -48,18 +74,18 @@ struct ServiceRowView: View {
                 switch service.status {
                 case .started:
                     actionButton("stop.fill", fill: AppColors.peach, help: "Stop") {
-                        Task { await brewService.stopService(service) }
+                        stop()
                     }
                     actionButton("arrow.clockwise", fill: AppColors.butter, help: "Restart") {
-                        Task { await brewService.restartService(service) }
+                        restart()
                     }
                 case .stopped, .error, .none:
                     actionButton("play.fill", fill: AppColors.mint, help: "Start") {
-                        Task { await brewService.startService(service) }
+                        start()
                     }
                     if service.status == .error {
                         actionButton("arrow.clockwise", fill: AppColors.butter, help: "Restart") {
-                            Task { await brewService.restartService(service) }
+                            restart()
                         }
                     }
                 case .unknown:

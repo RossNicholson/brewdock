@@ -29,6 +29,18 @@ struct PackageRowView: View {
         .contentShape(Rectangle())
         .onTapGesture { launch() }
         .animation(.easeOut(duration: 0.12), value: isHovered)
+        // Hover buttons aren't reachable by keyboard or VoiceOver, so every
+        // action is also in a right-click menu and named accessibility actions.
+        .contextMenu { rowMenu }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityAction { launch() }
+        .accessibilityAction(named: openLabel) { launch() }
+        .accessibilityAction(named: "Update") {
+            if package.isOutdated { Task { await brewService.upgrade(package) } }
+        }
+        .accessibilityAction(named: "Uninstall") { showingUninstallAlert = true }
         .alert("Uninstall \(package.name)?", isPresented: $showingUninstallAlert) {
             Button(package.runningApplication != nil && !package.isBrewDock ? "Quit & Uninstall" : "Uninstall", role: .destructive) {
                 // BrewDock uninstalling itself: the service hands off to a detached
@@ -46,6 +58,33 @@ struct PackageRowView: View {
         } message: {
             Text(uninstallMessage)
         }
+    }
+
+    private var openLabel: String {
+        package.type == .formula || package.isCLIOnly ? "Open in Terminal" : "Open"
+    }
+
+    private var accessibilitySummary: String {
+        var parts = [package.name, "version \(package.version)"]
+        if package.isOutdated { parts.append("update available") }
+        if isUpdating { parts.append("updating") }
+        if isRemoving { parts.append("removing") }
+        return parts.joined(separator: ", ")
+    }
+
+    @ViewBuilder
+    private var rowMenu: some View {
+        Button(openLabel) { launch() }
+        if package.isOutdated {
+            Button("Update") { Task { await brewService.upgrade(package) } }
+                .disabled(isUpdating || isRemoving)
+        }
+        if let url = package.appURL {
+            Button("Show in Finder") { NSWorkspace.shared.activateFileViewerSelecting([url]) }
+        }
+        Divider()
+        Button("Uninstall…") { showingUninstallAlert = true }
+            .disabled(isUpdating || isRemoving)
     }
 
     private var uninstallMessage: String {
@@ -109,7 +148,7 @@ struct PackageRowView: View {
                 RoundIconButton(symbol: "trash", fill: AppColors.peach, foreground: AppColors.ink, help: "Uninstall") {
                     showingUninstallAlert = true
                 }
-                RoundIconButton(symbol: "arrow.up.right", help: package.type == .formula || package.isCLIOnly ? "Open in Terminal" : "Open") {
+                RoundIconButton(symbol: "arrow.up.right", help: openLabel) {
                     launch()
                 }
             }
