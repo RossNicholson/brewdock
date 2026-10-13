@@ -16,8 +16,10 @@
 - **Apps** — all your Homebrew casks with real icons. Click to launch; hover or right-click to update or uninstall.
 - **Tools** — all your formulae. Click to open in Terminal or iTerm2.
 - **Services** — start, stop, and restart Homebrew services on hover.
-- **Discover** — browse 230+ curated packages across 10 categories and install with one click.
-- **Updates** — badge shows how many packages are outdated. Update one or all at once.
+- **Discover** — browse 230+ curated packages across 10 categories, or search all of Homebrew, and install with one click.
+- **Updates** — checked in the background, with optional notifications. Update one or all at once, with live progress. Can include apps that update themselves.
+- **Free up space** — clear old versions and cached downloads in one click.
+- **⌥⌘B** — open BrewDock from any app; Esc closes it.
 - **Brewfile** — back up your setup, restore it on a new Mac, or see what's missing.
 - 100% native SwiftUI — no Electron, no bloat. Light and dark mode.
 

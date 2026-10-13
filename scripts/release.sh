@@ -96,7 +96,14 @@ echo "$SUBMIT"
 
 step "Stapling and verifying"
 xcrun stapler staple "$DMG"            || fail "stapling failed"
-xcrun stapler validate "$DMG" >/dev/null || fail "staple validation failed"
+# Validation right after stapling occasionally fails while Apple's ticket
+# propagates (v1.2.0 hit this), so retry briefly before giving up.
+for attempt in 1 2 3 4 5; do
+  xcrun stapler validate "$DMG" >/dev/null 2>&1 && break
+  [[ "$attempt" -eq 5 ]] && fail "staple validation failed"
+  echo "staple validation not ready yet, retrying in 15s ($attempt/5)"
+  sleep 15
+done
 MP="$(hdiutil attach -nobrowse -readonly "$DMG" | grep Volumes | awk '{print $3}')"
 ASSESS="$(spctl -a -vvv -t exec "$MP/$APP.app" 2>&1 || true)"
 hdiutil detach "$MP" -quiet
