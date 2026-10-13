@@ -26,7 +26,7 @@ test DMG, use `make build` (or `scripts/release.sh` with no arguments).
 
 ## Required repo secrets
 Settings → Secrets and variables → Actions. The same six are used by BrewDock,
-ClawdBar, and Adios:
+and ClawdBar:
 
 | Secret | What it is |
 |---|---|

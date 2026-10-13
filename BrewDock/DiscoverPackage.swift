@@ -105,7 +105,6 @@ enum DiscoverCatalog {
 
         // MARK: Featured
         .init("clawdbar", "ClawdBar", "macOS menu bar app showing your Claude Code usage limits at a glance", .utilities, .cask, tap: "rossnicholson/tap"),
-        .init("adios", "Adios", "Open-source ad blocker for Safari on macOS", .utilities, .cask, tap: "rossnicholson/tap"),
 
         // MARK: Browsers
         .init("google-chrome",  "Google Chrome",   "Fast, secure web browser by Google",              .browsers, .cask, icon("chrome.google.com")),
