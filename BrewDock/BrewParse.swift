@@ -57,4 +57,21 @@ enum BrewParse {
         }
         return result
     }
+
+    /// The one line worth showing from brew's stderr when a command fails: the
+    /// first `Error:` line (without the prefix), else the last `Warning:`, else
+    /// the last non-empty line. Nil when there's nothing useful.
+    static func errorSummary(fromStderr stderr: String) -> String? {
+        let lines = stderr.lines.map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        let line = lines.first { $0.hasPrefix("Error:") }
+            ?? lines.last { $0.hasPrefix("Warning:") }
+            ?? lines.last { !$0.hasPrefix("==>") }
+        guard var summary = line else { return nil }
+        for prefix in ["Error:", "Warning:"] where summary.hasPrefix(prefix) {
+            summary = String(summary.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+        }
+        if summary.hasSuffix(".") { summary.removeLast() }
+        if summary.count > 160 { summary = String(summary.prefix(157)) + "…" }
+        return summary.isEmpty ? nil : summary
+    }
 }

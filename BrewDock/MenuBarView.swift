@@ -61,9 +61,13 @@ struct MenuBarView: View {
                 Text(msg)
                     .font(.mono(10.5, weight: .medium))
                     .foregroundStyle(AppColors.ink)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(4)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(AppColors.coral, in: Capsule())
+                    .background(AppColors.coral, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .padding(.horizontal, 18)
                     .padding(.bottom, 44)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
@@ -78,7 +82,10 @@ struct MenuBarView: View {
             guard let err else { return }
             withAnimation(.spring(duration: 0.3)) { toastMessage = err }
             Task {
-                try? await Task.sleep(nanoseconds: 3_000_000_000)
+                // Longer messages (with brew's reason) stay up long enough to read
+                let seconds = min(8, 3 + Double(err.count) / 40)
+                try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                guard brewService.lastError == err else { return }
                 withAnimation(.easeOut) { toastMessage = nil }
                 brewService.lastError = nil
             }

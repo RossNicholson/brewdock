@@ -188,7 +188,7 @@ class BrewService: ObservableObject {
         defer { updatingPackages.remove(package.name) }
         let flag = package.type == .cask ? "--cask" : "--formula"
         let result = await brew(["upgrade", flag, package.name], timeout: nil)
-        if result.exitCode != 0 { lastError = "Failed to update \(package.name)" }
+        if result.exitCode != 0 { lastError = result.failureMessage("Couldn't update \(package.name)") }
         await refresh(force: true)
     }
 
@@ -197,7 +197,7 @@ class BrewService: ObservableObject {
         defer { installingPackages.remove(package.id) }
         let flag = package.type == .cask ? "--cask" : "--formula"
         let result = await brew(["install", flag, package.installToken], timeout: nil)
-        if result.exitCode != 0 { lastError = "Failed to install \(package.displayName)" }
+        if result.exitCode != 0 { lastError = result.failureMessage("Couldn't install \(package.displayName)") }
         await refresh(force: true)
     }
 
@@ -210,7 +210,7 @@ class BrewService: ObservableObject {
         defer { removingPackages.remove(package.name) }
         let flag = package.type == .cask ? "--cask" : "--formula"
         let result = await brew(["uninstall", flag, package.name], timeout: nil)
-        if result.exitCode != 0 { lastError = "Failed to uninstall \(package.name)" }
+        if result.exitCode != 0 { lastError = result.failureMessage("Couldn't uninstall \(package.name)") }
         await refresh(force: true)
     }
 
@@ -322,15 +322,18 @@ class BrewService: ObservableObject {
         let outdatedFormulae = formulae.filter(\.isOutdated).map(\.name)
         let selfOutdated = casks.contains { $0.isOutdated && $0.isBrewDock }
         updatingPackages.formUnion(outdatedCasks + outdatedFormulae)
-        var failed = false
+        var failure: BrewResult? = nil
         if !outdatedFormulae.isEmpty {
-            failed = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil).exitCode != 0
+            let result = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil)
+            if result.exitCode != 0 { failure = result }
         }
         if !outdatedCasks.isEmpty {
-            failed = await brew(["upgrade", "--cask"] + outdatedCasks, timeout: nil).exitCode != 0 || failed
+            let result = await brew(["upgrade", "--cask"] + outdatedCasks, timeout: nil)
+            if result.exitCode != 0 { failure = failure ?? result }
         }
         updatingPackages.subtract(outdatedCasks + outdatedFormulae)
-        if failed { lastError = "Some updates failed" }
+        let failed = failure != nil
+        if let failure { lastError = failure.failureMessage("Some updates failed") }
         if selfOutdated && !failed {
             await updateSelf()
             return
@@ -342,7 +345,7 @@ class BrewService: ObservableObject {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }
         let result = await brew(["bundle", "dump", "--file=\(path)", "--force"])
-        guard result.exitCode == 0 else { return (false, "Failed to export Brewfile.") }
+        guard result.exitCode == 0 else { return (false, result.failureMessage("Couldn't export the Brewfile")) }
         return (true, "Brewfile saved.")
     }
 
@@ -351,7 +354,7 @@ class BrewService: ObservableObject {
         defer { isBrewfileWorking = false }
         let result = await brew(["bundle", "install", "--file=\(path)"], timeout: nil)
         await refresh(force: true)
-        guard result.exitCode == 0 else { return (false, "Some packages failed to install.") }
+        guard result.exitCode == 0 else { return (false, result.failureMessage("Some packages didn't install")) }
         return (true, "All packages installed.")
     }
 
@@ -376,7 +379,7 @@ class BrewService: ObservableObject {
         defer { isBrewfileWorking = false }
         let result = await brew(["bundle", "cleanup", "--file=\(path)", "--force"], timeout: nil)
         await refresh(force: true)
-        guard result.exitCode == 0 else { return (false, "Cleanup failed.") }
+        guard result.exitCode == 0 else { return (false, result.failureMessage("Cleanup failed")) }
         return (true, "Cleanup complete.")
     }
 
@@ -404,7 +407,7 @@ class BrewService: ObservableObject {
         managingServices.insert(service.name)
         defer { managingServices.remove(service.name) }
         let result = await brew(["services", command, service.name], timeout: 120)
-        if result.exitCode != 0 { lastError = "Failed to \(command) \(service.name)" }
+        if result.exitCode != 0 { lastError = result.failureMessage("Couldn't \(command) \(service.name)") }
         await refreshServices()
     }
 
@@ -417,7 +420,19 @@ let brewPath: String = {
 
 private struct BrewResult {
     let output: String
+    var errorOutput: String = ""
     let exitCode: Int32
+
+    /// "Couldn't update git: <brew's error>", or just the first part when brew
+    /// gave no reason
+    func failureMessage(_ base: String) -> String {
+        BrewParse.errorSummary(fromStderr: errorOutput).map { "\(base): \($0)" } ?? base
+    }
+}
+
+/// Collects stderr on one thread while stdout is read on another.
+private final class StderrBox: @unchecked Sendable {
+    var data = Data()
 }
 
 /// Deterministic environment for every `brew` invocation. A Finder-launched app
@@ -446,13 +461,14 @@ private func brew(_ args: [String], timeout: TimeInterval? = 30) async -> BrewRe
         process.arguments = args
         process.environment = brewEnvironment
         let pipe = Pipe()
+        let errPipe = Pipe()
         process.standardOutput = pipe
-        process.standardError = FileHandle.nullDevice  // prevent stderr buffer-fill hang
+        process.standardError = errPipe
 
         do {
             try process.run()
         } catch {
-            continuation.resume(returning: BrewResult(output: "", exitCode: 1))
+            continuation.resume(returning: BrewResult(output: "", errorOutput: "Error: Couldn't run \(brewPath)", exitCode: 1))
             return
         }
 
@@ -462,14 +478,25 @@ private func brew(_ args: [String], timeout: TimeInterval? = 30) async -> BrewRe
             }
         }
 
-        // Drain stdout while brew runs. Reading only after it exits deadlocks once
-        // the output passes the 64 KB pipe buffer (e.g. `brew info` over ~15 casks):
-        // brew blocks writing, so it never exits until the timeout kills it.
+        // Drain stdout and stderr while brew runs. Reading only after it exits
+        // deadlocks once either passes the 64 KB pipe buffer (e.g. `brew info` over
+        // ~15 casks): brew blocks writing, so it never exits until the timeout.
+        let stderrBox = StderrBox()
+        let stderrDone = DispatchGroup()
+        stderrDone.enter()
+        DispatchQueue.global().async {
+            stderrBox.data = errPipe.fileHandleForReading.readDataToEndOfFile()
+            stderrDone.leave()
+        }
         DispatchQueue.global().async {
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            stderrDone.wait()
             process.waitUntilExit()
-            let output = String(data: data, encoding: .utf8) ?? ""
-            continuation.resume(returning: BrewResult(output: output, exitCode: process.terminationStatus))
+            continuation.resume(returning: BrewResult(
+                output: String(data: data, encoding: .utf8) ?? "",
+                errorOutput: String(data: stderrBox.data, encoding: .utf8) ?? "",
+                exitCode: process.terminationStatus
+            ))
         }
     }
 }

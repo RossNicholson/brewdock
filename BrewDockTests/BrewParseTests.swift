@@ -114,4 +114,21 @@ final class BrewParseTests: XCTestCase {
         XCTAssertTrue(clawdbar.matches(installedName: "clawdbar"))
         XCTAssertEqual(DiscoverCatalog.all.first { $0.id == "git" }?.installToken, "git")
     }
+
+    // MARK: brew error output
+
+    func testErrorSummaryPrefersErrorLine() {
+        let stderr = """
+        Warning: No available formula with the name "nope".
+        Error: No formulae found for nope.
+        ==> Searching for similarly named formulae...
+        """
+        XCTAssertEqual(BrewParse.errorSummary(fromStderr: stderr), "No formulae found for nope")
+    }
+
+    func testErrorSummaryFallsBackToWarningThenLastLine() {
+        XCTAssertEqual(BrewParse.errorSummary(fromStderr: "Warning: disk nearly full\n"), "disk nearly full")
+        XCTAssertEqual(BrewParse.errorSummary(fromStderr: "curl: (6) Could not resolve host\n==> Retrying"), "curl: (6) Could not resolve host")
+        XCTAssertNil(BrewParse.errorSummary(fromStderr: "  \n"))
+    }
 }
