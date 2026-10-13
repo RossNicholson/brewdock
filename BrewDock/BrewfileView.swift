@@ -11,65 +11,47 @@ struct BrewfileView: View {
     @State private var pendingCleanupPath: String? = nil
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 6) {
-                Image(systemName: "square.and.arrow.down")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.blue)
-                Text("Brewfile")
-                    .font(.title3).fontWeight(.semibold)
-                Text("Backup and restore your Homebrew setup")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            PopoverHeader(title: "Brewfile", subtitle: "Back up and restore your Homebrew setup")
+                .padding(.bottom, 4)
 
-            Divider()
-
-            VStack(spacing: 10) {
-                brewfileAction(
-                    title: "Export",
-                    description: "Save your installed packages to a Brewfile",
-                    icon: "arrow.up.doc", color: .blue
-                ) { exportBrewfile() }
-
-                brewfileAction(
-                    title: "Install",
-                    description: "Install all packages listed in a Brewfile",
-                    icon: "arrow.down.doc", color: .green
-                ) { installFromBrewfile() }
-
-                brewfileAction(
-                    title: "What's Missing?",
-                    description: "Check which packages in a Brewfile you don't have yet",
-                    icon: "questionmark.circle", color: .orange
-                ) { checkBrewfile() }
-
-                brewfileAction(
-                    title: "Remove Unlisted",
-                    description: "Remove packages not in your Brewfile",
-                    icon: "trash", color: .red
-                ) { previewCleanup() }
+            Group {
+                ColorBlockButton(title: "Export", detail: "Save your installed packages to a Brewfile",
+                                 fill: AppColors.mint, symbol: "arrow.up") { exportBrewfile() }
+                ColorBlockButton(title: "Install", detail: "Install everything listed in a Brewfile",
+                                 fill: AppColors.periwinkle, symbol: "arrow.down") { installFromBrewfile() }
+                ColorBlockButton(title: "What's missing?", detail: "See what a Brewfile has that you don't",
+                                 fill: AppColors.butter, symbol: "questionmark") { checkBrewfile() }
+                ColorBlockButton(title: "Remove unlisted", detail: "Uninstall packages not in a Brewfile",
+                                 fill: AppColors.peach, symbol: "trash") { previewCleanup() }
             }
             .disabled(brewService.isBrewfileWorking)
+            .opacity(brewService.isBrewfileWorking ? 0.6 : 1)
 
             if brewService.isBrewfileWorking {
-                HStack(spacing: 6) {
-                    ProgressView().scaleEffect(0.7)
-                    Text("Working…").font(.caption).foregroundStyle(.secondary)
+                HStack(spacing: 8) {
+                    ProgressView().controlSize(.small)
+                    Text("Working…")
+                        .font(.mono(10))
+                        .foregroundStyle(AppColors.secondaryText)
                 }
+                .padding(.top, 4)
             }
 
             if let msg = statusMessage {
                 Text(msg)
-                    .font(.caption)
-                    .foregroundStyle(statusIsSuccess ? .green : .red)
-                    .multilineTextAlignment(.center)
+                    .font(.mono(10, weight: .medium))
+                    .foregroundStyle(AppColors.ink)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(statusIsSuccess ? AppColors.mint : AppColors.coral,
+                                in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                     .fixedSize(horizontal: false, vertical: true)
+                    .padding(.top, 4)
             }
         }
-        .padding(20)
-        .frame(width: 240)
+        .popoverChrome()
         .confirmationDialog(
             "Remove \(cleanupPreview.count) package\(cleanupPreview.count == 1 ? "" : "s")?",
             isPresented: $showCleanupConfirm,
@@ -87,32 +69,6 @@ struct BrewfileView: View {
         } message: {
             Text(cleanupPreview.joined(separator: "\n"))
         }
-    }
-
-    private func brewfileAction(title: String, description: String, icon: String, color: Color, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 10) {
-                Image(systemName: icon)
-                    .font(.body)
-                    .foregroundStyle(color)
-                    .frame(width: 24)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.primary)
-                    Text(description)
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                Spacer()
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
-        }
-        .buttonStyle(.plain)
-        .liquidGlassInteractive(in: RoundedRectangle(cornerRadius: 8))
     }
 
     private func exportBrewfile() {

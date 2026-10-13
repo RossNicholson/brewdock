@@ -13,59 +13,52 @@ struct ServiceRowView: View {
         HStack(spacing: 10) {
             statusIcon
             serviceInfo
-            Spacer()
+            Spacer(minLength: 4)
             actions
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(isHovered ? Color.primary.opacity(0.05) : .clear)
+        .card(hovered: isHovered)
         .onHover { isHovered = $0 }
         .contentShape(Rectangle())
+        .animation(.easeOut(duration: 0.12), value: isHovered)
     }
 
     private var statusIcon: some View {
-        Image(systemName: service.status.symbol)
-            .font(.system(size: 11, weight: .medium))
-            .foregroundStyle(service.status.color)
-            .frame(width: 28, height: 28)
-            .background(service.status.color.opacity(0.12))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+        SymbolTile(symbol: "gearshape.2.fill", fill: service.status.pastel)
     }
 
     private var serviceInfo: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 3) {
             Text(service.name)
-                .font(.subheadline)
-                .fontWeight(.medium)
+                .font(.display(16, relativeTo: .headline))
+                .textCase(.uppercase)
+                .foregroundStyle(AppColors.text)
                 .lineLimit(1)
-            Text(service.status.displayLabel)
-                .font(.caption2)
-                .foregroundStyle(service.status.color.opacity(0.85))
+            TagPill(text: service.status.displayLabel, fill: service.status.pastel)
         }
     }
 
     @ViewBuilder
     private var actions: some View {
         if isManaging {
-            ProgressView()
-                .scaleEffect(0.6)
-                .frame(width: 50, height: 24)
+            ProgressView().controlSize(.small)
         } else if isHovered {
-            HStack(spacing: 4) {
+            HStack(spacing: 5) {
                 switch service.status {
                 case .started:
-                    actionButton("stop.fill", color: .red, help: "Stop") {
+                    actionButton("stop.fill", fill: AppColors.peach, help: "Stop") {
                         Task { await brewService.stopService(service) }
                     }
-                    actionButton("arrow.triangle.2.circlepath", color: .orange, help: "Restart") {
+                    actionButton("arrow.clockwise", fill: AppColors.butter, help: "Restart") {
                         Task { await brewService.restartService(service) }
                     }
                 case .stopped, .error, .none:
-                    actionButton("play.fill", color: .green, help: "Start") {
+                    actionButton("play.fill", fill: AppColors.mint, help: "Start") {
                         Task { await brewService.startService(service) }
                     }
                     if service.status == .error {
-                        actionButton("arrow.triangle.2.circlepath", color: .orange, help: "Restart") {
+                        actionButton("arrow.clockwise", fill: AppColors.butter, help: "Restart") {
                             Task { await brewService.restartService(service) }
                         }
                     }
@@ -77,14 +70,19 @@ struct ServiceRowView: View {
         }
     }
 
-    private func actionButton(_ symbol: String, color: Color, help: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: symbol)
-                .font(.caption)
-                .foregroundStyle(color)
-                .frame(width: 24, height: 24)
+    private func actionButton(_ symbol: String, fill: Color, help: String, action: @escaping () -> Void) -> some View {
+        RoundIconButton(symbol: symbol, fill: fill, foreground: AppColors.ink, help: help, action: action)
+    }
+}
+
+extension HomebrewService.Status {
+    /// Card colour for the status: mint running, peach error, butter unknown, lilac idle
+    var pastel: Color {
+        switch self {
+        case .started: return AppColors.mint
+        case .error: return AppColors.peach
+        case .unknown: return AppColors.butter
+        case .stopped, .none: return AppColors.lilac
         }
-        .buttonStyle(.plain)
-        .help(help)
     }
 }

@@ -22,7 +22,7 @@ struct DiscoverTabView: View {
     var body: some View {
         VStack(spacing: 0) {
             categoryPicker
-            Divider()
+                .padding(.horizontal, 8)
             packageList
         }
     }
@@ -47,12 +47,14 @@ struct DiscoverTabView: View {
             // Left chevron
             Button { navigateCategory(by: -1) } label: {
                 Image(systemName: "chevron.left")
-                    .font(.caption.weight(.semibold))
-                    .frame(width: 28, height: 28)
+                    .font(.system(size: 10, weight: .bold))
+                    .frame(width: 26, height: 28)
             }
             .buttonStyle(.plain)
-            .foregroundStyle(currentIndex > 0 ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+            .foregroundStyle(AppColors.text)
+            .opacity(currentIndex > 0 ? 1 : 0.3)
             .disabled(currentIndex == 0)
+            .accessibilityLabel("Previous category")
 
             // Pill strip — scrolls to follow the selected pill
             ScrollViewReader { proxy in
@@ -66,7 +68,7 @@ struct DiscoverTabView: View {
                         }
                     }
                     .padding(.horizontal, 6)
-                    .padding(.vertical, 7)
+                    .padding(.vertical, 6)
                 }
                 .onChange(of: selectedCategory) { cat in
                     withAnimation(.easeInOut(duration: 0.2)) {
@@ -92,12 +94,14 @@ struct DiscoverTabView: View {
             // Right chevron
             Button { navigateCategory(by: 1) } label: {
                 Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .frame(width: 28, height: 28)
+                    .font(.system(size: 10, weight: .bold))
+                    .frame(width: 26, height: 28)
             }
             .buttonStyle(.plain)
-            .foregroundStyle(currentIndex < allCategories.count - 1 ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+            .foregroundStyle(AppColors.text)
+            .opacity(currentIndex < allCategories.count - 1 ? 1 : 0.3)
             .disabled(currentIndex == allCategories.count - 1)
+            .accessibilityLabel("Next category")
         }
     }
 
@@ -106,13 +110,16 @@ struct DiscoverTabView: View {
         return Button {
             withAnimation(.easeInOut(duration: 0.15)) { selectedCategory = category }
         } label: {
-            Label(label, systemImage: symbol)
-                .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(selected ? Color.accentColor.opacity(0.15) : Color.secondary.opacity(0.08))
-                .foregroundStyle(selected ? Color.accentColor : Color.primary)
-                .clipShape(Capsule())
+            HStack(spacing: 4) {
+                Image(systemName: symbol)
+                    .font(.system(size: 9, weight: .semibold))
+                Text(label)
+                    .font(.mono(10, weight: selected ? .semibold : .medium))
+            }
+            .padding(.horizontal, 9)
+            .padding(.vertical, 5)
+            .foregroundStyle(selected ? AppColors.onSolid : AppColors.text)
+            .background(selected ? AppColors.solid : AppColors.surface, in: Capsule())
         }
         .buttonStyle(.plain)
     }
@@ -121,25 +128,24 @@ struct DiscoverTabView: View {
         Group {
             if filtered.isEmpty {
                 VStack(spacing: 6) {
-                    Image(systemName: "magnifyingglass")
-                        .font(.title2)
-                        .foregroundStyle(.secondary)
-                    Text("No results for \"\(searchText)\"")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    SymbolTile(symbol: "magnifyingglass", fill: AppColors.lilac, size: 40)
+                        .padding(.bottom, 4)
+                    Text("No matches")
+                        .font(.display(20, relativeTo: .title3))
+                        .textCase(.uppercase)
+                        .foregroundStyle(AppColors.text)
+                    Text("Nothing matches \"\(searchText)\"")
+                        .font(.mono(10))
+                        .foregroundStyle(AppColors.secondaryText)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 40)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                List(filtered) { package in
-                    DiscoverPackageRow(package: package)
-                        .environmentObject(brewService)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
+                CardList {
+                    ForEach(filtered) { package in
+                        DiscoverPackageRow(package: package)
+                            .environmentObject(brewService)
+                    }
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
             }
         }
     }
@@ -169,31 +175,28 @@ struct DiscoverPackageRow: View {
             packageIcon
 
             VStack(alignment: .leading, spacing: 2) {
-                HStack(spacing: 5) {
+                HStack(spacing: 6) {
                     Text(package.displayName)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                        .font(.display(16, relativeTo: .headline))
+                        .textCase(.uppercase)
+                        .foregroundStyle(AppColors.text)
                         .lineLimit(1)
-                    Text(package.type == .cask ? "app" : "tool")
-                        .font(.caption2)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 1)
-                        .background(Color.secondary.opacity(0.12))
-                        .foregroundStyle(.secondary)
-                        .clipShape(Capsule())
+                    TagPill(text: package.type == .cask ? "app" : "tool",
+                            fill: package.type == .cask ? AppColors.periwinkle : AppColors.mint)
                 }
                 Text(package.description)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(.mono(9.5))
+                    .foregroundStyle(AppColors.secondaryText)
                     .lineLimit(1)
             }
 
-            Spacer()
+            Spacer(minLength: 4)
 
             actionButton
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .card()
     }
 
     @ViewBuilder
@@ -201,8 +204,7 @@ struct DiscoverPackageRow: View {
         if let appIcon = installedBrewPackage?.appIcon {
             Image(nsImage: appIcon)
                 .resizable()
-                .frame(width: 28, height: 28)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .frame(width: 30, height: 30)
         } else if let urlString = package.iconURL, let url = URL(string: urlString) {
             AsyncImage(url: url) { phase in
                 switch phase {
@@ -210,41 +212,38 @@ struct DiscoverPackageRow: View {
                     image
                         .resizable()
                         .scaledToFill()
-                        .frame(width: 28, height: 28)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .frame(width: 30, height: 30)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 default:
                     sfSymbolIcon
                 }
             }
-            .frame(width: 28, height: 28)
+            .frame(width: 30, height: 30)
         } else {
             sfSymbolIcon
         }
     }
 
     private var sfSymbolIcon: some View {
-        Image(systemName: package.icon.symbol)
-            .font(.system(size: 14, weight: .medium))
-            .foregroundStyle(package.icon.color)
-            .frame(width: 28, height: 28)
-            .background(package.icon.color.opacity(0.12))
-            .clipShape(RoundedRectangle(cornerRadius: 6))
+        SymbolTile(symbol: package.icon.symbol, fill: AppColors.pastel(for: package.id))
     }
 
     @ViewBuilder
     private var actionButton: some View {
         if isInstalling {
-            ProgressView().scaleEffect(0.6).frame(width: 60)
+            ProgressView().controlSize(.small)
         } else if isInstalled {
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.secondary)
-                .font(.body)
+            Image(systemName: "checkmark")
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(AppColors.ink)
+                .frame(width: 26, height: 26)
+                .background(AppColors.mint, in: Circle())
+                .help("Installed")
+                .accessibilityLabel("Installed")
         } else {
-            Button("Install") {
+            RoundIconButton(symbol: "plus", help: "Install \(package.displayName)") {
                 Task { await brewService.install(package) }
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.mini)
         }
     }
 }

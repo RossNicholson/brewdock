@@ -8,66 +8,65 @@ struct SettingsView: View {
     @State private var checkedUpToDate = false
 
     var body: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 6) {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.secondary)
-                Text("Settings")
-                    .font(.title3).fontWeight(.semibold)
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            PopoverHeader(title: "Settings", subtitle: "BrewDock preferences")
+                .padding(.bottom, 4)
 
-            Divider()
-
-            VStack(alignment: .leading, spacing: 14) {
-                Toggle("Launch at Login", isOn: Binding(
+            VStack(alignment: .leading, spacing: 6) {
+                Toggle(isOn: Binding(
                     get: { launchAtLogin },
                     set: { setLaunchAtLogin($0) }
-                ))
+                )) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Launch at login")
+                            .font(.display(17, relativeTo: .headline))
+                            .textCase(.uppercase)
+                            .foregroundStyle(AppColors.text)
+                        Text("Start BrewDock when you log in")
+                            .font(.mono(9.5))
+                            .foregroundStyle(AppColors.secondaryText)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .toggleStyle(.switch)
+                .tint(AppColors.toggle)
+                .controlSize(.small)
                 if let loginItemError {
                     Text(loginItemError)
-                        .font(.caption)
-                        .foregroundStyle(.red)
+                        .font(.mono(9.5))
+                        .foregroundStyle(AppColors.destructive)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+            }
+            .padding(12)
+            .card()
 
-                Divider()
-
-                if brewService.selfUpdateAvailable {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("A BrewDock update is available.")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                        Button(brewService.isUpdatingSelf ? "Updating…" : "Update BrewDock…") {
-                            Task { await brewService.updateSelf() }
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(Color.accentColor)
-                        .disabled(brewService.isUpdatingSelf)
-                    }
-                } else {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Button(brewService.isCheckingSelfUpdate ? "Checking…" : "Check for Updates…") {
-                            checkedUpToDate = false
-                            Task {
-                                await brewService.checkSelfUpdate()
-                                checkedUpToDate = !brewService.selfUpdateAvailable
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(Color.accentColor)
-                        .disabled(brewService.isCheckingSelfUpdate)
-                        if checkedUpToDate {
-                            Text("BrewDock is up to date.")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
+            if brewService.selfUpdateAvailable {
+                ColorBlockButton(
+                    title: brewService.isUpdatingSelf ? "Updating…" : "Update BrewDock",
+                    detail: "A new version is ready. BrewDock will restart.",
+                    fill: AppColors.peach, symbol: "arrow.up"
+                ) {
+                    Task { await brewService.updateSelf() }
+                }
+                .disabled(brewService.isUpdatingSelf)
+            } else {
+                ColorBlockButton(
+                    title: brewService.isCheckingSelfUpdate ? "Checking…" : "Check for updates",
+                    detail: checkedUpToDate ? "BrewDock is up to date." : "See if a new version of BrewDock is out",
+                    fill: checkedUpToDate ? AppColors.mint : AppColors.butter,
+                    symbol: checkedUpToDate ? "checkmark" : "arrow.clockwise"
+                ) {
+                    checkedUpToDate = false
+                    Task {
+                        await brewService.checkSelfUpdate()
+                        checkedUpToDate = !brewService.selfUpdateAvailable
                     }
                 }
+                .disabled(brewService.isCheckingSelfUpdate)
             }
         }
-        .padding(20)
-        .frame(width: 240)
+        .popoverChrome()
     }
 
     private func setLaunchAtLogin(_ enabled: Bool) {

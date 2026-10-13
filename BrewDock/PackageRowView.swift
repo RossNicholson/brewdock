@@ -19,15 +19,16 @@ struct PackageRowView: View {
         HStack(spacing: 10) {
             packageIcon
             packageInfo
-            Spacer()
+            Spacer(minLength: 4)
             actions
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .background(isHovered ? Color.primary.opacity(0.05) : .clear)
+        .card(hovered: isHovered)
         .onHover { isHovered = $0 }
         .contentShape(Rectangle())
         .onTapGesture { launch() }
+        .animation(.easeOut(duration: 0.12), value: isHovered)
         .alert("Quit \(package.name)?", isPresented: $showingUninstallAlert) {
             Button("Quit & Uninstall", role: .destructive) {
                 // BrewDock uninstalling itself: the service hands off to a detached
@@ -52,42 +53,29 @@ struct PackageRowView: View {
             if let appIcon = package.appIcon {
                 Image(nsImage: appIcon)
                     .resizable()
-                    .frame(width: 28, height: 28)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-            } else if let sfIcon = package.formulaIcon {
-                Image(systemName: sfIcon.symbol)
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(sfIcon.color)
-                    .frame(width: 28, height: 28)
-                    .background(sfIcon.color.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                    .frame(width: 30, height: 30)
             } else {
-                Image(systemName: "shippingbox.fill")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .frame(width: 28, height: 28)
-                    .background(Color.secondary.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                SymbolTile(symbol: package.formulaIcon?.symbol ?? "shippingbox.fill",
+                           fill: AppColors.pastel(for: package.name))
             }
         }
     }
 
     private var packageInfo: some View {
         VStack(alignment: .leading, spacing: 2) {
-            HStack(spacing: 4) {
+            HStack(spacing: 6) {
                 Text(package.name)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
+                    .font(.display(16, relativeTo: .headline))
+                    .textCase(.uppercase)
+                    .foregroundStyle(AppColors.text)
                     .lineLimit(1)
                 if package.isOutdated {
-                    Image(systemName: "arrow.up.circle.fill")
-                        .font(.caption2)
-                        .foregroundStyle(.orange)
+                    TagPill(text: "Update")
                 }
             }
             Text(package.version)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(.mono(9.5))
+                .foregroundStyle(AppColors.secondaryText)
                 .lineLimit(1)
         }
     }
@@ -95,38 +83,29 @@ struct PackageRowView: View {
     @ViewBuilder
     private var actions: some View {
         if isUpdating || isRemoving {
-            ProgressView()
-                .scaleEffect(0.6)
-                .frame(width: 24, height: 24)
+            HStack(spacing: 6) {
+                Text(isUpdating ? "Updating" : "Removing")
+                    .font(.mono(9.5))
+                    .foregroundStyle(AppColors.secondaryText)
+                ProgressView().controlSize(.small)
+            }
         } else if isHovered {
-            HStack(spacing: 8) {
-                Button("Open") { launch() }
-                    .buttonStyle(.borderedProminent)
-                    .controlSize(.mini)
+            HStack(spacing: 5) {
                 if package.isOutdated {
-                    Button {
+                    RoundIconButton(symbol: "arrow.up", fill: AppColors.butter, foreground: AppColors.ink, help: "Update") {
                         Task { await brewService.upgrade(package) }
-                    } label: {
-                        Image(systemName: "arrow.up.circle.fill")
-                            .foregroundStyle(.orange)
-                            .font(.body)
                     }
-                    .buttonStyle(.plain)
-                    .help("Update")
                 }
-                Button {
+                RoundIconButton(symbol: "trash", fill: AppColors.peach, foreground: AppColors.ink, help: "Uninstall") {
                     if package.runningApplication != nil {
                         showingUninstallAlert = true
                     } else {
                         Task { await brewService.uninstall(package) }
                     }
-                } label: {
-                    Image(systemName: "trash")
-                        .foregroundStyle(.red)
-                        .font(.caption)
                 }
-                .buttonStyle(.plain)
-                .help("Uninstall")
+                RoundIconButton(symbol: "arrow.up.right", help: package.type == .formula || package.isCLIOnly ? "Open in Terminal" : "Open") {
+                    launch()
+                }
             }
             .transition(.opacity)
         }

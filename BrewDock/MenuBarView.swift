@@ -6,9 +6,12 @@ struct MenuBarView: View {
     @State private var selectedTab: Tab = .apps
     @State private var showingSettings = false
     @State private var showingAbout = false
-    @State private var showingHelp = false
     @State private var showingBrewfile = false
     @State private var toastMessage: String? = nil
+
+    init(initialTab: Tab = .apps) {
+        _selectedTab = State(initialValue: initialTab)
+    }
 
     enum Tab: String, CaseIterable {
         case apps     = "Apps"
@@ -39,26 +42,28 @@ struct MenuBarView: View {
         VStack(spacing: 0) {
             dragHandle
             header
-            Divider().opacity(dividerOpacity)
+            if showsUpdateBanner {
+                updateBanner
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 10)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
             searchBar
-            Divider().opacity(dividerOpacity)
             tabPicker
-            Divider().opacity(dividerOpacity)
             contentList
-            Divider().opacity(dividerOpacity)
             footer
         }
         .frame(minWidth: 280, minHeight: 300)
-        .liquidGlassBackground(in: Rectangle())
+        .background(AppColors.ground)
+        .animation(.easeInOut(duration: 0.2), value: showsUpdateBanner)
         .overlay(alignment: .bottom) {
             if let msg = toastMessage {
                 Text(msg)
-                    .font(.caption)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 12)
+                    .font(.mono(10.5, weight: .medium))
+                    .foregroundStyle(AppColors.ink)
+                    .padding(.horizontal, 14)
                     .padding(.vertical, 8)
-                    .background(Color.red.opacity(0.88))
-                    .clipShape(Capsule())
+                    .background(AppColors.coral, in: Capsule())
                     .padding(.bottom, 44)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
@@ -80,75 +85,103 @@ struct MenuBarView: View {
         }
     }
 
-    private var dividerOpacity: Double {
-        if #available(macOS 26, *) { return 0.25 }
-        return 1.0
-    }
+    // MARK: Header
 
     private var dragHandle: some View {
-        HStack {
-            Spacer()
-            RoundedRectangle(cornerRadius: 2.5)
-                .fill(Color.secondary.opacity(0.4))
-                .frame(width: 36, height: 5)
-            Spacer()
-        }
-        .frame(height: 22)
-        .help("Drag to move · Resize from edges or corners")
+        Capsule()
+            .fill(AppColors.secondaryText.opacity(0.35))
+            .frame(width: 36, height: 4)
+            .frame(maxWidth: .infinity)
+            .frame(height: 18)
+            .contentShape(Rectangle())
+            .help("Drag to move · Resize from edges or corners")
     }
 
     private var header: some View {
-        HStack {
-            Image(systemName: "mug.fill")
-                .foregroundStyle(.brown)
-                .font(.title3)
-            Text("BrewDock")
-                .font(.headline)
-            Spacer()
-            if outdatedCount > 0 {
-                Button {
-                    Task { await brewService.upgradeAll() }
-                } label: {
-                    Label("Update \(outdatedCount)", systemImage: "arrow.triangle.2.circlepath")
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.orange)
-                .liquidGlassInteractive(in: Capsule())
+        HStack(alignment: .center, spacing: 6) {
+            VStack(alignment: .leading, spacing: 1) {
+                Text("BrewDock")
+                    .font(.display(32, relativeTo: .largeTitle))
+                    .textCase(.uppercase)
+                    .foregroundStyle(AppColors.text)
+                    .accessibilityAddTraits(.isHeader)
+                Text("Homebrew in your menu bar")
+                    .font(.mono(10))
+                    .foregroundStyle(AppColors.secondaryText)
             }
-            brewfileButton
-            helpButton
-            infoButton
-            settingsButton
+            Spacer(minLength: 8)
             refreshButton
+            brewfileButton
+            settingsButton
+            infoButton
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 14)
+        .padding(.top, 2)
+        .padding(.bottom, 12)
     }
 
+    private var showsUpdateBanner: Bool {
+        outdatedCount > 0 && (selectedTab == .apps || selectedTab == .tools)
+    }
+
+    /// Peach colour block offering to update everything, like the big call-to-action
+    /// card on the Don't Worry home screen
+    private var updateBanner: some View {
+        let busy = !brewService.updatingPackages.isEmpty
+        return HStack(spacing: 10) {
+            Text("\(outdatedCount)")
+                .font(.display(34, relativeTo: .largeTitle))
+                .foregroundStyle(AppColors.ink)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(outdatedCount == 1 ? "Update ready" : "Updates ready")
+                    .font(.display(18, relativeTo: .headline))
+                    .textCase(.uppercase)
+                Text(busy ? "Updating…" : "Update everything in one go")
+                    .font(.mono(9.5))
+                    .opacity(0.75)
+            }
+            .foregroundStyle(AppColors.ink)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if busy {
+                ProgressView()
+                    .controlSize(.small)
+                    .frame(width: 30, height: 30)
+            } else {
+                RoundIconButton(symbol: "arrow.up", size: 30, fill: AppColors.ink, foreground: .white, help: "Update all") {
+                    Task { await brewService.upgradeAll() }
+                }
+            }
+        }
+        .padding(.leading, 14)
+        .padding(.trailing, 10)
+        .padding(.vertical, 6)
+        .background(AppColors.peach, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+
+    // MARK: Search & tabs
+
     private var searchBar: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 7) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
-                .font(.footnote)
+                .font(.system(size: 11, weight: .semibold))
+                .foregroundStyle(AppColors.secondaryText)
             TextField(searchPlaceholder, text: $searchText)
                 .textFieldStyle(.plain)
-                .font(.subheadline)
+                .font(.mono(11.5))
+                .foregroundStyle(AppColors.text)
             if !searchText.isEmpty {
                 Button { searchText = "" } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.secondaryText)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel("Clear search")
             }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .liquidGlassInteractive(in: RoundedRectangle(cornerRadius: 8))
         .padding(.horizontal, 12)
-        .padding(.vertical, 6)
+        .padding(.vertical, 8)
+        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(.horizontal, 14)
     }
 
     private var searchPlaceholder: String {
@@ -159,9 +192,12 @@ struct MenuBarView: View {
         }
     }
 
+    /// Pill switcher: the selected tab is a solid ink capsule, like the period picker
+    /// on the Don't Worry insights screen
     private var tabPicker: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 2) {
             ForEach(Tab.allCases, id: \.self) { tab in
+                let selected = selectedTab == tab
                 Button {
                     withAnimation(.easeInOut(duration: 0.15)) {
                         selectedTab = tab
@@ -169,17 +205,27 @@ struct MenuBarView: View {
                     }
                 } label: {
                     Text(tab.rawValue)
-                        .font(.subheadline)
-                        .fontWeight(selectedTab == tab ? .semibold : .regular)
+                        .font(.mono(10.5, weight: selected ? .semibold : .medium))
+                        .foregroundStyle(selected ? AppColors.onSolid : AppColors.text)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 7)
-                        .foregroundStyle(selectedTab == tab ? Color.accentColor : .secondary)
-                        .contentShape(Rectangle())
+                        .padding(.vertical, 6)
+                        .background {
+                            if selected { Capsule().fill(AppColors.solid) }
+                        }
+                        .contentShape(Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityAddTraits(selected ? .isSelected : [])
             }
         }
+        .padding(3)
+        .background(AppColors.surface, in: Capsule())
+        .padding(.horizontal, 14)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
     }
+
+    // MARK: Lists
 
     private var contentList: some View {
         Group {
@@ -206,15 +252,13 @@ struct MenuBarView: View {
             } else if packages.isEmpty {
                 emptyView
             } else {
-                List(packages) { package in
-                    PackageRowView(package: package)
-                        .environmentObject(brewService)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
+                CardList {
+                    sectionTitle(selectedTab == .apps ? "Your apps" : "Your tools", count: packages.count)
+                    ForEach(packages) { package in
+                        PackageRowView(package: package)
+                            .environmentObject(brewService)
+                    }
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
             }
         }
     }
@@ -226,40 +270,70 @@ struct MenuBarView: View {
             } else if filteredServices.isEmpty {
                 emptyView
             } else {
-                List(filteredServices) { service in
-                    ServiceRowView(service: service)
-                        .environmentObject(brewService)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
+                CardList {
+                    let running = brewService.services.filter { $0.status == .started }.count
+                    sectionTitle("Services", count: filteredServices.count, detail: "\(running) running")
+                    ForEach(filteredServices) { service in
+                        ServiceRowView(service: service)
+                            .environmentObject(brewService)
+                    }
                 }
-                .listStyle(.plain)
-                .scrollContentBackground(.hidden)
             }
         }
     }
 
-    private func loadingView(label: String) -> some View {
-        VStack(spacing: 8) {
-            ProgressView().scaleEffect(0.8)
-            Text(label).font(.caption).foregroundStyle(.secondary)
+    private func sectionTitle(_ title: String, count: Int, detail: String? = nil) -> some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text(title)
+                .font(.display(17, relativeTo: .headline))
+                .textCase(.uppercase)
+                .foregroundStyle(AppColors.text)
+                .accessibilityAddTraits(.isHeader)
+            Spacer()
+            Text(detail ?? "\(count)")
+                .font(.mono(10))
+                .foregroundStyle(AppColors.secondaryText)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
+        .padding(.horizontal, 2)
+        .padding(.top, 4)
+    }
+
+    private func loadingView(label: String) -> some View {
+        VStack(spacing: 10) {
+            ProgressView().controlSize(.small)
+            Text(label)
+                .font(.mono(10.5))
+                .foregroundStyle(AppColors.secondaryText)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var emptyView: some View {
         VStack(spacing: 6) {
-            Image(systemName: searchText.isEmpty ? "tray" : "magnifyingglass")
-                .font(.title2)
-                .foregroundStyle(.secondary)
-            Text(searchText.isEmpty ? "No packages installed" : "No results for \"\(searchText)\"")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            SymbolTile(symbol: searchText.isEmpty ? "tray" : "magnifyingglass",
+                       fill: AppColors.lilac, size: 40)
+                .padding(.bottom, 4)
+            Text(searchText.isEmpty ? "Nothing here yet" : "No matches")
+                .font(.display(20, relativeTo: .title3))
+                .textCase(.uppercase)
+                .foregroundStyle(AppColors.text)
+            Text(searchText.isEmpty ? emptyHint : "Nothing matches \"\(searchText)\"")
+                .font(.mono(10))
+                .foregroundStyle(AppColors.secondaryText)
+                .multilineTextAlignment(.center)
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 40)
+        .padding(.horizontal, 24)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+
+    private var emptyHint: String {
+        switch selectedTab {
+        case .services: return "No Homebrew services installed"
+        default: return "Find something to install in Discover"
+        }
+    }
+
+    // MARK: Footer
 
     private var footer: some View {
         HStack {
@@ -269,203 +343,100 @@ struct MenuBarView: View {
                     let running = brewService.services.filter { $0.status == .started }.count
                     Text("\(brewService.services.count) services · \(running) running")
                 case .discover:
-                    Text("\(DiscoverCatalog.all.count) packages available")
+                    Text("\(DiscoverCatalog.all.count) packages to discover")
                 default:
                     Text("\(brewService.casks.count) apps · \(brewService.formulae.count) tools")
                 }
             }
-            .font(.caption2)
-            .foregroundStyle(.tertiary)
+            .font(.mono(9.5))
+            .foregroundStyle(AppColors.secondaryText)
             Spacer()
             Button("Quit") { NSApplication.shared.terminate(nil) }
-                .font(.caption)
+                .font(.mono(9.5, weight: .semibold))
+                .textCase(.uppercase)
                 .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.text)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 9)
+        .overlay(alignment: .top) {
+            Rectangle().fill(AppColors.hairline).frame(height: 1)
+        }
     }
 
-    private var settingsButton: some View {
-        Button {
-            showingSettings.toggle()
-        } label: {
-            Image(systemName: "gearshape")
-                .font(.footnote)
-                .padding(6)
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.secondary)
-        .liquidGlassInteractive(in: Circle())
-        .popover(isPresented: $showingSettings, arrowEdge: .top) {
-            SettingsView()
-        }
-    }
+    // MARK: Header buttons
 
     private var refreshButton: some View {
-        Button {
+        let busy = selectedTab == .services ? brewService.isLoadingServices : brewService.isLoading
+        return HeaderIconButton(symbol: "arrow.clockwise", help: "Refresh") {
             if selectedTab == .services {
                 Task { await brewService.refreshServices() }
             } else {
                 Task { await brewService.refresh(force: true) }
             }
-        } label: {
-            Image(systemName: "arrow.clockwise")
-                .font(.footnote)
-                .padding(6)
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.secondary)
-        .liquidGlassInteractive(in: Circle())
-        .disabled(selectedTab == .services ? brewService.isLoadingServices : brewService.isLoading)
+        .disabled(busy)
+        .opacity(busy ? 0.5 : 1)
     }
 
     private var brewfileButton: some View {
-        Button { showingBrewfile.toggle() } label: {
-            Image(systemName: "square.and.arrow.down")
-                .font(.footnote)
-                .padding(6)
+        HeaderIconButton(symbol: "doc.text", help: "Brewfile backup & restore") {
+            showingBrewfile.toggle()
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.secondary)
-        .liquidGlassInteractive(in: Circle())
-        .popover(isPresented: $showingBrewfile, arrowEdge: .top) {
+        .popover(isPresented: $showingBrewfile, arrowEdge: .bottom) {
             BrewfileView().environmentObject(brewService)
         }
     }
 
-    private var helpButton: some View {
-        Button { showingHelp.toggle() } label: {
-            Image(systemName: "questionmark.circle")
-                .font(.footnote)
-                .padding(6)
+    private var settingsButton: some View {
+        HeaderIconButton(symbol: "gearshape", help: "Settings") {
+            showingSettings.toggle()
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.secondary)
-        .liquidGlassInteractive(in: Circle())
-        .popover(isPresented: $showingHelp, arrowEdge: .top) {
-            helpView
+        .popover(isPresented: $showingSettings, arrowEdge: .bottom) {
+            SettingsView().environmentObject(brewService)
         }
-    }
-
-    private var helpView: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 6) {
-                Image(systemName: "lifepreserver")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.blue)
-                Text("Help & Support")
-                    .font(.title3).fontWeight(.semibold)
-            }
-
-            Divider()
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Found a bug or need help? Visit the support page or drop us an email — we read everything.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("Feature requests and feedback are always welcome too.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            VStack(spacing: 10) {
-                Link(destination: URL(string: "https://rossnicholson.dev/support")!) {
-                    Label("Support Page", systemImage: "globe")
-                        .font(.caption)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.blue)
-                .liquidGlassInteractive(in: Capsule())
-
-                Link(destination: URL(string: "mailto:support@rossnicholson.dev")!) {
-                    Label("support@rossnicholson.dev", systemImage: "envelope")
-                        .font(.caption)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .liquidGlassInteractive(in: Capsule())
-            }
-        }
-        .padding(20)
-        .frame(width: 240)
     }
 
     private var infoButton: some View {
-        Button { showingAbout.toggle() } label: {
-            Image(systemName: "info.circle")
-                .font(.footnote)
-                .padding(6)
+        HeaderIconButton(symbol: "info", help: "About & help") {
+            showingAbout.toggle()
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.secondary)
-        .liquidGlassInteractive(in: Circle())
-        .popover(isPresented: $showingAbout, arrowEdge: .top) {
+        .popover(isPresented: $showingAbout, arrowEdge: .bottom) {
             aboutView
         }
     }
 
+    // MARK: About & help
+
     private var aboutView: some View {
-        VStack(spacing: 16) {
-            VStack(spacing: 6) {
-                Image(systemName: "mug.fill")
-                    .font(.system(size: 36))
-                    .foregroundStyle(.brown)
-                Text("BrewDock")
-                    .font(.title3).fontWeight(.semibold)
-                Text("Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top) {
+                PopoverHeader(
+                    title: "BrewDock",
+                    subtitle: "Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")\nMade by Ross Nicholson"
+                )
+                SymbolTile(symbol: "mug.fill", fill: AppColors.butter, size: 40)
             }
 
-            Divider()
-
-            VStack(spacing: 8) {
-                Text("Made by Ross Nicholson")
-                    .font(.subheadline)
-                Link("rossnicholson.dev", destination: URL(string: "https://rossnicholson.dev")!)
-                    .font(.caption)
-                Link(destination: URL(string: "https://github.com/RossNicholson/brewdock")!) {
-                    Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
-                        .font(.caption)
-                }
+            ColorBlockButton(title: "Get help", detail: "Bugs, questions and feature requests", fill: AppColors.mint) {
+                NSWorkspace.shared.open(URL(string: "https://rossnicholson.dev/support")!)
+            }
+            ColorBlockButton(title: "Email support", detail: "support@rossnicholson.dev", fill: AppColors.periwinkle, symbol: "envelope.fill") {
+                NSWorkspace.shared.open(URL(string: "mailto:support@rossnicholson.dev")!)
+            }
+            ColorBlockButton(title: "Buy me a coffee", detail: "If BrewDock saves you time", fill: AppColors.peach, symbol: "cup.and.saucer.fill") {
+                NSWorkspace.shared.open(URL(string: "https://buymeacoffee.com/rossnicholson")!)
             }
 
-            Divider()
-
-            VStack(spacing: 4) {
-                Text("If you find BrewDock helpful:")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                Link(destination: URL(string: "https://buymeacoffee.com/rossnicholson")!) {
-                    Label("Buy Me a Coffee", systemImage: "cup.and.saucer.fill")
-                        .font(.caption)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.orange)
-                .liquidGlassInteractive(in: Capsule())
+            HStack(spacing: 10) {
+                MonoLink(title: "Website", destination: URL(string: "https://rossnicholson.dev")!)
+                MonoLink(title: "GitHub", destination: URL(string: "https://github.com/RossNicholson/brewdock")!)
+                MonoLink(title: "Terms", destination: URL(string: "https://rossnicholson.dev/terms")!)
+                MonoLink(title: "Privacy", destination: URL(string: "https://rossnicholson.dev/privacy")!)
             }
-
-            Divider()
-
-            HStack(spacing: 12) {
-                Link("Terms & Conditions", destination: URL(string: "https://rossnicholson.dev/terms")!)
-                Text("·").foregroundStyle(.tertiary)
-                Link("Privacy Policy", destination: URL(string: "https://rossnicholson.dev/privacy")!)
-            }
-            .font(.caption2)
-            .foregroundStyle(.secondary)
+            .padding(.top, 2)
         }
-        .padding(20)
-        .frame(width: 220)
+        .popoverChrome()
     }
 }
 
@@ -473,5 +444,21 @@ private extension Array where Element == BrewPackage {
     func filtered(by query: String) -> [BrewPackage] {
         guard !query.isEmpty else { return self }
         return filter { $0.name.localizedCaseInsensitiveContains(query) }
+    }
+}
+
+/// Scrolling stack of card rows, lined up with the search bar above it
+struct CardList<Content: View>: View {
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        ScrollView {
+            LazyVStack(spacing: 6) {
+                content
+            }
+            .padding(.horizontal, 14)
+            .padding(.top, 6)
+            .padding(.bottom, 10)
+        }
     }
 }
