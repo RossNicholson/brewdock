@@ -25,7 +25,7 @@ test DMG, use `make build` (or `scripts/release.sh` with no arguments).
 - After publishing, CI re-downloads the asset and checks its sha256 + notarization.
 
 ## Required repo secrets
-Settings → Secrets and variables → Actions. The same six are used by BrewDock,
+Settings → Secrets and variables → Actions. The same six are used by BrewDock
 and ClawdBar:
 
 | Secret | What it is |
