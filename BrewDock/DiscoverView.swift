@@ -4,6 +4,12 @@ struct DiscoverTabView: View {
     @Binding var searchText: String
     @EnvironmentObject var brewService: BrewService
     @State private var selectedCategory: DiscoverPackage.Category? = nil
+    @State private var homebrewResults: [DiscoverPackage] = []
+    @State private var isSearchingHomebrew = false
+
+    private var searchesHomebrew: Bool {
+        searchText.trimmingCharacters(in: .whitespaces).count >= 2
+    }
 
     var filtered: [DiscoverPackage] {
         var list = selectedCategory.map { cat in
@@ -24,6 +30,18 @@ struct DiscoverTabView: View {
             categoryPicker
                 .padding(.horizontal, 8)
             packageList
+        }
+        // Debounced search of all of Homebrew; a new keystroke cancels the last one
+        .task(id: searchText) {
+            homebrewResults = []
+            guard searchesHomebrew else { isSearchingHomebrew = false; return }
+            isSearchingHomebrew = true
+            try? await Task.sleep(nanoseconds: 350_000_000)
+            guard !Task.isCancelled else { return }
+            let results = await brewService.searchHomebrew(searchText.trimmingCharacters(in: .whitespaces))
+            guard !Task.isCancelled else { return }
+            homebrewResults = results
+            isSearchingHomebrew = false
         }
     }
 
@@ -126,7 +144,7 @@ struct DiscoverTabView: View {
 
     private var packageList: some View {
         Group {
-            if filtered.isEmpty {
+            if filtered.isEmpty && homebrewResults.isEmpty && !isSearchingHomebrew {
                 VStack(spacing: 6) {
                     SymbolTile(symbol: "magnifyingglass", fill: AppColors.lilac, size: 40)
                         .padding(.bottom, 4)
@@ -144,6 +162,29 @@ struct DiscoverTabView: View {
                     ForEach(filtered) { package in
                         DiscoverPackageRow(package: package)
                             .environmentObject(brewService)
+                    }
+                    if searchesHomebrew {
+                        HStack(alignment: .firstTextBaseline) {
+                            Text("More from Homebrew")
+                                .font(.display(17, relativeTo: .headline))
+                                .textCase(.uppercase)
+                                .foregroundStyle(AppColors.text)
+                                .accessibilityAddTraits(.isHeader)
+                            Spacer()
+                            if isSearchingHomebrew {
+                                ProgressView().controlSize(.mini)
+                            } else {
+                                Text(homebrewResults.isEmpty ? "No more matches" : "\(homebrewResults.count)")
+                                    .font(.mono(10))
+                                    .foregroundStyle(AppColors.secondaryText)
+                            }
+                        }
+                        .padding(.horizontal, 2)
+                        .padding(.top, filtered.isEmpty ? 4 : 10)
+                        ForEach(homebrewResults) { package in
+                            DiscoverPackageRow(package: package)
+                                .environmentObject(brewService)
+                        }
                     }
                 }
             }

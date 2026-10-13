@@ -195,7 +195,7 @@ struct MenuBarView: View {
     private var searchPlaceholder: String {
         switch selectedTab {
         case .services: return "Search services…"
-        case .discover: return "Search \(DiscoverCatalog.all.count) packages…"
+        case .discover: return "Search all of Homebrew…"
         default:        return "Search packages…"
         }
     }

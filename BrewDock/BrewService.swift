@@ -407,6 +407,30 @@ class BrewService: ObservableObject {
         return (true, "Cleanup complete.")
     }
 
+    /// Searches all of Homebrew (not just the curated Discover list), returning up
+    /// to `limit` formulae and `limit` casks with their descriptions.
+    func searchHomebrew(_ query: String, limit: Int = 15) async -> [DiscoverPackage] {
+        async let formulaSearch = brew(["search", "--formula", query])
+        async let caskSearch = brew(["search", "--cask", query])
+        let curated = Set(DiscoverCatalog.all.map(\.id))
+        let (formulaRes, caskRes) = await (formulaSearch, caskSearch)
+        let formulae = BrewParse.searchNames(fromOutput: formulaRes.output).filter { !curated.contains($0) }.prefix(limit)
+        let casks = BrewParse.searchNames(fromOutput: caskRes.output).filter { !curated.contains($0) }.prefix(limit)
+        guard !Task.isCancelled else { return [] }
+
+        async let formulaInfo = formulae.isEmpty ? BrewResult(output: "", exitCode: 0)
+            : brew(["info", "--json=v2", "--formula"] + formulae)
+        async let caskInfo = casks.isEmpty ? BrewResult(output: "", exitCode: 0)
+            : brew(["info", "--json=v2", "--cask"] + casks)
+        let (fInfo, cInfo) = await (formulaInfo, caskInfo)
+        let summaries = BrewParse.packageSummaries(fromJSON: fInfo.output) + BrewParse.packageSummaries(fromJSON: cInfo.output)
+        // Keep brew's relevance order: formulae then casks, as searched
+        let order = Array(formulae) + Array(casks)
+        return summaries
+            .sorted { (order.firstIndex(of: $0.id) ?? .max) < (order.firstIndex(of: $1.id) ?? .max) }
+            .map { DiscoverPackage(searchResult: $0.id, displayName: $0.name, description: $0.desc, type: $0.type) }
+    }
+
     /// How much `brew cleanup --prune=all` would free (old versions and every
     /// cached download), e.g. "644.8 MB", or nil if nothing.
     func measureCleanup() async -> String? {

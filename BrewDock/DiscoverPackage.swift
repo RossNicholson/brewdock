@@ -20,7 +20,20 @@ struct DiscoverPackage: Identifiable {
     /// alias like "python" installs a versioned formula ("python@3.15"), so match
     /// versioned names too.
     func matches(installedName name: String) -> Bool {
-        name == id || name.hasPrefix(id + "@")
+        // Search results from third-party taps are tap-qualified ("user/tap/foo"),
+        // but brew lists installed packages by their short name.
+        let short = id.split(separator: "/").last.map(String.init) ?? id
+        return name == short || name.hasPrefix(short + "@")
+    }
+
+    /// A package found by searching Homebrew, outside the curated catalog
+    init(searchResult id: String, displayName: String, description: String, type: BrewPackage.PackageType) {
+        self.id = id
+        self.displayName = displayName
+        self.description = description
+        self.category = .utilities
+        self.type = type
+        self.iconURL = nil
     }
 
     enum Category: String, CaseIterable {

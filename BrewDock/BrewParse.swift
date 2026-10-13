@@ -127,4 +127,29 @@ enum BrewParse {
         guard let unitStart = words.firstIndex(where: { $0.isLetter }) else { return nil }
         return "\(words[..<unitStart]) \(words[unitStart...])"
     }
+
+    /// Names from `brew search --formula|--cask` (one per line), minus headings.
+    static func searchNames(fromOutput output: String) -> [String] {
+        output.lines
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty && !$0.hasPrefix("==>") && !$0.contains(" ") }
+    }
+
+    /// `brew info --json=v2` → (token, display name, description) for formulae and casks.
+    static func packageSummaries(fromJSON json: String) -> [(id: String, name: String, desc: String, type: BrewPackage.PackageType)] {
+        guard let data = json.data(using: .utf8),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return [] }
+        var result: [(id: String, name: String, desc: String, type: BrewPackage.PackageType)] = []
+        for formula in obj["formulae"] as? [[String: Any]] ?? [] {
+            guard let name = formula["full_name"] as? String ?? formula["name"] as? String else { continue }
+            result.append((name, formula["name"] as? String ?? name, formula["desc"] as? String ?? "", .formula))
+        }
+        for cask in obj["casks"] as? [[String: Any]] ?? [] {
+            guard let token = cask["full_token"] as? String ?? cask["token"] as? String else { continue }
+            let display = (cask["name"] as? [String])?.first ?? token
+            result.append((token, display, cask["desc"] as? String ?? "", .cask))
+        }
+        return result
+    }
 }

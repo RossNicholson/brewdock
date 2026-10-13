@@ -176,4 +176,27 @@ final class BrewParseTests: XCTestCase {
         XCTAssertEqual(BrewParse.cleanupSize(fromOutput: "==> This operation has freed approximately 1.2GB of disk space."), "1.2 GB")
         XCTAssertNil(BrewParse.cleanupSize(fromOutput: ""))
     }
+
+    // MARK: brew search
+
+    func testSearchNamesSkipsHeadingsAndMessages() {
+        let out = "==> Formulae\nmarkdown\nhtml2markdown\n\nNo casks found for \"x\".\n"
+        XCTAssertEqual(BrewParse.searchNames(fromOutput: out), ["markdown", "html2markdown"])
+    }
+
+    func testPackageSummaries() {
+        let json = """
+        {"formulae":[{"name":"jq","full_name":"jq","desc":"JSON processor"}],
+         "casks":[{"token":"macdown","full_token":"macdown","name":["MacDown"],"desc":"Markdown editor"}]}
+        """
+        let s = BrewParse.packageSummaries(fromJSON: json)
+        XCTAssertEqual(s.map(\.id), ["jq", "macdown"])
+        XCTAssertEqual(s[1].name, "MacDown")
+        XCTAssertEqual(s[1].type, .cask)
+    }
+
+    func testTapQualifiedResultMatchesShortInstalledName() {
+        let pkg = DiscoverPackage(searchResult: "user/tap/foo", displayName: "foo", description: "", type: .formula)
+        XCTAssertTrue(pkg.matches(installedName: "foo"))
+    }
 }
