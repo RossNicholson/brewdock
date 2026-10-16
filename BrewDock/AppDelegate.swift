@@ -11,6 +11,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
     private var dotView: NSView?
     private var cancellables = Set<AnyCancellable>()
     private var updateCheckTask: Task<Void, Never>?
+    private var autoUpdateTask: Task<Void, Never>?
+    private var isAutoUpdating = false
     private var keyMonitor: Any?
     private(set) lazy var hotKey = GlobalHotKey { [weak self] in self?.togglePanel() }
     let brewService = BrewService()
@@ -41,6 +43,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
             announceUpdates()
         }
         startPeriodicUpdateCheck()
+        startAutoUpdate()
     }
 
     /// A menu bar app can run for days, so the launch-time check isn't enough.
@@ -56,6 +59,37 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
                 await self.brewService.refresh(force: true)
                 self.announceUpdates()
             }
+        }
+    }
+
+    /// Auto-update (off unless turned on in Settings): every 10 minutes, update
+    /// all apps and tools. The loop always runs and checks the setting each time,
+    /// so turning it on or off takes effect without a restart.
+    private func startAutoUpdate() {
+        autoUpdateTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(BrewService.autoUpdateInterval))
+                guard let self else { return }
+                if UserDefaults.standard.bool(forKey: BrewService.autoUpdateKey) {
+                    await self.runAutoUpdate()
+                }
+            }
+        }
+    }
+
+    /// One Auto-update run, also started straight away when the setting is turned on
+    func runAutoUpdate() async {
+        guard !isAutoUpdating else { return }
+        isAutoUpdating = true
+        defer { isAutoUpdating = false }
+        let updated = await brewService.autoUpdate()
+        await UpdateNotifier.notifyAutoUpdated(updated)
+        announceUpdates()
+        // Updating BrewDock restarts it, so not while the panel is in use;
+        // the next run picks it up.
+        if brewService.selfUpdateAvailable, !panel.isVisible, !brewService.isBusy,
+           UserDefaults.standard.bool(forKey: BrewService.autoUpdateKey) {
+            await brewService.updateSelf()
         }
     }
 

@@ -143,6 +143,15 @@ final class BrewParseTests: XCTestCase {
         XCTAssertEqual(many.body, "New: a, b, c and 2 more")
     }
 
+    func testAutoUpdatedMessage() {
+        let one = UpdateNotifier.autoUpdatedMessage(["git"])
+        XCTAssertEqual(one.title, "Updated 1 Homebrew package")
+        XCTAssertEqual(one.body, "git")
+        let many = UpdateNotifier.autoUpdatedMessage(["a", "b", "c", "d"])
+        XCTAssertEqual(many.title, "Updated 4 Homebrew packages")
+        XCTAssertEqual(many.body, "a, b, c and 1 more")
+    }
+
     // MARK: Install progress
 
     func testProgressLabels() {

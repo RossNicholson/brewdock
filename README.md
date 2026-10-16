@@ -72,6 +72,7 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
 - **Background checks:** BrewDock refreshes Homebrew's package list every few hours. An orange dot on the menu bar icon means updates are waiting.
 - **Update alerts:** optional notifications when new versions come out. Each update is announced once.
 - **Update all,** or one at a time, with live progress ("Downloading…", "Unpacking…") instead of a bare spinner.
+- **Auto-update:** off by default. Turn it on in Settings and BrewDock updates all your apps and tools every 10 minutes. Apps that are open wait until you quit them, and held packages are skipped.
 - **Don't update:** right-click to hold a package at its current version. Tools use `brew pin`, so Terminal's `brew upgrade` respects it too.
 - **Self-updating apps:** optionally include apps like Chrome and Slack, which Homebrew normally leaves out of updates.
 

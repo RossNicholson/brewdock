@@ -487,6 +487,52 @@ class BrewService: ObservableObject {
         await refresh(force: true)
     }
 
+    /// Settings toggle, off by default: update everything every 10 minutes
+    nonisolated static let autoUpdateKey = "autoUpdateEverything"
+    nonisolated static let autoUpdateInterval: TimeInterval = 10 * 60
+
+    /// Whether anything is installing, updating, removing or refreshing
+    var isBusy: Bool {
+        isLoading || isBrewfileWorking || isUpdatingSelf || !updatingPackages.isEmpty
+            || !removingPackages.isEmpty || !installingPackages.isEmpty
+    }
+
+    /// One unattended Auto-update run: fetch Homebrew's latest index, then
+    /// upgrade everything outdated except apps that are open (replacing a
+    /// running app can break it; they're picked up once quit), untrusted casks
+    /// and BrewDock itself, which the caller updates last since that restarts
+    /// the app. Stays quiet on failure, as the next run tries again. Returns
+    /// the names that were updated.
+    func autoUpdate() async -> [String] {
+        guard !isBusy else { return [] }
+        _ = await brew(["update"], timeout: 120)
+        await refresh(force: true)
+        guard !isBusy else { return [] }
+
+        let untrustedNames = Set(untrusted.map(\.shortName))
+        let outdatedCasks = casks.filter {
+            $0.isOutdated && !$0.isBrewDock && !untrustedNames.contains($0.name) && $0.runningApplication == nil
+        }.map(\.name)
+        let outdatedFormulae = formulae.filter { $0.isOutdated && !untrustedNames.contains($0.name) }.map(\.name)
+        let attempted = outdatedCasks + outdatedFormulae
+        guard !attempted.isEmpty else { return [] }
+
+        updatingPackages.formUnion(attempted)
+        if !outdatedFormulae.isEmpty {
+            _ = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil,
+                           onLine: reportProgress(to: Self.allUpdatesKey))
+        }
+        if !outdatedCasks.isEmpty {
+            _ = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
+                           onLine: reportProgress(to: Self.allUpdatesKey))
+        }
+        updatingPackages.subtract(attempted)
+        await refresh(force: true)
+        // Brew carries on past a failed package, so check what actually updated
+        let stillOutdated = Set((casks + formulae).filter(\.isOutdated).map(\.name))
+        return attempted.filter { !stillOutdated.contains($0) }
+    }
+
     func brewfileDump(to path: String) async -> (success: Bool, message: String) {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }

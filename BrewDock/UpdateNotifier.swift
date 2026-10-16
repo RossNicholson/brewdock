@@ -41,6 +41,26 @@ enum UpdateNotifier {
         Task { try? await UNUserNotificationCenter.current().add(request) }
     }
 
+    /// After an Auto-update run that updated something. Awaited, so it's
+    /// posted before a BrewDock self-update quits the app.
+    static func notifyAutoUpdated(_ names: [String]) async {
+        guard isEnabled, !names.isEmpty else { return }
+        let message = autoUpdatedMessage(names)
+        let content = UNMutableNotificationContent()
+        content.title = message.title
+        content.body = message.body
+        let request = UNNotificationRequest(identifier: "brewdock-auto-updated", content: content, trigger: nil)
+        try? await UNUserNotificationCenter.current().add(request)
+    }
+
+    /// "Updated 3 Homebrew packages" / "git, node and 1 more"
+    nonisolated static func autoUpdatedMessage(_ names: [String]) -> (title: String, body: String) {
+        let title = names.count == 1 ? "Updated 1 Homebrew package" : "Updated \(names.count) Homebrew packages"
+        let shown = names.prefix(3).joined(separator: ", ")
+        let rest = names.count - min(names.count, 3)
+        return (title, shown + (rest > 0 ? " and \(rest) more" : ""))
+    }
+
     /// "3 Homebrew updates ready" / "New: blender, node and 2 more"
     nonisolated static func message(fresh: [String], total: Int) -> (title: String, body: String) {
         let title = total == 1 ? "1 Homebrew update ready" : "\(total) Homebrew updates ready"

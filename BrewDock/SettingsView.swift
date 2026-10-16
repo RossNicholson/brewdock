@@ -10,6 +10,7 @@ struct SettingsView: View {
     @State private var notificationError: String? = nil
     @State private var cleanup: CleanupState = .measuring
     @AppStorage(BrewService.includeAutoUpdatingKey) private var includeAutoUpdating = false
+    @AppStorage(BrewService.autoUpdateKey) private var autoUpdate = false
     @AppStorage(GlobalHotKey.enabledKey) private var shortcutEnabled = true
     @State private var shortcutError: String? = nil
 
@@ -75,6 +76,31 @@ struct SettingsView: View {
                         .font(.mono(9.5))
                         .foregroundStyle(AppColors.destructive)
                         .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(12)
+            .card()
+
+            VStack(alignment: .leading, spacing: 6) {
+                Toggle(isOn: $autoUpdate) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Auto-update")
+                            .font(.display(17, relativeTo: .headline))
+                            .textCase(.uppercase)
+                            .foregroundStyle(AppColors.text)
+                        Text("Update all apps and tools every 10 minutes. Open apps wait until you quit them.")
+                            .font(.mono(9.5))
+                            .foregroundStyle(AppColors.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .tint(AppColors.toggle)
+                .onChange(of: autoUpdate) { enabled in
+                    guard enabled, let delegate = NSApp.delegate as? AppDelegate else { return }
+                    Task { await delegate.runAutoUpdate() }
                 }
             }
             .padding(12)
