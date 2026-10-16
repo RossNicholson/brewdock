@@ -131,6 +131,9 @@ Homebrew 7 needs you to trust casks from taps other than its own. BrewDock shows
 **Chrome, Slack or Zoom never show an update.**
 Those apps update themselves, so Homebrew skips them by default. Turn on **Settings → Self-updating apps** to include them.
 
+**Can BrewDock keep everything updated automatically?**
+Yes. Turn on **Settings → Auto-update** (it's off by default) and BrewDock runs `brew update` and upgrades all your apps and tools every 10 minutes. Apps that are open are updated once you quit them, and anything set to **Don't update** is left alone.
+
 **An update or install failed.**
 The message at the bottom of the panel includes Homebrew's reason. If BrewDock's own update fails, its log is at `~/Library/Application Support/BrewDock/brewdock-self-upgrade.log`.
 
