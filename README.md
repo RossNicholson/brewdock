@@ -96,7 +96,7 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
     <td align="center"><img src="docs/discover.png" alt="Discover tab: curated apps with install buttons" width="190"><br><sub><b>Discover</b></sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/settings.png" alt="Settings: launch at login, update alerts, self-updating apps, shortcut, free up space" width="150"><br><sub><b>Settings</b></sub></td>
+    <td align="center"><img src="docs/settings.png" alt="Settings: launch at login, update alerts, auto-update, self-updating apps, shortcut, free up space" width="150"><br><sub><b>Settings</b></sub></td>
     <td align="center"><img src="docs/brewfile.png" alt="Brewfile: export, install, what's missing, remove unlisted" width="150"><br><sub><b>Brewfile</b></sub></td>
     <td align="center"><img src="docs/screenshot-dark.png" alt="BrewDock in dark mode" width="190"><br><sub><b>Dark mode</b></sub></td>
   </tr>
