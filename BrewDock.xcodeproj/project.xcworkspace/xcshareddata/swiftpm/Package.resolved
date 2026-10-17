@@ -1,0 +1,15 @@
+{
+  "originHash" : "6867d50d37fe34392c23bc64c8199702ce5a8956f091f2cf6686d1a7e8a78f04",
+  "pins" : [
+    {
+      "identity" : "mac-house-style",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/RossNicholson/mac-house-style",
+      "state" : {
+        "revision" : "7be4b7c52ed2f65191bdb943b95a3983939f5a35",
+        "version" : "1.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

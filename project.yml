@@ -15,7 +15,8 @@ settings:
 
 packages:
   HouseStyle:
-    path: ../mac-house-style
+    url: https://github.com/RossNicholson/mac-house-style
+    from: 1.0.0
 
 targets:
   BrewDock:

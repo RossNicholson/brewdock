@@ -52,7 +52,6 @@
 		4AC65231F149F5DE798D8B0E /* BrewDock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BrewDock.entitlements; sourceTree = "<group>"; };
 		503440E86E47889F134F948C /* FormulaIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormulaIcons.swift; sourceTree = "<group>"; };
 		50F54518697019DB3A89116B /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
-		559236E1E634FC4472D1A671 /* mac-house-style */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mac-house-style"; path = "../mac-house-style"; sourceTree = SOURCE_ROOT; };
 		771150EC08441ABC3EC1DD1C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7CDD1D41DE8EB6E1E2E6722C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8A346F38852F4B702A7A516C /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
@@ -78,14 +77,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		6140ABAB297636A4F7F5FB8E /* Packages */ = {
-			isa = PBXGroup;
-			children = (
-				559236E1E634FC4472D1A671 /* mac-house-style */,
-			);
-			name = Packages;
-			sourceTree = "<group>";
-		};
 		696A5C4E733F7045BDAFBB16 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
@@ -143,7 +134,6 @@
 			children = (
 				96D973215F2F9D9E52514672 /* BrewDock */,
 				F0500E2C93E797EE370B4FFD /* BrewDockTests */,
-				6140ABAB297636A4F7F5FB8E /* Packages */,
 				E36A701CBFF8956828D21571 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -214,7 +204,7 @@
 			mainGroup = FDDCF261E707027AE34D28C2;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				6C8C474653C2F08DAFF8FC43 /* XCLocalSwiftPackageReference "../mac-house-style" */,
+				139400BB24A69494E9365DF6 /* XCRemoteSwiftPackageReference "mac-house-style" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E36A701CBFF8956828D21571 /* Products */;
@@ -513,16 +503,21 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		6C8C474653C2F08DAFF8FC43 /* XCLocalSwiftPackageReference "../mac-house-style" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "../mac-house-style";
+/* Begin XCRemoteSwiftPackageReference section */
+		139400BB24A69494E9365DF6 /* XCRemoteSwiftPackageReference "mac-house-style" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RossNicholson/mac-house-style";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
 		};
-/* End XCLocalSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		DFC9C1772185743A6064FC72 /* HouseStyle */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = 139400BB24A69494E9365DF6 /* XCRemoteSwiftPackageReference "mac-house-style" */;
 			productName = HouseStyle;
 		};
 /* End XCSwiftPackageProductDependency section */
