@@ -9,27 +9,21 @@
 /* Begin PBXBuildFile section */
 		0340713FE26CEDF0E4EDD2A0 /* FormulaIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503440E86E47889F134F948C /* FormulaIcons.swift */; };
 		0B8E514444A8AD2CB70ABF92 /* BrewfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBC1B238338C194118F6083 /* BrewfileView.swift */; };
-		1315CA64AD162944B7B1A65D /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3A0505003D5710B085C84B5 /* Theme.swift */; };
 		14E6F6389CC75707C9F058BC /* PackageRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */; };
 		20DE48E19430760FBA2321E3 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A346F38852F4B702A7A516C /* MenuBarView.swift */; };
 		2954B2235972C3A2493C665B /* BrewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 250F33E2A3C8FF27E3FB785A /* BrewService.swift */; };
 		31B9AA09C82A37530619A2BF /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DE9A086D90E815A39C88A5 /* DiscoverView.swift */; };
-		365428CDE9E2B021642FBFA7 /* GeistMono-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8DA48CD12EDF2F8EB20A6C25 /* GeistMono-SemiBold.ttf */; };
-		6FE7E3FADF2069E95649153B /* GeistMono-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = A19FBF6417D0E612485E563B /* GeistMono-OFL.txt */; };
-		70CB4817C8A875C139DBCA64 /* GeistMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DC1A8B467DEE0A79CC21E49B /* GeistMono-Regular.ttf */; };
-		7303A7F7DD62D2F062BD9C1B /* GeistMono-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 12F72C149323E697079D3E03 /* GeistMono-Medium.ttf */; };
-		7EAD9BC11BB4761667F42A6C /* BarlowCondensed-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 02B442AEAF44CF066B755C83 /* BarlowCondensed-Bold.ttf */; };
 		7F00D81CA723FFF931934C7C /* GlobalHotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */; };
 		8307C1100E99F99BD5D5C7F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D3C526889D003BC43FAD7E /* AppDelegate.swift */; };
+		8EB79BC693A019D0C3A6C880 /* HouseStyle in Frameworks */ = {isa = PBXBuildFile; productRef = DFC9C1772185743A6064FC72 /* HouseStyle */; };
 		98BBD02CA4ABA5A9F7EC0D12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 771150EC08441ABC3EC1DD1C /* Assets.xcassets */; };
 		98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DAF62F0F9BD3607332230F /* Mascot.swift */; };
 		99F875975481F8F426760A1A /* BrewParseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3999942A157B537C78219A00 /* BrewParseTests.swift */; };
 		A028D58D8573DA62145455B8 /* DiscoverPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDA32D50FEC4D1761B3D80C /* DiscoverPackage.swift */; };
 		AD6C949DD52CB525A59ED6EA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6511EB48F677664E54300B /* SettingsView.swift */; };
-		B02CCA1DA9AF6636D16A9C13 /* BarlowCondensed-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6E1EE6219103A06B2753612E /* BarlowCondensed-OFL.txt */; };
 		B7A0F3CB7CEDDF1035CDDA9B /* UpdateNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */; };
-		BE2D1427B93979EBDBE0084D /* ResizeGrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9C43C590B352E082385AF /* ResizeGrip.swift */; };
 		BF97D9C2737EA6EF061CFAB2 /* BrewParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E590DD931E1D08AEF44F26 /* BrewParse.swift */; };
+		D015DADD4B014BF2A4BA9B62 /* HouseStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B28E7E29E57D8EB3ADA2A9 /* HouseStyle.swift */; };
 		EB1668047B6F2D788991D287 /* BrewDockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A547DD2500FDF4F98DE1FF5 /* BrewDockApp.swift */; };
 		EE938E160CFA88B6094F7F3A /* ServiceRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16969FF28CA92DA2624C50CF /* ServiceRowView.swift */; };
 /* End PBXBuildFile section */
@@ -45,44 +39,56 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		02B442AEAF44CF066B755C83 /* BarlowCondensed-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "BarlowCondensed-Bold.ttf"; sourceTree = "<group>"; };
 		0A547DD2500FDF4F98DE1FF5 /* BrewDockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewDockApp.swift; sourceTree = "<group>"; };
-		12F72C149323E697079D3E03 /* GeistMono-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Medium.ttf"; sourceTree = "<group>"; };
 		16969FF28CA92DA2624C50CF /* ServiceRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRowView.swift; sourceTree = "<group>"; };
 		1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNotifier.swift; sourceTree = "<group>"; };
 		250F33E2A3C8FF27E3FB785A /* BrewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewService.swift; sourceTree = "<group>"; };
+		26B28E7E29E57D8EB3ADA2A9 /* HouseStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseStyle.swift; sourceTree = "<group>"; };
 		341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageRowView.swift; sourceTree = "<group>"; };
 		36E590DD931E1D08AEF44F26 /* BrewParse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewParse.swift; sourceTree = "<group>"; };
 		3999942A157B537C78219A00 /* BrewParseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewParseTests.swift; sourceTree = "<group>"; };
 		4365A8D2E1676E7A11C70D45 /* BrewDock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrewDock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AC65231F149F5DE798D8B0E /* BrewDock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BrewDock.entitlements; sourceTree = "<group>"; };
 		503440E86E47889F134F948C /* FormulaIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormulaIcons.swift; sourceTree = "<group>"; };
-		6E1EE6219103A06B2753612E /* BarlowCondensed-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "BarlowCondensed-OFL.txt"; sourceTree = "<group>"; };
+		559236E1E634FC4472D1A671 /* mac-house-style */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mac-house-style"; path = "../mac-house-style"; sourceTree = SOURCE_ROOT; };
 		771150EC08441ABC3EC1DD1C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7CDD1D41DE8EB6E1E2E6722C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8A346F38852F4B702A7A516C /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
-		8DA48CD12EDF2F8EB20A6C25 /* GeistMono-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-SemiBold.ttf"; sourceTree = "<group>"; };
 		A16265C0D540C22593B7FE55 /* BrewDockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrewDockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A19FBF6417D0E612485E563B /* GeistMono-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "GeistMono-OFL.txt"; sourceTree = "<group>"; };
 		A7DAF62F0F9BD3607332230F /* Mascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mascot.swift; sourceTree = "<group>"; };
 		ACBC1B238338C194118F6083 /* BrewfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewfileView.swift; sourceTree = "<group>"; };
 		BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotKey.swift; sourceTree = "<group>"; };
-		C3A0505003D5710B085C84B5 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		D8F9C43C590B352E082385AF /* ResizeGrip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResizeGrip.swift; sourceTree = "<group>"; };
 		DA6511EB48F677664E54300B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		DC1A8B467DEE0A79CC21E49B /* GeistMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "GeistMono-Regular.ttf"; sourceTree = "<group>"; };
 		E6DE9A086D90E815A39C88A5 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
 		E7D3C526889D003BC43FAD7E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FCDA32D50FEC4D1761B3D80C /* DiscoverPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPackage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFrameworksBuildPhase section */
+		408513DA1D249FB5BE9C3199 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8EB79BC693A019D0C3A6C880 /* HouseStyle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
 /* Begin PBXGroup section */
+		6140ABAB297636A4F7F5FB8E /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				559236E1E634FC4472D1A671 /* mac-house-style */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		696A5C4E733F7045BDAFBB16 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				26B28E7E29E57D8EB3ADA2A9 /* HouseStyle.swift */,
 				A7DAF62F0F9BD3607332230F /* Mascot.swift */,
-				D8F9C43C590B352E082385AF /* ResizeGrip.swift */,
-				C3A0505003D5710B085C84B5 /* Theme.swift */,
 			);
 			path = Theme;
 			sourceTree = "<group>";
@@ -107,23 +113,9 @@
 				16969FF28CA92DA2624C50CF /* ServiceRowView.swift */,
 				DA6511EB48F677664E54300B /* SettingsView.swift */,
 				1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */,
-				9F08BEB1A7A1480FDE5C729E /* Fonts */,
 				696A5C4E733F7045BDAFBB16 /* Theme */,
 			);
 			path = BrewDock;
-			sourceTree = "<group>";
-		};
-		9F08BEB1A7A1480FDE5C729E /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				02B442AEAF44CF066B755C83 /* BarlowCondensed-Bold.ttf */,
-				6E1EE6219103A06B2753612E /* BarlowCondensed-OFL.txt */,
-				12F72C149323E697079D3E03 /* GeistMono-Medium.ttf */,
-				A19FBF6417D0E612485E563B /* GeistMono-OFL.txt */,
-				DC1A8B467DEE0A79CC21E49B /* GeistMono-Regular.ttf */,
-				8DA48CD12EDF2F8EB20A6C25 /* GeistMono-SemiBold.ttf */,
-			);
-			path = Fonts;
 			sourceTree = "<group>";
 		};
 		E36A701CBFF8956828D21571 /* Products */ = {
@@ -148,6 +140,7 @@
 			children = (
 				96D973215F2F9D9E52514672 /* BrewDock */,
 				F0500E2C93E797EE370B4FFD /* BrewDockTests */,
+				6140ABAB297636A4F7F5FB8E /* Packages */,
 				E36A701CBFF8956828D21571 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -161,6 +154,7 @@
 			buildPhases = (
 				B3C2AF37C3860DF697653150 /* Sources */,
 				EED2D21BA58E205618D36AA7 /* Resources */,
+				408513DA1D249FB5BE9C3199 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -168,6 +162,7 @@
 			);
 			name = BrewDock;
 			packageProductDependencies = (
+				DFC9C1772185743A6064FC72 /* HouseStyle */,
 			);
 			productName = BrewDock;
 			productReference = 4365A8D2E1676E7A11C70D45 /* BrewDock.app */;
@@ -215,6 +210,9 @@
 			);
 			mainGroup = FDDCF261E707027AE34D28C2;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6C8C474653C2F08DAFF8FC43 /* XCLocalSwiftPackageReference "../mac-house-style" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E36A701CBFF8956828D21571 /* Products */;
 			projectDirPath = "";
@@ -232,12 +230,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				98BBD02CA4ABA5A9F7EC0D12 /* Assets.xcassets in Resources */,
-				7EAD9BC11BB4761667F42A6C /* BarlowCondensed-Bold.ttf in Resources */,
-				B02CCA1DA9AF6636D16A9C13 /* BarlowCondensed-OFL.txt in Resources */,
-				7303A7F7DD62D2F062BD9C1B /* GeistMono-Medium.ttf in Resources */,
-				6FE7E3FADF2069E95649153B /* GeistMono-OFL.txt in Resources */,
-				70CB4817C8A875C139DBCA64 /* GeistMono-Regular.ttf in Resources */,
-				365428CDE9E2B021642FBFA7 /* GeistMono-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,13 +257,12 @@
 				31B9AA09C82A37530619A2BF /* DiscoverView.swift in Sources */,
 				0340713FE26CEDF0E4EDD2A0 /* FormulaIcons.swift in Sources */,
 				7F00D81CA723FFF931934C7C /* GlobalHotKey.swift in Sources */,
+				D015DADD4B014BF2A4BA9B62 /* HouseStyle.swift in Sources */,
 				98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */,
 				20DE48E19430760FBA2321E3 /* MenuBarView.swift in Sources */,
 				14E6F6389CC75707C9F058BC /* PackageRowView.swift in Sources */,
-				BE2D1427B93979EBDBE0084D /* ResizeGrip.swift in Sources */,
 				EE938E160CFA88B6094F7F3A /* ServiceRowView.swift in Sources */,
 				AD6C949DD52CB525A59ED6EA /* SettingsView.swift in Sources */,
-				1315CA64AD162944B7B1A65D /* Theme.swift in Sources */,
 				B7A0F3CB7CEDDF1035CDDA9B /* UpdateNotifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -517,6 +508,20 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		6C8C474653C2F08DAFF8FC43 /* XCLocalSwiftPackageReference "../mac-house-style" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../mac-house-style";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		DFC9C1772185743A6064FC72 /* HouseStyle */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = HouseStyle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 60BCB17F25DAD72C99617655 /* Project object */;
 }

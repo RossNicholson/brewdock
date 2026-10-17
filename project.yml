@@ -13,12 +13,18 @@ settings:
     DEVELOPMENT_TEAM: ""
     ENABLE_HARDENED_RUNTIME: YES
 
+packages:
+  HouseStyle:
+    path: ../mac-house-style
+
 targets:
   BrewDock:
     type: application
     platform: macOS
     sources:
       - path: BrewDock
+    dependencies:
+      - package: HouseStyle
     info:
       path: BrewDock/Info.plist
       properties:
