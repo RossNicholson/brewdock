@@ -13,6 +13,7 @@
 		20DE48E19430760FBA2321E3 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A346F38852F4B702A7A516C /* MenuBarView.swift */; };
 		2954B2235972C3A2493C665B /* BrewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 250F33E2A3C8FF27E3FB785A /* BrewService.swift */; };
 		31B9AA09C82A37530619A2BF /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DE9A086D90E815A39C88A5 /* DiscoverView.swift */; };
+		629F0FBE22FFC80C5EF221D5 /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54518697019DB3A89116B /* ScreenshotTests.swift */; };
 		7F00D81CA723FFF931934C7C /* GlobalHotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */; };
 		8307C1100E99F99BD5D5C7F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D3C526889D003BC43FAD7E /* AppDelegate.swift */; };
 		8EB79BC693A019D0C3A6C880 /* HouseStyle in Frameworks */ = {isa = PBXBuildFile; productRef = DFC9C1772185743A6064FC72 /* HouseStyle */; };
@@ -50,6 +51,7 @@
 		4365A8D2E1676E7A11C70D45 /* BrewDock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrewDock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4AC65231F149F5DE798D8B0E /* BrewDock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BrewDock.entitlements; sourceTree = "<group>"; };
 		503440E86E47889F134F948C /* FormulaIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormulaIcons.swift; sourceTree = "<group>"; };
+		50F54518697019DB3A89116B /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
 		559236E1E634FC4472D1A671 /* mac-house-style */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "mac-house-style"; path = "../mac-house-style"; sourceTree = SOURCE_ROOT; };
 		771150EC08441ABC3EC1DD1C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7CDD1D41DE8EB6E1E2E6722C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				3999942A157B537C78219A00 /* BrewParseTests.swift */,
+				50F54518697019DB3A89116B /* ScreenshotTests.swift */,
 			);
 			path = BrewDockTests;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				99F875975481F8F426760A1A /* BrewParseTests.swift in Sources */,
+				629F0FBE22FFC80C5EF221D5 /* ScreenshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

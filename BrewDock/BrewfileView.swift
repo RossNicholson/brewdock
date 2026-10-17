@@ -43,7 +43,7 @@ struct BrewfileView: View {
                     .padding(.vertical, 6)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(statusIsSuccess ? AppColors.mint : AppColors.coral,
-                                in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                in: RoundedRectangle(cornerRadius: Radius.small, style: .continuous))
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.top, 4)
             }

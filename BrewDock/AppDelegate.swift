@@ -4,28 +4,26 @@ import Combine
 import UserNotifications
 
 @MainActor
-class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
+    /// The panel opens at this size and can be dragged bigger, but not smaller
+    static let panelDefaultSize = NSSize(width: 380, height: 520)
+    static let panelMinimumSize = NSSize(width: 330, height: 300)
+
     private var statusItem: NSStatusItem!
-    private var panel: NSPanel!
-    private var eventMonitor: Any?
+    private var panel: MenuBarPanelController!
     private var dotView: NSView?
     private var cancellables = Set<AnyCancellable>()
     private var updateCheckTask: Task<Void, Never>?
     private var autoUpdateTask: Task<Void, Never>?
     private var isAutoUpdating = false
-    private var keyMonitor: Any?
-    private(set) lazy var hotKey = GlobalHotKey { [weak self] in self?.togglePanel() }
+    private(set) lazy var hotKey = GlobalHotKey { [weak self] in self?.panel.toggle() }
     let brewService = BrewService()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "mug.fill", accessibilityDescription: "BrewDock")
-            button.action = #selector(togglePanel)
-            button.target = self
-        }
+        statusItem.button?.image = NSImage(systemSymbolName: "mug.fill", accessibilityDescription: "BrewDock")
 
         setupPanel()
         setupUpdateDot()
@@ -114,7 +112,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
     }
 
     func showPanel() {
-        if !panel.isVisible { openPanel() }
+        panel.open()
+    }
+
+    func closePanel() {
+        panel.close()
     }
 
     private func setupUpdateDot() {
@@ -147,107 +149,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate, UNUserNoti
     }
 
     private func setupPanel() {
-        let content = MenuBarView().environmentObject(brewService)
-        let hostingView = NSHostingView(rootView: content)
-        hostingView.autoresizingMask = [.width, .height]
-
-        panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 380, height: 520),
-            styleMask: [.resizable, .titled, .fullSizeContentView, .nonactivatingPanel],
-            backing: .buffered,
-            defer: false
-        )
-        panel.contentView = hostingView
-        panel.delegate = self
-        panel.isFloatingPanel = true
-        panel.level = .popUpMenu
-        panel.minSize = NSSize(width: 280, height: 300)
-        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        panel.isOpaque = false
-        panel.backgroundColor = .clear
-        panel.titleVisibility = .hidden
-        panel.titlebarAppearsTransparent = true
-        panel.isMovableByWindowBackground = true
-        panel.standardWindowButton(.closeButton)?.isHidden = true
-        panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
-        panel.standardWindowButton(.zoomButton)?.isHidden = true
-    }
-
-    @objc func togglePanel() {
-        if panel.isVisible { closePanel() } else { openPanel() }
-    }
-
-    private func openPanel() {
-        positionPanel()
-        panel.makeKeyAndOrderFront(nil)
-        // SwiftUI's onAppear only fires the first time the panel is shown, so
-        // refresh here (refresh() skips itself if it ran in the last 30s).
-        Task { await brewService.refresh() }
-        NotificationCenter.default.post(name: .brewDockPanelOpened, object: nil)
-
-        // Esc closes the panel. A local monitor sees it even while the search
-        // field (whose text view would otherwise swallow Esc) has focus.
-        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
-            guard let self, event.keyCode == UInt16(53), event.window === self.panel else { return event }
-            self.closePanel()
-            return nil
+        panel = MenuBarPanelController(statusItem: statusItem)
+        panel.setContent(defaultSize: Self.panelDefaultSize, minimumSize: Self.panelMinimumSize) {
+            MenuBarView().environmentObject(brewService)
         }
-
-        // Clicks on our own menu bar icon arrive here too; leave those to togglePanel
-        eventMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            guard let self, !self.mouseIsOverStatusItem else { return }
-            self.closePanel()
+        panel.onOpen = { [weak self] in
+            // SwiftUI's onAppear only fires the first time the panel is shown, so
+            // refresh here (refresh() skips itself if it ran in the last 30s).
+            Task { await self?.brewService.refresh() }
+            NotificationCenter.default.post(name: .brewDockPanelOpened, object: nil)
         }
-    }
-
-    func closePanel() {
-        panel.orderOut(nil)
-        if let monitor = eventMonitor {
-            NSEvent.removeMonitor(monitor)
-            eventMonitor = nil
-        }
-        if let keyMonitor {
-            NSEvent.removeMonitor(keyMonitor)
-            self.keyMonitor = nil
-        }
-    }
-
-    private func positionPanel() {
-        guard let button = statusItem.button,
-              let buttonWindow = button.window else { return }
-
-        let buttonRect = button.convert(button.bounds, to: nil)
-        let screenRect = buttonWindow.convertToScreen(buttonRect)
-        guard let screen = buttonWindow.screen ?? NSScreen.main ?? NSScreen.screens.first else { return }
-
-        var x = screenRect.midX - panel.frame.width / 2
-        let y = screenRect.minY - panel.frame.height
-
-        x = min(max(x, screen.visibleFrame.minX + 4),
-                screen.visibleFrame.maxX - panel.frame.width - 4)
-
-        panel.setFrameOrigin(NSPoint(x: x, y: y))
-    }
-
-    func windowDidResignKey(_ notification: Notification) {
-        // Wait a tick for the new key window to settle, then stay open if it's
-        // one of ours (a save/open dialog or alert from the Brewfile popover) —
-        // closing would tear down the view still waiting on that dialog.
-        // Clicking another app leaves us with no key window, so the panel closes.
-        DispatchQueue.main.async { [weak self] in
-            guard let self, self.panel.isVisible else { return }
-            if NSApp.modalWindow != nil || NSApp.keyWindow != nil { return }
-            // A click on the menu bar icon is togglePanel's to handle; closing
-            // here would make that click reopen the panel straight away.
-            if self.mouseIsOverStatusItem { return }
-            self.closePanel()
-        }
-    }
-
-    private var mouseIsOverStatusItem: Bool {
-        guard let button = statusItem.button, let window = button.window else { return false }
-        let frame = window.convertToScreen(button.convert(button.bounds, to: nil))
-        return frame.contains(NSEvent.mouseLocation)
     }
 }
 

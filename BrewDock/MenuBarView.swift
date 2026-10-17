@@ -44,7 +44,6 @@ struct MenuBarView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            dragHandle
             header
             if let target = brewService.untrusted.first {
                 trustBanner(target)
@@ -63,12 +62,7 @@ struct MenuBarView: View {
             contentList
             footer
         }
-        .frame(minWidth: 280, minHeight: 300)
-        .background(AppColors.ground)
-        .overlay(alignment: .bottomTrailing) {
-            ResizeGrip()
-                .padding(3)
-        }
+        .menuBarPanel(width: AppDelegate.panelMinimumSize.width)
         .animation(.easeInOut(duration: 0.2), value: showsUpdateBanner)
         .animation(.easeInOut(duration: 0.2), value: brewService.untrusted)
         .alert(
@@ -103,7 +97,7 @@ struct MenuBarView: View {
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
                     .background(toastIsError ? AppColors.coral : AppColors.mint,
-                                in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                in: RoundedRectangle(cornerRadius: Radius.row, style: .continuous))
                     .padding(.horizontal, 18)
                     .padding(.bottom, 44)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -139,37 +133,15 @@ struct MenuBarView: View {
 
     // MARK: Header
 
-    private var dragHandle: some View {
-        Capsule()
-            .fill(AppColors.secondaryText.opacity(0.35))
-            .frame(width: 36, height: 4)
-            .frame(maxWidth: .infinity)
-            .frame(height: 18)
-            .contentShape(Rectangle())
-            .help("Drag to move · Drag the corner to resize")
-    }
-
     private var header: some View {
-        HStack(alignment: .center, spacing: 6) {
-            VStack(alignment: .leading, spacing: 1) {
-                Text("BrewDock")
-                    .font(.display(32, relativeTo: .largeTitle))
-                    .textCase(.uppercase)
-                    .foregroundStyle(AppColors.text)
-                    .accessibilityAddTraits(.isHeader)
-                Text("Homebrew in your menu bar")
-                    .font(.mono(10))
-                    .foregroundStyle(AppColors.secondaryText)
-            }
-            Spacer(minLength: 8)
+        PanelHeader(title: "BrewDock", subtitle: "Homebrew in your menu bar") {
+            Mascot(size: PanelMetrics.mascot)
+        } actions: {
             refreshButton
             brewfileButton
             settingsButton
             infoButton
         }
-        .padding(.horizontal, 14)
-        .padding(.top, 2)
-        .padding(.bottom, 12)
     }
 
     private var showsUpdateBanner: Bool {
@@ -208,7 +180,7 @@ struct MenuBarView: View {
         .padding(.leading, 14)
         .padding(.trailing, 10)
         .padding(.vertical, 10)
-        .background(AppColors.lilac, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(AppColors.lilac, in: RoundedRectangle(cornerRadius: Radius.block, style: .continuous))
     }
 
     /// Peach colour block offering to update everything, like the big call-to-action
@@ -243,7 +215,7 @@ struct MenuBarView: View {
         .padding(.leading, 14)
         .padding(.trailing, 10)
         .padding(.vertical, 6)
-        .background(AppColors.peach, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .background(AppColors.peach, in: RoundedRectangle(cornerRadius: Radius.block, style: .continuous))
     }
 
     // MARK: Search & tabs
@@ -269,7 +241,7 @@ struct MenuBarView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .background(AppColors.surface, in: RoundedRectangle(cornerRadius: Radius.small, style: .continuous))
         .padding(.horizontal, 14)
     }
 
@@ -281,35 +253,12 @@ struct MenuBarView: View {
         }
     }
 
-    /// Pill switcher: the selected tab is a solid ink capsule, like the period picker
-    /// on the Don't Worry insights screen
     private var tabPicker: some View {
-        HStack(spacing: 2) {
-            ForEach(Tab.allCases, id: \.self) { tab in
-                let selected = selectedTab == tab
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        selectedTab = tab
-                        searchText = ""
-                    }
-                } label: {
-                    Text(tab.rawValue)
-                        .font(.mono(10.5, weight: selected ? .semibold : .medium))
-                        .foregroundStyle(selected ? AppColors.onSolid : AppColors.text)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 6)
-                        .background {
-                            if selected { Capsule().fill(AppColors.solid) }
-                        }
-                        .contentShape(Capsule())
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(selected ? .isSelected : [])
-            }
-        }
-        .padding(3)
-        .background(AppColors.surface, in: Capsule())
-        .padding(.horizontal, 14)
+        PillPicker(selection: Binding(get: { selectedTab }, set: { tab in
+            selectedTab = tab
+            searchText = ""
+        }), options: Tab.allCases) { $0.rawValue }
+        .padding(.horizontal, PanelMetrics.inset)
         .padding(.top, 8)
         .padding(.bottom, 4)
     }
@@ -479,48 +428,30 @@ struct MenuBarView: View {
     // MARK: Footer
 
     private var footer: some View {
-        HStack {
-            Group {
-                switch selectedTab {
-                case .services:
-                    let running = brewService.services.filter { $0.status == .started }.count
-                    Text("\(plural(brewService.services.count, "service")) · \(running) running")
-                case .discover:
-                    Text("\(DiscoverCatalog.all.count) packages to discover")
-                default:
-                    Text("\(plural(brewService.casks.count, "app")) · \(plural(brewService.formulae.count, "tool"))")
-                }
+        PanelFooter {
+            switch selectedTab {
+            case .services:
+                let running = brewService.services.filter { $0.status == .started }.count
+                Text("\(plural(brewService.services.count, "service")) · \(running) running")
+            case .discover:
+                Text("\(DiscoverCatalog.all.count) packages to discover")
+            default:
+                Text("\(plural(brewService.casks.count, "app")) · \(plural(brewService.formulae.count, "tool"))")
             }
-            .font(.mono(9.5))
-            .foregroundStyle(AppColors.secondaryText)
-            Spacer()
-            Button("Quit") { NSApplication.shared.terminate(nil) }
-                .font(.mono(9.5, weight: .semibold))
-                .textCase(.uppercase)
-                .buttonStyle(.plain)
-                .foregroundStyle(AppColors.text)
-        }
-        .padding(.leading, 16)
-        .padding(.trailing, 26)   // clear of the resize grip in the corner
-        .padding(.vertical, 9)
-        .overlay(alignment: .top) {
-            Rectangle().fill(AppColors.hairline).frame(height: 1)
         }
     }
 
     // MARK: Header buttons
 
     private var refreshButton: some View {
-        let busy = selectedTab == .services ? brewService.isLoadingServices : brewService.isLoading
-        return HeaderIconButton(symbol: "arrow.clockwise", help: "Refresh") {
+        HeaderRefreshButton(isRefreshing: selectedTab == .services ? brewService.isLoadingServices
+                                                                   : brewService.isLoading) {
             if selectedTab == .services {
                 Task { await brewService.refreshServices() }
             } else {
                 Task { await brewService.refresh(force: true) }
             }
         }
-        .disabled(busy)
-        .opacity(busy ? 0.5 : 1)
     }
 
     private var brewfileButton: some View {
@@ -546,42 +477,10 @@ struct MenuBarView: View {
             showingAbout.toggle()
         }
         .popover(isPresented: $showingAbout, arrowEdge: .bottom) {
-            aboutView
+            AboutPopover(app: .brewDock) { Mascot(size: 56) }
         }
     }
 
-    // MARK: About & help
-
-    private var aboutView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top) {
-                PopoverHeader(
-                    title: "BrewDock",
-                    subtitle: "Version \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "")\nMade by Ross Nicholson"
-                )
-                Mascot(size: 56)
-            }
-
-            ColorBlockButton(title: "Get help", detail: "Bugs, questions and feature requests", fill: AppColors.mint) {
-                NSWorkspace.shared.open(URL(string: "https://rossnicholson.dev/support")!)
-            }
-            ColorBlockButton(title: "Email support", detail: "support@rossnicholson.dev", fill: AppColors.periwinkle, symbol: "envelope.fill") {
-                NSWorkspace.shared.open(URL(string: "mailto:support@rossnicholson.dev")!)
-            }
-            ColorBlockButton(title: "Buy me a coffee", detail: "If BrewDock saves you time", fill: AppColors.peach, symbol: "cup.and.saucer.fill") {
-                NSWorkspace.shared.open(URL(string: "https://buymeacoffee.com/rossnicholson")!)
-            }
-
-            HStack(spacing: 10) {
-                MonoLink(title: "Website", destination: URL(string: "https://rossnicholson.dev")!)
-                MonoLink(title: "GitHub", destination: URL(string: "https://github.com/RossNicholson/brewdock")!)
-                MonoLink(title: "Terms", destination: URL(string: "https://rossnicholson.dev/terms")!)
-                MonoLink(title: "Privacy", destination: URL(string: "https://rossnicholson.dev/privacy")!)
-            }
-            .padding(.top, 2)
-        }
-        .popoverChrome()
-    }
 }
 
 /// "1 app", "2 apps"

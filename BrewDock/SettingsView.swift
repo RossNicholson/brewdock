@@ -23,143 +23,45 @@ struct SettingsView: View {
             PopoverHeader(title: "Settings", subtitle: "BrewDock preferences")
                 .padding(.bottom, 4)
 
-            VStack(alignment: .leading, spacing: 6) {
-                Toggle(isOn: Binding(
-                    get: { launchAtLogin },
-                    set: { setLaunchAtLogin($0) }
-                )) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Launch at login")
-                            .font(.display(17, relativeTo: .headline))
-                            .textCase(.uppercase)
-                            .foregroundStyle(AppColors.text)
-                        Text("Start BrewDock when you log in")
-                            .font(.mono(9.5))
-                            .foregroundStyle(AppColors.secondaryText)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .toggleStyle(.switch)
-                .tint(AppColors.toggle)
-                .controlSize(.small)
-                if let loginItemError {
-                    Text(loginItemError)
-                        .font(.mono(9.5))
-                        .foregroundStyle(AppColors.destructive)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .padding(12)
-            .card()
-
-            VStack(alignment: .leading, spacing: 6) {
-                Toggle(isOn: Binding(
-                    get: { notifyAboutUpdates },
-                    set: { setNotifications($0) }
-                )) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Update alerts")
-                            .font(.display(17, relativeTo: .headline))
-                            .textCase(.uppercase)
-                            .foregroundStyle(AppColors.text)
-                        Text("Notify me when new versions are out")
-                            .font(.mono(9.5))
-                            .foregroundStyle(AppColors.secondaryText)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .toggleStyle(.switch)
-                .controlSize(.small)
-                .tint(AppColors.toggle)
+            SettingToggle(title: "Update alerts", detail: "Notify me when new versions are out",
+                          isOn: Binding(get: { notifyAboutUpdates }, set: { setNotifications($0) })) {
                 if let notificationError {
-                    Text(notificationError)
-                        .font(.mono(9.5))
-                        .foregroundStyle(AppColors.destructive)
-                        .fixedSize(horizontal: false, vertical: true)
+                    SettingNote(notificationError)
                 }
             }
-            .padding(12)
-            .card()
 
-            VStack(alignment: .leading, spacing: 6) {
-                Toggle(isOn: $autoUpdate) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Auto-update")
-                            .font(.display(17, relativeTo: .headline))
-                            .textCase(.uppercase)
-                            .foregroundStyle(AppColors.text)
-                        Text("Update all apps and tools every 10 minutes. Open apps wait until you quit them.")
-                            .font(.mono(9.5))
-                            .foregroundStyle(AppColors.secondaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .toggleStyle(.switch)
-                .controlSize(.small)
-                .tint(AppColors.toggle)
+            SettingToggle(title: "Auto-update",
+                          detail: "Update all apps and tools every 10 minutes. Open apps wait until you quit them.",
+                          isOn: $autoUpdate)
                 .onChange(of: autoUpdate) { enabled in
                     guard enabled, let delegate = NSApp.delegate as? AppDelegate else { return }
                     Task { await delegate.runAutoUpdate() }
                 }
-            }
-            .padding(12)
-            .card()
 
-            VStack(alignment: .leading, spacing: 6) {
-                Toggle(isOn: $includeAutoUpdating) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Self-updating apps")
-                            .font(.display(17, relativeTo: .headline))
-                            .textCase(.uppercase)
-                            .foregroundStyle(AppColors.text)
-                        Text("Include apps like Chrome and Slack that update themselves")
-                            .font(.mono(9.5))
-                            .foregroundStyle(AppColors.secondaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .toggleStyle(.switch)
-                .controlSize(.small)
-                .tint(AppColors.toggle)
+            SettingToggle(title: "Self-updating apps",
+                          detail: "Include apps like Chrome and Slack that update themselves",
+                          isOn: $includeAutoUpdating)
                 .onChange(of: includeAutoUpdating) { _ in
                     Task { await brewService.refresh(force: true) }
                 }
-            }
-            .padding(12)
-            .card()
 
-            VStack(alignment: .leading, spacing: 6) {
-                Toggle(isOn: $shortcutEnabled) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Shortcut \(GlobalHotKey.displayName)")
-                            .font(.display(17, relativeTo: .headline))
-                            .textCase(.uppercase)
-                            .foregroundStyle(AppColors.text)
-                        Text("Open BrewDock from any app. Esc closes it.")
-                            .font(.mono(9.5))
-                            .foregroundStyle(AppColors.secondaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .toggleStyle(.switch)
-                .controlSize(.small)
-                .tint(AppColors.toggle)
-                .onChange(of: shortcutEnabled) { _ in
-                    let ok = (NSApp.delegate as? AppDelegate)?.hotKey.update() ?? true
-                    shortcutError = ok ? nil : "\(GlobalHotKey.displayName) is already used by another app."
-                }
+            SettingToggle(title: "Shortcut \(GlobalHotKey.displayName)", detail: "Open BrewDock from any app. Esc closes it.",
+                          isOn: $shortcutEnabled) {
                 if let shortcutError {
-                    Text(shortcutError)
-                        .font(.mono(9.5))
-                        .foregroundStyle(AppColors.destructive)
-                        .fixedSize(horizontal: false, vertical: true)
+                    SettingNote(shortcutError)
                 }
             }
-            .padding(12)
-            .card()
+            .onChange(of: shortcutEnabled) { _ in
+                let ok = (NSApp.delegate as? AppDelegate)?.hotKey.update() ?? true
+                shortcutError = ok ? nil : "\(GlobalHotKey.displayName) is already used by another app."
+            }
+
+            SettingToggle(title: "Launch at login", detail: "Start BrewDock when you log in",
+                          isOn: Binding(get: { launchAtLogin }, set: { setLaunchAtLogin($0) })) {
+                if let loginItemError {
+                    SettingNote(loginItemError)
+                }
+            }
 
             cleanupCard
 
@@ -188,7 +90,7 @@ struct SettingsView: View {
                 .disabled(brewService.isCheckingSelfUpdate)
             }
         }
-        .popoverChrome()
+        .popoverChrome(width: 280)
         .task { await measureCleanup() }
     }
 

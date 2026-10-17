@@ -346,7 +346,7 @@ private struct OwnAppCard: ViewModifier {
         if isOwnApp {
             content
                 .card()
-                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .overlay(RoundedRectangle(cornerRadius: Radius.row, style: .continuous)
                     .strokeBorder(AppColors.pastel(for: id), lineWidth: 2))
         } else {
             content.card()
