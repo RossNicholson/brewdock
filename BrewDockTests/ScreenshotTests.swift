@@ -44,18 +44,26 @@ final class ScreenshotTests: XCTestCase {
             BrewPackage(name: "wget", version: "1.25.0", type: .formula),
             BrewPackage(name: "openssl@3", version: "3.4.0", type: .formula, isDependency: true),
         ]
+        service.services = [
+            HomebrewService(name: "postgresql@18", status: .started, user: "ross"),
+            HomebrewService(name: "redis", status: .started, user: "ross"),
+            HomebrewService(name: "nginx", status: .stopped, user: ""),
+            HomebrewService(name: "mysql", status: .error, user: "ross"),
+        ]
         return service
     }
 
     func testRenderPanel() throws {
-        let size = AppDelegate.panelDefaultSize
+        // The website's shots are a little taller than the panel opens at
+        let size = NSSize(width: AppDelegate.panelDefaultSize.width, height: 560)
         for dark in [false, true] {
             let service = sampleService()
             try Snapshot.panel(dark: dark, size: size, to: out.appendingPathComponent(dark ? "panel-dark.png" : "panel-apps.png")) {
                 MenuBarView().environmentObject(service)
             }
         }
-        for (tab, name) in [(MenuBarView.Tab.tools, "panel-tools"), (.discover, "panel-discover")] {
+        for (tab, name) in [(MenuBarView.Tab.tools, "panel-tools"), (.services, "panel-services"),
+                            (.discover, "panel-discover")] {
             let service = sampleService()
             try Snapshot.panel(size: size, to: out.appendingPathComponent("\(name).png")) {
                 MenuBarView(initialTab: tab).environmentObject(service)

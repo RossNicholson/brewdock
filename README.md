@@ -88,7 +88,7 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
 - **Homebrew 7 trusted taps:** if Homebrew refuses a package from a tap you haven't trusted, BrewDock tells you which one, and asks before trusting it.
 
 ### Native and light
-100% SwiftUI, with no Electron. It has light and dark mode, VoiceOver support, and a small mug who waves hello. Want more room? Drag the grip in the panel's bottom-right corner to make it bigger.
+100% SwiftUI, with no Electron. It has light and dark mode, VoiceOver support, and a small mug who waves hello. Want more room? Drag the grip in the panel's bottom-right corner to make it bigger; BrewDock remembers the size.
 
 <table>
   <tr>
@@ -159,6 +159,7 @@ The `.xcodeproj` is generated from `project.yml`, so re-run `xcodegen generate` 
 |---|---|
 | `make test` | Run the unit tests |
 | `make check-catalog` | Check the Discover catalog against Homebrew for renamed or retired packages (also runs weekly in CI) |
+| `make screenshots` | Render the panel and popovers with sample packages into `build/screenshots` |
 | `make release VERSION=x.y.z` | Ship a release; see [RELEASING.md](RELEASING.md) |
 
 Bug reports, feature ideas and pull requests are welcome. [Open an issue](https://github.com/RossNicholson/brewdock/issues) to start.
@@ -179,4 +180,4 @@ If BrewDock saves you time, you can [buy me a coffee](https://buymeacoffee.com/r
 
 GPL-3.0. See [LICENSE](LICENSE).
 
-The bundled fonts, Barlow Condensed and Geist Mono, are under the SIL Open Font License (see `BrewDock/Fonts`). Homebrew is a separate project and isn't affiliated with BrewDock.
+The look and the menu bar panel come from [HouseStyle](https://github.com/RossNicholson/mac-house-style) (MIT), shared with my other Mac apps, ClawdBar and Mop Up. Its bundled fonts, Barlow Condensed and Geist Mono, are under the SIL Open Font License. Homebrew is a separate project and isn't affiliated with BrewDock.
