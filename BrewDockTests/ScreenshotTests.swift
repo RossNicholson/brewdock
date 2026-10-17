@@ -31,7 +31,7 @@ final class ScreenshotTests: XCTestCase {
         let service = BrewService()
         service.casks = [
             cask("blender", "4.5.3", app: "Blender", outdated: true),
-            cask("brewdock", "1.4.2", app: "BrewDock"),
+            cask("brewdock", "1.5.0", app: "BrewDock"),
             cask("karabiner-elements", "15.5.0", app: "Karabiner-Elements"),
             cask("steam", "4.0", app: "Steam", held: true),
             cask("transmission", "4.0.6", app: "Transmission", outdated: true),
