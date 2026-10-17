@@ -7,26 +7,230 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0008F25C124AF9DC4D7D6D07 /* discover-brave-browser.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BDAF8F5B6590310B51FCC25 /* discover-brave-browser.png */; };
+		009CD0C30FFE9B5D3D5B5DD4 /* discover-ruby.png in Resources */ = {isa = PBXBuildFile; fileRef = BEA08CF3AEA36A832E458629 /* discover-ruby.png */; };
+		01F1688308242809CCE49BE3 /* discover-charles.png in Resources */ = {isa = PBXBuildFile; fileRef = 40157997D03D7790608F876A /* discover-charles.png */; };
+		0264ABE4C9174E6FF63D9411 /* discover-cleanmymac.png in Resources */ = {isa = PBXBuildFile; fileRef = E2A3C731A9F7E63DDED2443C /* discover-cleanmymac.png */; };
 		0340713FE26CEDF0E4EDD2A0 /* FormulaIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503440E86E47889F134F948C /* FormulaIcons.swift */; };
+		034C268F45D2D1DC80C52EF7 /* discover-jq.png in Resources */ = {isa = PBXBuildFile; fileRef = 25FFBBC2DCD03EE89C9B3938 /* discover-jq.png */; };
+		042DE516F3035B34307EBBEE /* discover-fork.png in Resources */ = {isa = PBXBuildFile; fileRef = 68AEED39722A5C0ED8C03275 /* discover-fork.png */; };
+		053C302805A739682A4BB55C /* discover-daisydisk.png in Resources */ = {isa = PBXBuildFile; fileRef = 825D4AA37CB1AA682C7AE0B7 /* discover-daisydisk.png */; };
+		060C6AD35DA0795B8C8DB141 /* discover-transmit.png in Resources */ = {isa = PBXBuildFile; fileRef = B7065B5A830AD9781E11A4BC /* discover-transmit.png */; };
+		075E5EEF8754F22AD08AC901 /* discover-calibre.png in Resources */ = {isa = PBXBuildFile; fileRef = F109ABF8C22B80263D427D39 /* discover-calibre.png */; };
+		08DF92D72D8715A779667659 /* discover-github.png in Resources */ = {isa = PBXBuildFile; fileRef = 3AB8E4A63C324A28CFB4BE69 /* discover-github.png */; };
+		0A1FA5164E1F1691A20C6F2F /* discover-kubernetes-cli.png in Resources */ = {isa = PBXBuildFile; fileRef = FC35F6B0F959BA24B9E01852 /* discover-kubernetes-cli.png */; };
+		0B2C731BB277F6F738F399F5 /* discover-sequel-ace.png in Resources */ = {isa = PBXBuildFile; fileRef = 7F51C963186D9C42A0A92BDD /* discover-sequel-ace.png */; };
 		0B8E514444A8AD2CB70ABF92 /* BrewfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBC1B238338C194118F6083 /* BrewfileView.swift */; };
+		0BCC5AF9EAEEB5ED2EDED448 /* discover-swish.png in Resources */ = {isa = PBXBuildFile; fileRef = 359C0D697DA99818CB4DBB7F /* discover-swish.png */; };
+		0CB0A49628029E8FF4C6117F /* discover-azure-cli.png in Resources */ = {isa = PBXBuildFile; fileRef = F026617991A1B2AAD168459A /* discover-azure-cli.png */; };
+		0EAA28E90B1CF2CDFB192CCF /* discover-notion.png in Resources */ = {isa = PBXBuildFile; fileRef = FF17025984547D53128222BC /* discover-notion.png */; };
+		11C23444989D598E1C3D4CB8 /* discover-stats.png in Resources */ = {isa = PBXBuildFile; fileRef = EA0E70ECC3FF673DD0F29C74 /* discover-stats.png */; };
 		14E6F6389CC75707C9F058BC /* PackageRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */; };
+		1521E9E20EEDB0408C6D3D61 /* discover-ngrok.png in Resources */ = {isa = PBXBuildFile; fileRef = 53C686493BF421742F907231 /* discover-ngrok.png */; };
+		169F23983EF314A89580D6E1 /* discover-libreoffice.png in Resources */ = {isa = PBXBuildFile; fileRef = C951068ED5ACFB6B340EE0A1 /* discover-libreoffice.png */; };
+		1914A917DF70D30EA6B63EA3 /* discover-downie.png in Resources */ = {isa = PBXBuildFile; fileRef = 700B755FBFD572ED47ED745E /* discover-downie.png */; };
+		1D2344B3BE102754BAB566AD /* discover-yazi.png in Resources */ = {isa = PBXBuildFile; fileRef = 1C1A38CDEA4239AFB090565D /* discover-yazi.png */; };
+		1D8AD0697E0053E5B25C4B97 /* discover-keepassxc.png in Resources */ = {isa = PBXBuildFile; fileRef = 295CC78964103ECB6B266855 /* discover-keepassxc.png */; };
+		1D9A0780CB55F51FDA0C1AFF /* discover-cyberduck.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A87BDD63BCF74B79B0A2E8E /* discover-cyberduck.png */; };
+		1F05271AB1D15D93ADD4EB97 /* discover-helm.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B30C0EC27A7D7B4F9EE5D3D /* discover-helm.png */; };
+		1F28D41C284FB32A34E40C46 /* discover-transmission.png in Resources */ = {isa = PBXBuildFile; fileRef = 548648475463D17254645C1A /* discover-transmission.png */; };
+		1F93AC7A607CC8CF4EDC257F /* discover-clamav.png in Resources */ = {isa = PBXBuildFile; fileRef = F9CDBD535B2876D145B14576 /* discover-clamav.png */; };
+		2065ECA993A3953D6A4E8519 /* discover-pdf-expert.png in Resources */ = {isa = PBXBuildFile; fileRef = F819208F45A2D16EFED70EDF /* discover-pdf-expert.png */; };
 		20DE48E19430760FBA2321E3 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A346F38852F4B702A7A516C /* MenuBarView.swift */; };
+		22AE20E4D130A7E87FD515C9 /* discover-ffmpeg.png in Resources */ = {isa = PBXBuildFile; fileRef = CA6C3C64CE8B1459CE75AE6C /* discover-ffmpeg.png */; };
+		23E27ED6A883BBA3C8740BFD /* discover-the-unarchiver.png in Resources */ = {isa = PBXBuildFile; fileRef = F3581AAAC46C28A2C33EB951 /* discover-the-unarchiver.png */; };
+		256CDDF51B264C6C6ED5E72F /* discover-forklift.png in Resources */ = {isa = PBXBuildFile; fileRef = FF092F933C6643886420B07A /* discover-forklift.png */; };
+		26BEF08D82B114501074BF03 /* discover-sourcetree.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B7A02D2C7B704D581D095B1 /* discover-sourcetree.png */; };
 		2954B2235972C3A2493C665B /* BrewService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 250F33E2A3C8FF27E3FB785A /* BrewService.swift */; };
+		2C0E7DB54A5F8D99F1A4D495 /* discover-sqlite.png in Resources */ = {isa = PBXBuildFile; fileRef = F1A7137D7599BA2FCC5942CF /* discover-sqlite.png */; };
+		2C231C6E2C32CA13733B87B1 /* discover-stern.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A656DE5EAFFDBD33450FEAB /* discover-stern.png */; };
+		2D0F27A4A03D5E1B8A54778E /* discover-blender.png in Resources */ = {isa = PBXBuildFile; fileRef = 485126610CB2DB39819694CD /* discover-blender.png */; };
+		30B73158C6D0072EE5689F27 /* discover-mullvad-vpn.png in Resources */ = {isa = PBXBuildFile; fileRef = 76C8E4033919E7A8BF92773B /* discover-mullvad-vpn.png */; };
+		30D7AFEA1C146F829DB72971 /* discover-mattermost.png in Resources */ = {isa = PBXBuildFile; fileRef = EAA2987BBC0E64484E65E765 /* discover-mattermost.png */; };
 		31B9AA09C82A37530619A2BF /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DE9A086D90E815A39C88A5 /* DiscoverView.swift */; };
+		31EF24A04E8F6A08977E7723 /* discover-burp-suite.png in Resources */ = {isa = PBXBuildFile; fileRef = D22F6E053E0F22A9007E24E6 /* discover-burp-suite.png */; };
+		34C458B203220364A0236043 /* discover-nmap.png in Resources */ = {isa = PBXBuildFile; fileRef = F5084F14440C6AC490FC101D /* discover-nmap.png */; };
+		358E95FAF89443C8A27CF928 /* discover-exiftool.png in Resources */ = {isa = PBXBuildFile; fileRef = 240357F479AACFE826E504D5 /* discover-exiftool.png */; };
+		35E6DABF788D0385804829D2 /* discover-karabiner-elements.png in Resources */ = {isa = PBXBuildFile; fileRef = 6F19FA7223FB6489EA43A781 /* discover-karabiner-elements.png */; };
+		368D2FA45C8D45F887E1E0EC /* discover-slack.png in Resources */ = {isa = PBXBuildFile; fileRef = A89F483AF679A1791EEF4F2F /* discover-slack.png */; };
+		38043528D6E10717A4BAE9B8 /* discover-postico.png in Resources */ = {isa = PBXBuildFile; fileRef = 879A48B82DCF578EFE9B7B65 /* discover-postico.png */; };
+		383934AA70143F2919F610C8 /* discover-aldente.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5ED85C5A8495FBE90F2E27 /* discover-aldente.png */; };
+		39D04C894EB82EB1901E4994 /* discover-go.png in Resources */ = {isa = PBXBuildFile; fileRef = 62ECC8E5793F38718BA543E9 /* discover-go.png */; };
+		3A1F89D1D1B3F5321DC37682 /* discover-fastlane.png in Resources */ = {isa = PBXBuildFile; fileRef = 0DE1013432A16F09E4AD36A4 /* discover-fastlane.png */; };
+		3B713373AB2010BE96883178 /* discover-helix.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E2E0283029180E283F611EB /* discover-helix.png */; };
+		3DB382406C4CCC88868CAD29 /* discover-htop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DB2FC749F9514F5C829161B /* discover-htop.png */; };
+		3EC03A43E84E54A095F0FF92 /* discover-gh.png in Resources */ = {isa = PBXBuildFile; fileRef = 44CD0669A8F74BDFDE6800D3 /* discover-gh.png */; };
+		3F21AFF3C63F7D9E685D312E /* discover-lulu.png in Resources */ = {isa = PBXBuildFile; fileRef = BEEB1A06667073B34F14EE47 /* discover-lulu.png */; };
+		3FC59E3C8E1E866D4EA84E07 /* discover-obs.png in Resources */ = {isa = PBXBuildFile; fileRef = AE042DA98F94A44A0C720E0A /* discover-obs.png */; };
+		402FEEBEB13161C51C4421C1 /* discover-alt-tab.png in Resources */ = {isa = PBXBuildFile; fileRef = C3095B5C2FA79ED4E7F3D161 /* discover-alt-tab.png */; };
+		412BD7FBE00921581F17C352 /* discover-lynis.png in Resources */ = {isa = PBXBuildFile; fileRef = 7008F02D4F1D234ADBA09C28 /* discover-lynis.png */; };
+		43CE8E9247F04CFA419DAACF /* discover-k9s.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6D67F2471AF713DA8C914D /* discover-k9s.png */; };
+		47863FC00371AC7B2F90D45F /* discover-mise.png in Resources */ = {isa = PBXBuildFile; fileRef = 963FCA4FDA1028E3E79C9DC8 /* discover-mise.png */; };
+		4B12E4FD36E9470D20A9A21B /* discover-element.png in Resources */ = {isa = PBXBuildFile; fileRef = 42AE6D3BF51870C044805383 /* discover-element.png */; };
+		4C92916EC7E7A992388198A8 /* discover-orbstack.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D11D81F84A9918232696A0E /* discover-orbstack.png */; };
+		4CB71FC20E889AE7868AE865 /* discover-figma.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A977B7F8980A919A76199B1 /* discover-figma.png */; };
+		4E1447513BC01B169D982E74 /* discover-wireshark-app.png in Resources */ = {isa = PBXBuildFile; fileRef = FFBA64267C2324BA03DF2251 /* discover-wireshark-app.png */; };
+		4ED2A45A78F005D09EDA8DB6 /* discover-redis.png in Resources */ = {isa = PBXBuildFile; fileRef = 1481149B2A04AA777353E9B2 /* discover-redis.png */; };
+		4FF9D09495CB129103A8E4D4 /* discover-node.png in Resources */ = {isa = PBXBuildFile; fileRef = EED94BD786CED764B228A9F2 /* discover-node.png */; };
+		503EEDE87CB3B8EA0380FEB4 /* discover-imagemagick.png in Resources */ = {isa = PBXBuildFile; fileRef = 429D6FAC64FD43941D850CEF /* discover-imagemagick.png */; };
+		50BD27F9A5B37FCBA4251B3E /* discover-microsoft-edge.png in Resources */ = {isa = PBXBuildFile; fileRef = 9D15219159B7A9EA38E5CC90 /* discover-microsoft-edge.png */; };
+		51C4DC57FAE5069450D8A749 /* discover-microsoft-teams.png in Resources */ = {isa = PBXBuildFile; fileRef = E2087BA3AD25E130FFEE2FAB /* discover-microsoft-teams.png */; };
+		526A083CD1F090221B820EF4 /* discover-audacity.png in Resources */ = {isa = PBXBuildFile; fileRef = BE889F6EC7EFFC43640A3BE5 /* discover-audacity.png */; };
+		532DCD3BB3ECA578957D6443 /* discover-mysql.png in Resources */ = {isa = PBXBuildFile; fileRef = 99B01C6EF4F73F9E77A96EC0 /* discover-mysql.png */; };
+		54A93EF8094D7535787897D8 /* discover-vagrant.png in Resources */ = {isa = PBXBuildFile; fileRef = 764C902B7E751B7505EDCBDB /* discover-vagrant.png */; };
+		555C6A3E643AF04A206247DC /* discover-jan.png in Resources */ = {isa = PBXBuildFile; fileRef = 82528B3D457F0BB346A02271 /* discover-jan.png */; };
+		57E0F8370D78EEC4B191E93B /* discover-miniconda.png in Resources */ = {isa = PBXBuildFile; fileRef = 46349F36C433D5C9E97752C0 /* discover-miniconda.png */; };
+		58539C7629796947D31135AA /* discover-neo4j-desktop.png in Resources */ = {isa = PBXBuildFile; fileRef = 29504A3163F9EEA1ECFD61DF /* discover-neo4j-desktop.png */; };
+		586682CED838EE666FC4E5D8 /* discover-pgadmin4.png in Resources */ = {isa = PBXBuildFile; fileRef = 0009A3D97C8A0374BCD28A9C /* discover-pgadmin4.png */; };
+		5E034D81ADE21EBB9E856266 /* discover-arc.png in Resources */ = {isa = PBXBuildFile; fileRef = 4EDA8B6B874A45BC2CEBC861 /* discover-arc.png */; };
+		5F65D5926C542A0DD1C1AFD1 /* discover-discord.png in Resources */ = {isa = PBXBuildFile; fileRef = A12EA5DE208587766AA1B89E /* discover-discord.png */; };
+		606678E251BF7D06528DEF14 /* discover-bettertouchtool.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B8A2DF12F28C42EEB49EAD0 /* discover-bettertouchtool.png */; };
+		61F99DA000B96E5E8F9F585F /* discover-diffusionbee.png in Resources */ = {isa = PBXBuildFile; fileRef = 54B5B70652E9FA088F2BBC35 /* discover-diffusionbee.png */; };
+		6202A9721E42323275765073 /* discover-cursor.png in Resources */ = {isa = PBXBuildFile; fileRef = 4BDE9F3A2D99304DFF9BA210 /* discover-cursor.png */; };
+		62144DD89EBD58106E1419B0 /* discover-textexpander.png in Resources */ = {isa = PBXBuildFile; fileRef = 24B2FF183C0E926E1BE2D07D /* discover-textexpander.png */; };
+		6256D89637A3B81787BE1506 /* discover-neovim.png in Resources */ = {isa = PBXBuildFile; fileRef = 7438D724C1447D8A4BD753A4 /* discover-neovim.png */; };
 		629F0FBE22FFC80C5EF221D5 /* ScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F54518697019DB3A89116B /* ScreenshotTests.swift */; };
+		62DB75B5448BD2D1DA31FC97 /* discover-alfred.png in Resources */ = {isa = PBXBuildFile; fileRef = 593100AF60A0CA98C1DF63E0 /* discover-alfred.png */; };
+		630312953765BB3E59B494C6 /* discover-ghostty.png in Resources */ = {isa = PBXBuildFile; fileRef = E2DD78076B0FD1D79ADA145C /* discover-ghostty.png */; };
+		64404C36ED313A0480817358 /* discover-android-studio.png in Resources */ = {isa = PBXBuildFile; fileRef = 03BF54DE3E0C0EEFF86EB06A /* discover-android-studio.png */; };
+		669B0D5363445F71259E43CE /* discover-zellij.png in Resources */ = {isa = PBXBuildFile; fileRef = 7EE7522046B044FCAFCD225B /* discover-zellij.png */; };
+		672C336EB07566EC5F348497 /* discover-redis-insight.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A93DB8915CE4FD5C557A4D /* discover-redis-insight.png */; };
+		6C2A213A4360971A647AAE8D /* discover-k3d.png in Resources */ = {isa = PBXBuildFile; fileRef = 7CCC6A9B50C745DDDC5AB79A /* discover-k3d.png */; };
+		6C60CFA4BF2464467DBA58E2 /* discover-lens.png in Resources */ = {isa = PBXBuildFile; fileRef = 09BDEBBA8650F9FB963F8BBF /* discover-lens.png */; };
+		6D72DA631478369AC4C6D798 /* discover-notion-calendar.png in Resources */ = {isa = PBXBuildFile; fileRef = 892BB201C950F8425F6763F5 /* discover-notion-calendar.png */; };
+		6E159BB72E619561B20CB815 /* discover-google-chrome.png in Resources */ = {isa = PBXBuildFile; fileRef = D6AF0A5E9893175B5ACF8C37 /* discover-google-chrome.png */; };
+		6F33330BA1CA602D888829D0 /* discover-bitwarden.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A2AEEF365815181D922FADE /* discover-bitwarden.png */; };
+		6FDCE2DF4D7DB6D05F223D7C /* discover-devin-desktop.png in Resources */ = {isa = PBXBuildFile; fileRef = E719C8462B8DA99506031C00 /* discover-devin-desktop.png */; };
+		705B109A7B7D90156B1F4153 /* discover-hazel.png in Resources */ = {isa = PBXBuildFile; fileRef = 4E1D434389CA48C678B164C8 /* discover-hazel.png */; };
+		7094294CD52D2F464F317751 /* discover-linear.png in Resources */ = {isa = PBXBuildFile; fileRef = 643FE39BF1C96C7EF755697C /* discover-linear.png */; };
+		71BFFF539190E321155EED51 /* discover-visual-studio-code.png in Resources */ = {isa = PBXBuildFile; fileRef = 91DE3D3CAB020C494EB031A8 /* discover-visual-studio-code.png */; };
+		72691ED3EF639AF224B44EF7 /* discover-cloudflared.png in Resources */ = {isa = PBXBuildFile; fileRef = 637714C01140C21399D8B6A4 /* discover-cloudflared.png */; };
+		7337CD26D1B926226D612561 /* discover-yt-dlp.png in Resources */ = {isa = PBXBuildFile; fileRef = B9C6F9CF0F44D9025A529894 /* discover-yt-dlp.png */; };
+		74E0187D00DFAE113CB4757F /* discover-anaconda.png in Resources */ = {isa = PBXBuildFile; fileRef = 24830E593DABE068954D10A0 /* discover-anaconda.png */; };
+		75525D03175B2C87D9A36F47 /* discover-vivaldi.png in Resources */ = {isa = PBXBuildFile; fileRef = 89906F98C8EDF80D8C0C91A9 /* discover-vivaldi.png */; };
+		765FCCAA95F144F43FE71EAD /* discover-jetbrains-toolbox.png in Resources */ = {isa = PBXBuildFile; fileRef = 9B0AAC5687CDCDADA9FD559C /* discover-jetbrains-toolbox.png */; };
+		766838D22D0FBBEEDF62C8CE /* discover-nordvpn.png in Resources */ = {isa = PBXBuildFile; fileRef = 3257B38C181CC762C425C6CF /* discover-nordvpn.png */; };
+		76848659DD25046813C71039 /* discover-awscli.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E4614E74F2F1A4C264A873B /* discover-awscli.png */; };
+		795C8E1A625F71CB6A6E5F0A /* discover-sketch.png in Resources */ = {isa = PBXBuildFile; fileRef = D8E6F60A4C6A039692754DB5 /* discover-sketch.png */; };
+		7E18BE36309030D9CCDBEE10 /* discover-tower.png in Resources */ = {isa = PBXBuildFile; fileRef = 525DE8787CD4C673FC5DF19A /* discover-tower.png */; };
 		7F00D81CA723FFF931934C7C /* GlobalHotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */; };
+		7F0654DD279C043315DDD6A4 /* discover-opentofu.png in Resources */ = {isa = PBXBuildFile; fileRef = DB7A1DF4875BA9AD403E28CF /* discover-opentofu.png */; };
+		7F7E10743B858115FA0A3B21 /* discover-zoom.png in Resources */ = {isa = PBXBuildFile; fileRef = 5A08DD0A5E1DCE80DB77D7D7 /* discover-zoom.png */; };
+		80C5F7502A10542B3824BF05 /* discover-dbeaver-community.png in Resources */ = {isa = PBXBuildFile; fileRef = 1B8F934C6150D4723E6574E3 /* discover-dbeaver-community.png */; };
+		814D5311FC9361B24FBBE29B /* discover-minikube.png in Resources */ = {isa = PBXBuildFile; fileRef = A1A6CF3D00BAC77A4FBA050D /* discover-minikube.png */; };
+		81B4D36BC719943AFD16B130 /* discover-rust.png in Resources */ = {isa = PBXBuildFile; fileRef = DD2EA9E4033AC4F704FBFC3C /* discover-rust.png */; };
+		81FABF6E92F7030D07955832 /* discover-keka.png in Resources */ = {isa = PBXBuildFile; fileRef = 3F3745C3AE6A4388A0C0DFC3 /* discover-keka.png */; };
+		82E13B27ABA2D76034BAFB78 /* discover-vlc.png in Resources */ = {isa = PBXBuildFile; fileRef = 91BDE7770A6ECCB35C83A071 /* discover-vlc.png */; };
+		82EF1CB1A35869FD6B863195 /* discover-gpg-suite.png in Resources */ = {isa = PBXBuildFile; fileRef = 2178251A6E2914C0670228A8 /* discover-gpg-suite.png */; };
 		8307C1100E99F99BD5D5C7F8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7D3C526889D003BC43FAD7E /* AppDelegate.swift */; };
+		83617A44B322BD8048032E85 /* discover-kitty.png in Resources */ = {isa = PBXBuildFile; fileRef = 22C9B5968A93BCE1B007DC10 /* discover-kitty.png */; };
+		87E67369B21A358A4AF23149 /* discover-lm-studio.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CC0340190A784C7CCAAB66B /* discover-lm-studio.png */; };
+		88617E6DEC39F27EEC26422D /* discover-betterdisplay.png in Resources */ = {isa = PBXBuildFile; fileRef = A87886819F77401F686F8510 /* discover-betterdisplay.png */; };
+		89013F06E216D65D0C2D351D /* discover-screenflow.png in Resources */ = {isa = PBXBuildFile; fileRef = DF8EDABFF1353EF92FCA7980 /* discover-screenflow.png */; };
+		89D372717A305516F92C85FC /* discover-1password.png in Resources */ = {isa = PBXBuildFile; fileRef = CC4DC3404587635505155EC2 /* discover-1password.png */; };
+		89D472178D96EB6FE1ECB7DC /* discover-devtoys.png in Resources */ = {isa = PBXBuildFile; fileRef = 355F406FF322D09B9A88FAD0 /* discover-devtoys.png */; };
+		8B5C188A6DF3719B8DB94D1D /* discover-docker-desktop.png in Resources */ = {isa = PBXBuildFile; fileRef = 39869B119C34D6CC921261DC /* discover-docker-desktop.png */; };
+		8BDDE982A285A9EA006540F8 /* discover-doctl.png in Resources */ = {isa = PBXBuildFile; fileRef = EDAC796843798B9D5E0BE8F5 /* discover-doctl.png */; };
+		8C806906E071ED3AA8B07FC0 /* discover-deno.png in Resources */ = {isa = PBXBuildFile; fileRef = 58D2550692D5C058BF58CE29 /* discover-deno.png */; };
+		8CD9660D8170350936C5E6F8 /* discover-git.png in Resources */ = {isa = PBXBuildFile; fileRef = 6837A63A57B54F7E081B1CE5 /* discover-git.png */; };
+		8CFA1A3A5CD58765A2ECD706 /* discover-netnewswire.png in Resources */ = {isa = PBXBuildFile; fileRef = EE326DBCD268D4C819F651EB /* discover-netnewswire.png */; };
+		8D41E70CE160E321A7E1D995 /* discover-jordanbaird-ice.png in Resources */ = {isa = PBXBuildFile; fileRef = C2E1E506BC0D092A6394F79F /* discover-jordanbaird-ice.png */; };
+		8D5AA9F629B56DCE2AAD3674 /* discover-mongodb-compass.png in Resources */ = {isa = PBXBuildFile; fileRef = 679FDABB13FBB4F2C55AF97E /* discover-mongodb-compass.png */; };
+		8DF93504579909DFF156EC86 /* discover-tunnelblick.png in Resources */ = {isa = PBXBuildFile; fileRef = C5B370A8A0DDE84AF5E14842 /* discover-tunnelblick.png */; };
+		8E918FD2A7EA68F3A3552DB5 /* discover-iterm2.png in Resources */ = {isa = PBXBuildFile; fileRef = 229DC8C758DD6E598483FE8B /* discover-iterm2.png */; };
 		8EB79BC693A019D0C3A6C880 /* HouseStyle in Frameworks */ = {isa = PBXBuildFile; productRef = DFC9C1772185743A6064FC72 /* HouseStyle */; };
+		8F8C3EC8EF127D4AEAFB8AB9 /* discover-pulumi.png in Resources */ = {isa = PBXBuildFile; fileRef = 15A2208A6F98F3BD597DF806 /* discover-pulumi.png */; };
+		91A003173AA311ED9A6503F6 /* discover-expressvpn.png in Resources */ = {isa = PBXBuildFile; fileRef = 70BB5B7B7E85DD139B3B355D /* discover-expressvpn.png */; };
+		92EA98359A9B7E51D618BF20 /* discover-python.png in Resources */ = {isa = PBXBuildFile; fileRef = CA1C59FC764BFA449529C27B /* discover-python.png */; };
+		9339C33194F0CDA910444F7F /* discover-blockblock.png in Resources */ = {isa = PBXBuildFile; fileRef = 56A8940832961A2021E7C0DA /* discover-blockblock.png */; };
+		93F91B36DDEAF56A0C8D67A5 /* discover-superwhisper.png in Resources */ = {isa = PBXBuildFile; fileRef = 418F6FE16E44D1B530B18397 /* discover-superwhisper.png */; };
+		94F5FE490C71F817EFBCDCF9 /* discover-firefox.png in Resources */ = {isa = PBXBuildFile; fileRef = 2AFF3917C167FBDAE379072E /* discover-firefox.png */; };
+		954CC05917B85828C72025CF /* discover-cmake.png in Resources */ = {isa = PBXBuildFile; fileRef = ED59385BC699A711B2153FFA /* discover-cmake.png */; };
+		98427099BC70F95C992DA14C /* discover-iina.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D2D2E3E27E5ED8D76FBF469 /* discover-iina.png */; };
+		98684CEA78425E236AF839F7 /* discover-cleanshot.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E22D2241E264E32431D30B2 /* discover-cleanshot.png */; };
 		98BBD02CA4ABA5A9F7EC0D12 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 771150EC08441ABC3EC1DD1C /* Assets.xcassets */; };
 		98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DAF62F0F9BD3607332230F /* Mascot.swift */; };
 		99F875975481F8F426760A1A /* BrewParseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3999942A157B537C78219A00 /* BrewParseTests.swift */; };
+		9A1813659970B1F58EFB893E /* discover-podman-desktop.png in Resources */ = {isa = PBXBuildFile; fileRef = A651A9697E7A6AFDB1CC4CD8 /* discover-podman-desktop.png */; };
+		9AC53C680FFAB220EAC1D4E9 /* discover-eza.png in Resources */ = {isa = PBXBuildFile; fileRef = 4B398B723022522ED71770FA /* discover-eza.png */; };
+		9CFEBBA9EF41463BBB398C23 /* discover-raycast.png in Resources */ = {isa = PBXBuildFile; fileRef = BA969C000483FFAED9E6B3A2 /* discover-raycast.png */; };
+		9D8CDAF21433635F9BF7FD68 /* discover-oversight.png in Resources */ = {isa = PBXBuildFile; fileRef = 945455C0ED49E92D53BACC08 /* discover-oversight.png */; };
+		9E2DBD94B64678A039B832D7 /* discover-tor-browser.png in Resources */ = {isa = PBXBuildFile; fileRef = 46B4799709349094F1D67B99 /* discover-tor-browser.png */; };
+		9FF823E6F765E6198E1B0783 /* discover-superduper.png in Resources */ = {isa = PBXBuildFile; fileRef = 60603245A0D405B06400DCAD /* discover-superduper.png */; };
 		A028D58D8573DA62145455B8 /* DiscoverPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDA32D50FEC4D1761B3D80C /* DiscoverPackage.swift */; };
+		A0F6A750D6F01D8272E1BD99 /* discover-signal.png in Resources */ = {isa = PBXBuildFile; fileRef = FA256CD4F74F83199FA8DA88 /* discover-signal.png */; };
+		A4BAF25E3EC61DEA95458324 /* discover-pnpm.png in Resources */ = {isa = PBXBuildFile; fileRef = C1F96D9DDD9F1E0C3D26E979 /* discover-pnpm.png */; };
+		A6992F8FB9691A35D0B49620 /* discover-proxifier.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A06616E9C3E841FEE57444F /* discover-proxifier.png */; };
+		A6B2940F392D5B426AA8EB21 /* discover-bartender.png in Resources */ = {isa = PBXBuildFile; fileRef = 195EA8E03CE007B0D6A5B017 /* discover-bartender.png */; };
+		A7508917FDB90FADBCEF8A48 /* discover-zed.png in Resources */ = {isa = PBXBuildFile; fileRef = 9F02C523F2944E329DDCE72C /* discover-zed.png */; };
+		ABE55532B50828BE5EE37337 /* discover-openjdk.png in Resources */ = {isa = PBXBuildFile; fileRef = 4F49732C85BB145DB621AF40 /* discover-openjdk.png */; };
 		AD6C949DD52CB525A59ED6EA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6511EB48F677664E54300B /* SettingsView.swift */; };
+		AD9A33C4107AA4BB5A48F9B3 /* discover-dbgate.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D66A22605FD9421E27B63DF /* discover-dbgate.png */; };
+		B1980CC8A750A3BE2D7E9E9F /* discover-kap.png in Resources */ = {isa = PBXBuildFile; fileRef = 1126794A76B23B1CB2E02B5A /* discover-kap.png */; };
+		B75C0FEA77A07D98C14AB515 /* discover-bruno.png in Resources */ = {isa = PBXBuildFile; fileRef = ABA63C3A8FF8AC50C0006541 /* discover-bruno.png */; };
 		B7A0F3CB7CEDDF1035CDDA9B /* UpdateNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */; };
+		B8524CCF7F68E990EC9B4EF8 /* discover-krisp.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB8FB13C6FA70177F1C26E0 /* discover-krisp.png */; };
+		BA9213E5149A6C96089EA737 /* discover-mockoon.png in Resources */ = {isa = PBXBuildFile; fileRef = 8A7C7B7A07D88064BD9C91D3 /* discover-mockoon.png */; };
+		BB45636CED27A62A5588EF5E /* discover-beekeeper-studio.png in Resources */ = {isa = PBXBuildFile; fileRef = F37B24A5185027BF4AAE6D8E /* discover-beekeeper-studio.png */; };
+		BB801310C4A2349D41C8A791 /* discover-telegram.png in Resources */ = {isa = PBXBuildFile; fileRef = 55706D25BF6D88366F8230B5 /* discover-telegram.png */; };
+		BD55A63B7586F02EF5F85624 /* discover-glow.png in Resources */ = {isa = PBXBuildFile; fileRef = 00DDBE3F5689A18BA7D19FD6 /* discover-glow.png */; };
+		BE46134C4465889FAA72C219 /* discover-opera.png in Resources */ = {isa = PBXBuildFile; fileRef = F1191BAAD02CC3EF06B96AD8 /* discover-opera.png */; };
+		BEC601C8EE1A4D3A48F10A0D /* discover-readdle-spark.png in Resources */ = {isa = PBXBuildFile; fileRef = D4A784C77DEA821A3B004E16 /* discover-readdle-spark.png */; };
 		BF97D9C2737EA6EF061CFAB2 /* BrewParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E590DD931E1D08AEF44F26 /* BrewParse.swift */; };
+		C0DD91EB3ACCED0E3DA31E3A /* discover-losslesscut.png in Resources */ = {isa = PBXBuildFile; fileRef = DBA87A23FF7C6FED8C5B9ED9 /* discover-losslesscut.png */; };
+		C4F99E6B4D971A086EB0C1DB /* discover-imageoptim.png in Resources */ = {isa = PBXBuildFile; fileRef = 1CA7ECBF8B22579AD5DB8737 /* discover-imageoptim.png */; };
+		C52F9D1920FEB2A086520753 /* discover-pre-commit.png in Resources */ = {isa = PBXBuildFile; fileRef = 86E898565E022B056BC7284B /* discover-pre-commit.png */; };
+		C8C57EFFF4028CA5AD3C6248 /* discover-starship.png in Resources */ = {isa = PBXBuildFile; fileRef = 1EDF9FD16489DB7B4A323DDE /* discover-starship.png */; };
+		C962019723FBD6B92976AE13 /* discover-affinity.png in Resources */ = {isa = PBXBuildFile; fileRef = 9856A34A2D7CA0E53014E301 /* discover-affinity.png */; };
+		C9B41A3EDE839D26DF0A531E /* discover-dash.png in Resources */ = {isa = PBXBuildFile; fileRef = 5BAC4CA480C61F1A819B8543 /* discover-dash.png */; };
+		CAFDFA1663C4C2F295A69B59 /* discover-handbrake-app.png in Resources */ = {isa = PBXBuildFile; fileRef = 072CAE87C8DE05E267B36CDA /* discover-handbrake-app.png */; };
+		CB0CDBD6568C345F29808336 /* discover-aerial.png in Resources */ = {isa = PBXBuildFile; fileRef = B17F973670EE964ECBF9A643 /* discover-aerial.png */; };
+		CB3FF7DE810E43805CEBC340 /* discover-sublime-text.png in Resources */ = {isa = PBXBuildFile; fileRef = 5A1DDB88F2891289F7F14B4E /* discover-sublime-text.png */; };
+		CBB0060294CECD6688F4EECF /* discover-loom.png in Resources */ = {isa = PBXBuildFile; fileRef = DE1FF0BB61A1E75C0A414F35 /* discover-loom.png */; };
+		CC0AAC9EA64036E26A60BC44 /* discover-veracrypt.png in Resources */ = {isa = PBXBuildFile; fileRef = 6A8BE0F52D13C159059B4624 /* discover-veracrypt.png */; };
 		D015DADD4B014BF2A4BA9B62 /* HouseStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26B28E7E29E57D8EB3ADA2A9 /* HouseStyle.swift */; };
+		D08EA0AF774E78F40E78F236 /* discover-yarn.png in Resources */ = {isa = PBXBuildFile; fileRef = 0AA947B846E9D6533DF3A0CF /* discover-yarn.png */; };
+		D08ECBD31537EC91186A766F /* discover-claude.png in Resources */ = {isa = PBXBuildFile; fileRef = AC206B0DAFE591A2860F9B46 /* discover-claude.png */; };
+		D14F9E5BBB32177293D7EEBD /* discover-volta.png in Resources */ = {isa = PBXBuildFile; fileRef = 07515DEB054BF0B258F3187B /* discover-volta.png */; };
+		D2307A7096D45DC5D9EA2D26 /* discover-craft.png in Resources */ = {isa = PBXBuildFile; fileRef = 783F4985264CFB556B6A9424 /* discover-craft.png */; };
+		D41176FB8A0B217551847C0C /* discover-rancher.png in Resources */ = {isa = PBXBuildFile; fileRef = DB793AC7EBEFF314752C3F28 /* discover-rancher.png */; };
+		D6CAB348E6D6E7811041882C /* discover-ansible.png in Resources */ = {isa = PBXBuildFile; fileRef = 9260E49E1131582FB0882FF7 /* discover-ansible.png */; };
+		D752A0D1160FFFC026ACF015 /* discover-keyboard-maestro.png in Resources */ = {isa = PBXBuildFile; fileRef = 17530A20CD37CBC1CDC1115B /* discover-keyboard-maestro.png */; };
+		D7DEC577B8EBB7D30CEE3E11 /* discover-rectangle.png in Resources */ = {isa = PBXBuildFile; fileRef = 3A1AB21923C7B52362B43536 /* discover-rectangle.png */; };
+		D87F5235A56F4DDF8EDD5190 /* discover-carbon-copy-cloner.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D2A00E91EEEC61EC5DDF241 /* discover-carbon-copy-cloner.png */; };
+		D8BA75EFD495C32C55CCDE7C /* discover-nova.png in Resources */ = {isa = PBXBuildFile; fileRef = 331768B10103072274F62EE2 /* discover-nova.png */; };
+		DA13CC1DF9A234FB31D6BBAC /* discover-inkscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E53EC47FC97BB96F94A5D5E /* discover-inkscape.png */; };
+		DB65657035F947CF070DC8BC /* discover-popclip.png in Resources */ = {isa = PBXBuildFile; fileRef = F636D3FBB782A5060C8A569D /* discover-popclip.png */; };
+		DC8182B2ECDA1E5917C597CB /* discover-httpie.png in Resources */ = {isa = PBXBuildFile; fileRef = 344C3331C0E6A46A39CF89BD /* discover-httpie.png */; };
+		DD3D15119FCB16BFEF6F0290 /* discover-logseq.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F0F773B19CB09A427B1F29F /* discover-logseq.png */; };
+		DE0F292955877A02A3812E0F /* discover-gcloud-cli.png in Resources */ = {isa = PBXBuildFile; fileRef = C3FF45C9D463A1764F05448F /* discover-gcloud-cli.png */; };
+		DF286EB2731280387A915DBF /* discover-todoist-app.png in Resources */ = {isa = PBXBuildFile; fileRef = A5B3E320BB80D43343F936D6 /* discover-todoist-app.png */; };
+		DF2BB485531A89D28A672367 /* discover-skaffold.png in Resources */ = {isa = PBXBuildFile; fileRef = 670ADBB1388C04742067744D /* discover-skaffold.png */; };
+		E137461F1A80966FA4CFDD4A /* discover-webex.png in Resources */ = {isa = PBXBuildFile; fileRef = B75E69769CB4A59456ED1EB5 /* discover-webex.png */; };
+		E162768C20F07C5AFFFDD842 /* discover-gimp.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C6214CD0CCFC90504AEB0FC /* discover-gimp.png */; };
+		E2E784FF3CDA898F845CE330 /* discover-xcodes-app.png in Resources */ = {isa = PBXBuildFile; fileRef = 2BA9528BEE1A977A1D88149C /* discover-xcodes-app.png */; };
+		E3834A117901E0E6999A06F6 /* discover-warp.png in Resources */ = {isa = PBXBuildFile; fileRef = 961FE42AB522DA113241A631 /* discover-warp.png */; };
+		E60A5FD7D692D42846C81044 /* discover-proxyman.png in Resources */ = {isa = PBXBuildFile; fileRef = 4DFC5E67E36329E744B1E5D4 /* discover-proxyman.png */; };
+		E6B935D6AC3AF809B1814CD9 /* discover-istat-menus.png in Resources */ = {isa = PBXBuildFile; fileRef = D9A2A7F499EC81719CF3C8EB /* discover-istat-menus.png */; };
+		E96451D0BF47A539E7167421 /* discover-postgresql.png in Resources */ = {isa = PBXBuildFile; fileRef = B419973447DEF862B92CEED1 /* discover-postgresql.png */; };
+		E99EBB83B375AAF6EE6BC1A6 /* discover-protonvpn.png in Resources */ = {isa = PBXBuildFile; fileRef = CEE399F3ACB3DD559C8182BE /* discover-protonvpn.png */; };
 		EB1668047B6F2D788991D287 /* BrewDockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A547DD2500FDF4F98DE1FF5 /* BrewDockApp.swift */; };
+		EBAC43DD0E0D283C77252745 /* discover-whatsapp.png in Resources */ = {isa = PBXBuildFile; fileRef = C501D69B50E90E02A3588169 /* discover-whatsapp.png */; };
+		EC14FBAB9EBABBFF9A716440 /* discover-insomnia.png in Resources */ = {isa = PBXBuildFile; fileRef = E4A04122CEAADC48BCF0A2CE /* discover-insomnia.png */; };
 		EE938E160CFA88B6094F7F3A /* ServiceRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16969FF28CA92DA2624C50CF /* ServiceRowView.swift */; };
+		EF00AA4CEB888C7E0898833E /* discover-postman.png in Resources */ = {isa = PBXBuildFile; fileRef = 397C0A4D8E17D4DAD67CB78A /* discover-postman.png */; };
+		EF41DE0ACB9BC58930A64C69 /* discover-tlrc.png in Resources */ = {isa = PBXBuildFile; fileRef = A39F734A7673A9EED64CD32C /* discover-tlrc.png */; };
+		F43C105C0BE176B8EBE055B2 /* discover-direnv.png in Resources */ = {isa = PBXBuildFile; fileRef = 643DE2675BB3270E44D7B576 /* discover-direnv.png */; };
+		F52BBCA4A5079AAA91231D0B /* discover-tableplus.png in Resources */ = {isa = PBXBuildFile; fileRef = EC75CC569CF548CFDE8A12D6 /* discover-tableplus.png */; };
+		F6DFEFECC30AA9F99137CF05 /* discover-cocoapods.png in Resources */ = {isa = PBXBuildFile; fileRef = 11AC33A055FE03BDF60EBAED /* discover-cocoapods.png */; };
+		F7021617F865224D74BB1EF1 /* discover-ollama-app.png in Resources */ = {isa = PBXBuildFile; fileRef = 0FDFA4247219801C48BDE01F /* discover-ollama-app.png */; };
+		F70B56C83B7396C1E3706164 /* discover-mariadb.png in Resources */ = {isa = PBXBuildFile; fileRef = C5C7C6EB8C6830441F8DD6E9 /* discover-mariadb.png */; };
+		FA4E2B61B4F3C90CF9B2BD9E /* discover-fantastical.png in Resources */ = {isa = PBXBuildFile; fileRef = 9BCAE2A0ACC804A2E8F3DCBE /* discover-fantastical.png */; };
+		FCC8224747546C7AC0C58A8C /* discover-wezterm.png in Resources */ = {isa = PBXBuildFile; fileRef = 4A3D50F2E119D21F08DFAF8D /* discover-wezterm.png */; };
+		FDC7BFC13CA04DBC11237065 /* discover-mimestream.png in Resources */ = {isa = PBXBuildFile; fileRef = 03D98B2ED75BF96DD4C5D032 /* discover-mimestream.png */; };
+		FDCE9C17D81DFB1EA1332FA3 /* discover-maccy.png in Resources */ = {isa = PBXBuildFile; fileRef = 4D369349BA914575AE673567 /* discover-maccy.png */; };
+		FDE56D2F5BB315D55F2610FB /* discover-obsidian.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F310809F7D8638D734DCA7D /* discover-obsidian.png */; };
+		FE2736BE65F1DC338FB4B9F1 /* discover-chatgpt.png in Resources */ = {isa = PBXBuildFile; fileRef = E526A82D1A9FFEC1E711F6CF /* discover-chatgpt.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,29 +244,233 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0009A3D97C8A0374BCD28A9C /* discover-pgadmin4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-pgadmin4.png"; sourceTree = "<group>"; };
+		00DDBE3F5689A18BA7D19FD6 /* discover-glow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-glow.png"; sourceTree = "<group>"; };
+		03BF54DE3E0C0EEFF86EB06A /* discover-android-studio.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-android-studio.png"; sourceTree = "<group>"; };
+		03D98B2ED75BF96DD4C5D032 /* discover-mimestream.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mimestream.png"; sourceTree = "<group>"; };
+		072CAE87C8DE05E267B36CDA /* discover-handbrake-app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-handbrake-app.png"; sourceTree = "<group>"; };
+		07515DEB054BF0B258F3187B /* discover-volta.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-volta.png"; sourceTree = "<group>"; };
+		09BDEBBA8650F9FB963F8BBF /* discover-lens.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-lens.png"; sourceTree = "<group>"; };
 		0A547DD2500FDF4F98DE1FF5 /* BrewDockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewDockApp.swift; sourceTree = "<group>"; };
+		0AA947B846E9D6533DF3A0CF /* discover-yarn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-yarn.png"; sourceTree = "<group>"; };
+		0C6214CD0CCFC90504AEB0FC /* discover-gimp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-gimp.png"; sourceTree = "<group>"; };
+		0DE1013432A16F09E4AD36A4 /* discover-fastlane.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-fastlane.png"; sourceTree = "<group>"; };
+		0F310809F7D8638D734DCA7D /* discover-obsidian.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-obsidian.png"; sourceTree = "<group>"; };
+		0FDFA4247219801C48BDE01F /* discover-ollama-app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-ollama-app.png"; sourceTree = "<group>"; };
+		1126794A76B23B1CB2E02B5A /* discover-kap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-kap.png"; sourceTree = "<group>"; };
+		11AC33A055FE03BDF60EBAED /* discover-cocoapods.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-cocoapods.png"; sourceTree = "<group>"; };
+		1481149B2A04AA777353E9B2 /* discover-redis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-redis.png"; sourceTree = "<group>"; };
+		15A2208A6F98F3BD597DF806 /* discover-pulumi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-pulumi.png"; sourceTree = "<group>"; };
 		16969FF28CA92DA2624C50CF /* ServiceRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceRowView.swift; sourceTree = "<group>"; };
+		17530A20CD37CBC1CDC1115B /* discover-keyboard-maestro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-keyboard-maestro.png"; sourceTree = "<group>"; };
+		195EA8E03CE007B0D6A5B017 /* discover-bartender.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-bartender.png"; sourceTree = "<group>"; };
+		1A977B7F8980A919A76199B1 /* discover-figma.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-figma.png"; sourceTree = "<group>"; };
+		1B30C0EC27A7D7B4F9EE5D3D /* discover-helm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-helm.png"; sourceTree = "<group>"; };
+		1B8F934C6150D4723E6574E3 /* discover-dbeaver-community.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-dbeaver-community.png"; sourceTree = "<group>"; };
+		1C1A38CDEA4239AFB090565D /* discover-yazi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-yazi.png"; sourceTree = "<group>"; };
+		1CA7ECBF8B22579AD5DB8737 /* discover-imageoptim.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-imageoptim.png"; sourceTree = "<group>"; };
 		1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateNotifier.swift; sourceTree = "<group>"; };
+		1EDF9FD16489DB7B4A323DDE /* discover-starship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-starship.png"; sourceTree = "<group>"; };
+		2178251A6E2914C0670228A8 /* discover-gpg-suite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-gpg-suite.png"; sourceTree = "<group>"; };
+		229DC8C758DD6E598483FE8B /* discover-iterm2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-iterm2.png"; sourceTree = "<group>"; };
+		22C9B5968A93BCE1B007DC10 /* discover-kitty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-kitty.png"; sourceTree = "<group>"; };
+		240357F479AACFE826E504D5 /* discover-exiftool.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-exiftool.png"; sourceTree = "<group>"; };
+		24830E593DABE068954D10A0 /* discover-anaconda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-anaconda.png"; sourceTree = "<group>"; };
+		24B2FF183C0E926E1BE2D07D /* discover-textexpander.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-textexpander.png"; sourceTree = "<group>"; };
 		250F33E2A3C8FF27E3FB785A /* BrewService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewService.swift; sourceTree = "<group>"; };
+		25FFBBC2DCD03EE89C9B3938 /* discover-jq.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-jq.png"; sourceTree = "<group>"; };
 		26B28E7E29E57D8EB3ADA2A9 /* HouseStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseStyle.swift; sourceTree = "<group>"; };
+		29504A3163F9EEA1ECFD61DF /* discover-neo4j-desktop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-neo4j-desktop.png"; sourceTree = "<group>"; };
+		295CC78964103ECB6B266855 /* discover-keepassxc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-keepassxc.png"; sourceTree = "<group>"; };
+		2A06616E9C3E841FEE57444F /* discover-proxifier.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-proxifier.png"; sourceTree = "<group>"; };
+		2AFF3917C167FBDAE379072E /* discover-firefox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-firefox.png"; sourceTree = "<group>"; };
+		2BA9528BEE1A977A1D88149C /* discover-xcodes-app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-xcodes-app.png"; sourceTree = "<group>"; };
+		2D11D81F84A9918232696A0E /* discover-orbstack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-orbstack.png"; sourceTree = "<group>"; };
+		2D2A00E91EEEC61EC5DDF241 /* discover-carbon-copy-cloner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-carbon-copy-cloner.png"; sourceTree = "<group>"; };
+		2D66A22605FD9421E27B63DF /* discover-dbgate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-dbgate.png"; sourceTree = "<group>"; };
+		2E22D2241E264E32431D30B2 /* discover-cleanshot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-cleanshot.png"; sourceTree = "<group>"; };
+		3257B38C181CC762C425C6CF /* discover-nordvpn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-nordvpn.png"; sourceTree = "<group>"; };
+		331768B10103072274F62EE2 /* discover-nova.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-nova.png"; sourceTree = "<group>"; };
 		341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PackageRowView.swift; sourceTree = "<group>"; };
+		344C3331C0E6A46A39CF89BD /* discover-httpie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-httpie.png"; sourceTree = "<group>"; };
+		355F406FF322D09B9A88FAD0 /* discover-devtoys.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-devtoys.png"; sourceTree = "<group>"; };
+		359C0D697DA99818CB4DBB7F /* discover-swish.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-swish.png"; sourceTree = "<group>"; };
 		36E590DD931E1D08AEF44F26 /* BrewParse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewParse.swift; sourceTree = "<group>"; };
+		397C0A4D8E17D4DAD67CB78A /* discover-postman.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-postman.png"; sourceTree = "<group>"; };
+		39869B119C34D6CC921261DC /* discover-docker-desktop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-docker-desktop.png"; sourceTree = "<group>"; };
 		3999942A157B537C78219A00 /* BrewParseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewParseTests.swift; sourceTree = "<group>"; };
+		3A1AB21923C7B52362B43536 /* discover-rectangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-rectangle.png"; sourceTree = "<group>"; };
+		3AB8E4A63C324A28CFB4BE69 /* discover-github.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-github.png"; sourceTree = "<group>"; };
+		3BDAF8F5B6590310B51FCC25 /* discover-brave-browser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-brave-browser.png"; sourceTree = "<group>"; };
+		3F3745C3AE6A4388A0C0DFC3 /* discover-keka.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-keka.png"; sourceTree = "<group>"; };
+		40157997D03D7790608F876A /* discover-charles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-charles.png"; sourceTree = "<group>"; };
+		418F6FE16E44D1B530B18397 /* discover-superwhisper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-superwhisper.png"; sourceTree = "<group>"; };
+		429D6FAC64FD43941D850CEF /* discover-imagemagick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-imagemagick.png"; sourceTree = "<group>"; };
+		42AE6D3BF51870C044805383 /* discover-element.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-element.png"; sourceTree = "<group>"; };
 		4365A8D2E1676E7A11C70D45 /* BrewDock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BrewDock.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44CD0669A8F74BDFDE6800D3 /* discover-gh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-gh.png"; sourceTree = "<group>"; };
+		46349F36C433D5C9E97752C0 /* discover-miniconda.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-miniconda.png"; sourceTree = "<group>"; };
+		46B4799709349094F1D67B99 /* discover-tor-browser.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-tor-browser.png"; sourceTree = "<group>"; };
+		485126610CB2DB39819694CD /* discover-blender.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-blender.png"; sourceTree = "<group>"; };
+		4A3D50F2E119D21F08DFAF8D /* discover-wezterm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-wezterm.png"; sourceTree = "<group>"; };
 		4AC65231F149F5DE798D8B0E /* BrewDock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BrewDock.entitlements; sourceTree = "<group>"; };
+		4B398B723022522ED71770FA /* discover-eza.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-eza.png"; sourceTree = "<group>"; };
+		4BDE9F3A2D99304DFF9BA210 /* discover-cursor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-cursor.png"; sourceTree = "<group>"; };
+		4D369349BA914575AE673567 /* discover-maccy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-maccy.png"; sourceTree = "<group>"; };
+		4DFC5E67E36329E744B1E5D4 /* discover-proxyman.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-proxyman.png"; sourceTree = "<group>"; };
+		4E1D434389CA48C678B164C8 /* discover-hazel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-hazel.png"; sourceTree = "<group>"; };
+		4EDA8B6B874A45BC2CEBC861 /* discover-arc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-arc.png"; sourceTree = "<group>"; };
+		4F49732C85BB145DB621AF40 /* discover-openjdk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-openjdk.png"; sourceTree = "<group>"; };
 		503440E86E47889F134F948C /* FormulaIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormulaIcons.swift; sourceTree = "<group>"; };
 		50F54518697019DB3A89116B /* ScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotTests.swift; sourceTree = "<group>"; };
+		525DE8787CD4C673FC5DF19A /* discover-tower.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-tower.png"; sourceTree = "<group>"; };
+		53C686493BF421742F907231 /* discover-ngrok.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-ngrok.png"; sourceTree = "<group>"; };
+		548648475463D17254645C1A /* discover-transmission.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-transmission.png"; sourceTree = "<group>"; };
+		54B5B70652E9FA088F2BBC35 /* discover-diffusionbee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-diffusionbee.png"; sourceTree = "<group>"; };
+		55706D25BF6D88366F8230B5 /* discover-telegram.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-telegram.png"; sourceTree = "<group>"; };
+		56A8940832961A2021E7C0DA /* discover-blockblock.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-blockblock.png"; sourceTree = "<group>"; };
+		58D2550692D5C058BF58CE29 /* discover-deno.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-deno.png"; sourceTree = "<group>"; };
+		593100AF60A0CA98C1DF63E0 /* discover-alfred.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-alfred.png"; sourceTree = "<group>"; };
+		5A08DD0A5E1DCE80DB77D7D7 /* discover-zoom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-zoom.png"; sourceTree = "<group>"; };
+		5A1DDB88F2891289F7F14B4E /* discover-sublime-text.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-sublime-text.png"; sourceTree = "<group>"; };
+		5BAC4CA480C61F1A819B8543 /* discover-dash.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-dash.png"; sourceTree = "<group>"; };
+		5F0F773B19CB09A427B1F29F /* discover-logseq.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-logseq.png"; sourceTree = "<group>"; };
+		60603245A0D405B06400DCAD /* discover-superduper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-superduper.png"; sourceTree = "<group>"; };
+		62ECC8E5793F38718BA543E9 /* discover-go.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-go.png"; sourceTree = "<group>"; };
+		637714C01140C21399D8B6A4 /* discover-cloudflared.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-cloudflared.png"; sourceTree = "<group>"; };
+		643DE2675BB3270E44D7B576 /* discover-direnv.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-direnv.png"; sourceTree = "<group>"; };
+		643FE39BF1C96C7EF755697C /* discover-linear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-linear.png"; sourceTree = "<group>"; };
+		670ADBB1388C04742067744D /* discover-skaffold.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-skaffold.png"; sourceTree = "<group>"; };
+		679FDABB13FBB4F2C55AF97E /* discover-mongodb-compass.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mongodb-compass.png"; sourceTree = "<group>"; };
+		6837A63A57B54F7E081B1CE5 /* discover-git.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-git.png"; sourceTree = "<group>"; };
+		68AEED39722A5C0ED8C03275 /* discover-fork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-fork.png"; sourceTree = "<group>"; };
+		6A656DE5EAFFDBD33450FEAB /* discover-stern.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-stern.png"; sourceTree = "<group>"; };
+		6A8BE0F52D13C159059B4624 /* discover-veracrypt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-veracrypt.png"; sourceTree = "<group>"; };
+		6F19FA7223FB6489EA43A781 /* discover-karabiner-elements.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-karabiner-elements.png"; sourceTree = "<group>"; };
+		7008F02D4F1D234ADBA09C28 /* discover-lynis.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-lynis.png"; sourceTree = "<group>"; };
+		700B755FBFD572ED47ED745E /* discover-downie.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-downie.png"; sourceTree = "<group>"; };
+		70BB5B7B7E85DD139B3B355D /* discover-expressvpn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-expressvpn.png"; sourceTree = "<group>"; };
+		7438D724C1447D8A4BD753A4 /* discover-neovim.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-neovim.png"; sourceTree = "<group>"; };
+		764C902B7E751B7505EDCBDB /* discover-vagrant.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-vagrant.png"; sourceTree = "<group>"; };
+		76C8E4033919E7A8BF92773B /* discover-mullvad-vpn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mullvad-vpn.png"; sourceTree = "<group>"; };
 		771150EC08441ABC3EC1DD1C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		783F4985264CFB556B6A9424 /* discover-craft.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-craft.png"; sourceTree = "<group>"; };
+		7B7A02D2C7B704D581D095B1 /* discover-sourcetree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-sourcetree.png"; sourceTree = "<group>"; };
+		7B8A2DF12F28C42EEB49EAD0 /* discover-bettertouchtool.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-bettertouchtool.png"; sourceTree = "<group>"; };
+		7CCC6A9B50C745DDDC5AB79A /* discover-k3d.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-k3d.png"; sourceTree = "<group>"; };
 		7CDD1D41DE8EB6E1E2E6722C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7D2D2E3E27E5ED8D76FBF469 /* discover-iina.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-iina.png"; sourceTree = "<group>"; };
+		7EE7522046B044FCAFCD225B /* discover-zellij.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-zellij.png"; sourceTree = "<group>"; };
+		7F51C963186D9C42A0A92BDD /* discover-sequel-ace.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-sequel-ace.png"; sourceTree = "<group>"; };
+		82528B3D457F0BB346A02271 /* discover-jan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-jan.png"; sourceTree = "<group>"; };
+		825D4AA37CB1AA682C7AE0B7 /* discover-daisydisk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-daisydisk.png"; sourceTree = "<group>"; };
+		86E898565E022B056BC7284B /* discover-pre-commit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-pre-commit.png"; sourceTree = "<group>"; };
+		879A48B82DCF578EFE9B7B65 /* discover-postico.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-postico.png"; sourceTree = "<group>"; };
+		892BB201C950F8425F6763F5 /* discover-notion-calendar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-notion-calendar.png"; sourceTree = "<group>"; };
+		89906F98C8EDF80D8C0C91A9 /* discover-vivaldi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-vivaldi.png"; sourceTree = "<group>"; };
+		8A2AEEF365815181D922FADE /* discover-bitwarden.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-bitwarden.png"; sourceTree = "<group>"; };
 		8A346F38852F4B702A7A516C /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		8A7C7B7A07D88064BD9C91D3 /* discover-mockoon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mockoon.png"; sourceTree = "<group>"; };
+		8A87BDD63BCF74B79B0A2E8E /* discover-cyberduck.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-cyberduck.png"; sourceTree = "<group>"; };
+		8E2E0283029180E283F611EB /* discover-helix.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-helix.png"; sourceTree = "<group>"; };
+		8E4614E74F2F1A4C264A873B /* discover-awscli.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-awscli.png"; sourceTree = "<group>"; };
+		91BDE7770A6ECCB35C83A071 /* discover-vlc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-vlc.png"; sourceTree = "<group>"; };
+		91DE3D3CAB020C494EB031A8 /* discover-visual-studio-code.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-visual-studio-code.png"; sourceTree = "<group>"; };
+		9260E49E1131582FB0882FF7 /* discover-ansible.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-ansible.png"; sourceTree = "<group>"; };
+		945455C0ED49E92D53BACC08 /* discover-oversight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-oversight.png"; sourceTree = "<group>"; };
+		961FE42AB522DA113241A631 /* discover-warp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-warp.png"; sourceTree = "<group>"; };
+		963FCA4FDA1028E3E79C9DC8 /* discover-mise.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mise.png"; sourceTree = "<group>"; };
+		9856A34A2D7CA0E53014E301 /* discover-affinity.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-affinity.png"; sourceTree = "<group>"; };
+		99B01C6EF4F73F9E77A96EC0 /* discover-mysql.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mysql.png"; sourceTree = "<group>"; };
+		9B0AAC5687CDCDADA9FD559C /* discover-jetbrains-toolbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-jetbrains-toolbox.png"; sourceTree = "<group>"; };
+		9BCAE2A0ACC804A2E8F3DCBE /* discover-fantastical.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-fantastical.png"; sourceTree = "<group>"; };
+		9CB8FB13C6FA70177F1C26E0 /* discover-krisp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-krisp.png"; sourceTree = "<group>"; };
+		9CC0340190A784C7CCAAB66B /* discover-lm-studio.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-lm-studio.png"; sourceTree = "<group>"; };
+		9D15219159B7A9EA38E5CC90 /* discover-microsoft-edge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-microsoft-edge.png"; sourceTree = "<group>"; };
+		9DB2FC749F9514F5C829161B /* discover-htop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-htop.png"; sourceTree = "<group>"; };
+		9E53EC47FC97BB96F94A5D5E /* discover-inkscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-inkscape.png"; sourceTree = "<group>"; };
+		9F02C523F2944E329DDCE72C /* discover-zed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-zed.png"; sourceTree = "<group>"; };
+		A12EA5DE208587766AA1B89E /* discover-discord.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-discord.png"; sourceTree = "<group>"; };
 		A16265C0D540C22593B7FE55 /* BrewDockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrewDockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1A6CF3D00BAC77A4FBA050D /* discover-minikube.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-minikube.png"; sourceTree = "<group>"; };
+		A39F734A7673A9EED64CD32C /* discover-tlrc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-tlrc.png"; sourceTree = "<group>"; };
+		A5B3E320BB80D43343F936D6 /* discover-todoist-app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-todoist-app.png"; sourceTree = "<group>"; };
+		A651A9697E7A6AFDB1CC4CD8 /* discover-podman-desktop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-podman-desktop.png"; sourceTree = "<group>"; };
 		A7DAF62F0F9BD3607332230F /* Mascot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mascot.swift; sourceTree = "<group>"; };
+		A87886819F77401F686F8510 /* discover-betterdisplay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-betterdisplay.png"; sourceTree = "<group>"; };
+		A89F483AF679A1791EEF4F2F /* discover-slack.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-slack.png"; sourceTree = "<group>"; };
+		ABA63C3A8FF8AC50C0006541 /* discover-bruno.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-bruno.png"; sourceTree = "<group>"; };
+		AC206B0DAFE591A2860F9B46 /* discover-claude.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-claude.png"; sourceTree = "<group>"; };
 		ACBC1B238338C194118F6083 /* BrewfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrewfileView.swift; sourceTree = "<group>"; };
+		AE042DA98F94A44A0C720E0A /* discover-obs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-obs.png"; sourceTree = "<group>"; };
+		B17F973670EE964ECBF9A643 /* discover-aerial.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-aerial.png"; sourceTree = "<group>"; };
+		B419973447DEF862B92CEED1 /* discover-postgresql.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-postgresql.png"; sourceTree = "<group>"; };
+		B7065B5A830AD9781E11A4BC /* discover-transmit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-transmit.png"; sourceTree = "<group>"; };
+		B75E69769CB4A59456ED1EB5 /* discover-webex.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-webex.png"; sourceTree = "<group>"; };
+		B9C6F9CF0F44D9025A529894 /* discover-yt-dlp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-yt-dlp.png"; sourceTree = "<group>"; };
+		BA969C000483FFAED9E6B3A2 /* discover-raycast.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-raycast.png"; sourceTree = "<group>"; };
 		BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalHotKey.swift; sourceTree = "<group>"; };
+		BE889F6EC7EFFC43640A3BE5 /* discover-audacity.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-audacity.png"; sourceTree = "<group>"; };
+		BEA08CF3AEA36A832E458629 /* discover-ruby.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-ruby.png"; sourceTree = "<group>"; };
+		BEEB1A06667073B34F14EE47 /* discover-lulu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-lulu.png"; sourceTree = "<group>"; };
+		C1F96D9DDD9F1E0C3D26E979 /* discover-pnpm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-pnpm.png"; sourceTree = "<group>"; };
+		C2E1E506BC0D092A6394F79F /* discover-jordanbaird-ice.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-jordanbaird-ice.png"; sourceTree = "<group>"; };
+		C3095B5C2FA79ED4E7F3D161 /* discover-alt-tab.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-alt-tab.png"; sourceTree = "<group>"; };
+		C3FF45C9D463A1764F05448F /* discover-gcloud-cli.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-gcloud-cli.png"; sourceTree = "<group>"; };
+		C501D69B50E90E02A3588169 /* discover-whatsapp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-whatsapp.png"; sourceTree = "<group>"; };
+		C5B370A8A0DDE84AF5E14842 /* discover-tunnelblick.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-tunnelblick.png"; sourceTree = "<group>"; };
+		C5C7C6EB8C6830441F8DD6E9 /* discover-mariadb.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mariadb.png"; sourceTree = "<group>"; };
+		C951068ED5ACFB6B340EE0A1 /* discover-libreoffice.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-libreoffice.png"; sourceTree = "<group>"; };
+		CA1C59FC764BFA449529C27B /* discover-python.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-python.png"; sourceTree = "<group>"; };
+		CA6C3C64CE8B1459CE75AE6C /* discover-ffmpeg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-ffmpeg.png"; sourceTree = "<group>"; };
+		CC4DC3404587635505155EC2 /* discover-1password.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-1password.png"; sourceTree = "<group>"; };
+		CEE399F3ACB3DD559C8182BE /* discover-protonvpn.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-protonvpn.png"; sourceTree = "<group>"; };
+		D22F6E053E0F22A9007E24E6 /* discover-burp-suite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-burp-suite.png"; sourceTree = "<group>"; };
+		D3A93DB8915CE4FD5C557A4D /* discover-redis-insight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-redis-insight.png"; sourceTree = "<group>"; };
+		D4A784C77DEA821A3B004E16 /* discover-readdle-spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-readdle-spark.png"; sourceTree = "<group>"; };
+		D6AF0A5E9893175B5ACF8C37 /* discover-google-chrome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-google-chrome.png"; sourceTree = "<group>"; };
+		D8E6F60A4C6A039692754DB5 /* discover-sketch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-sketch.png"; sourceTree = "<group>"; };
+		D9A2A7F499EC81719CF3C8EB /* discover-istat-menus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-istat-menus.png"; sourceTree = "<group>"; };
 		DA6511EB48F677664E54300B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		DB793AC7EBEFF314752C3F28 /* discover-rancher.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-rancher.png"; sourceTree = "<group>"; };
+		DB7A1DF4875BA9AD403E28CF /* discover-opentofu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-opentofu.png"; sourceTree = "<group>"; };
+		DBA87A23FF7C6FED8C5B9ED9 /* discover-losslesscut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-losslesscut.png"; sourceTree = "<group>"; };
+		DD2EA9E4033AC4F704FBFC3C /* discover-rust.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-rust.png"; sourceTree = "<group>"; };
+		DE1FF0BB61A1E75C0A414F35 /* discover-loom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-loom.png"; sourceTree = "<group>"; };
+		DF8EDABFF1353EF92FCA7980 /* discover-screenflow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-screenflow.png"; sourceTree = "<group>"; };
+		E2087BA3AD25E130FFEE2FAB /* discover-microsoft-teams.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-microsoft-teams.png"; sourceTree = "<group>"; };
+		E2A3C731A9F7E63DDED2443C /* discover-cleanmymac.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-cleanmymac.png"; sourceTree = "<group>"; };
+		E2DD78076B0FD1D79ADA145C /* discover-ghostty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-ghostty.png"; sourceTree = "<group>"; };
+		E4A04122CEAADC48BCF0A2CE /* discover-insomnia.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-insomnia.png"; sourceTree = "<group>"; };
+		E526A82D1A9FFEC1E711F6CF /* discover-chatgpt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-chatgpt.png"; sourceTree = "<group>"; };
 		E6DE9A086D90E815A39C88A5 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
+		E719C8462B8DA99506031C00 /* discover-devin-desktop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-devin-desktop.png"; sourceTree = "<group>"; };
 		E7D3C526889D003BC43FAD7E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		EA0E70ECC3FF673DD0F29C74 /* discover-stats.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-stats.png"; sourceTree = "<group>"; };
+		EAA2987BBC0E64484E65E765 /* discover-mattermost.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-mattermost.png"; sourceTree = "<group>"; };
+		EB5ED85C5A8495FBE90F2E27 /* discover-aldente.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-aldente.png"; sourceTree = "<group>"; };
+		EC75CC569CF548CFDE8A12D6 /* discover-tableplus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-tableplus.png"; sourceTree = "<group>"; };
+		ED59385BC699A711B2153FFA /* discover-cmake.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-cmake.png"; sourceTree = "<group>"; };
+		EDAC796843798B9D5E0BE8F5 /* discover-doctl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-doctl.png"; sourceTree = "<group>"; };
+		EE326DBCD268D4C819F651EB /* discover-netnewswire.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-netnewswire.png"; sourceTree = "<group>"; };
+		EED94BD786CED764B228A9F2 /* discover-node.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-node.png"; sourceTree = "<group>"; };
+		F026617991A1B2AAD168459A /* discover-azure-cli.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-azure-cli.png"; sourceTree = "<group>"; };
+		F109ABF8C22B80263D427D39 /* discover-calibre.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-calibre.png"; sourceTree = "<group>"; };
+		F1191BAAD02CC3EF06B96AD8 /* discover-opera.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-opera.png"; sourceTree = "<group>"; };
+		F1A7137D7599BA2FCC5942CF /* discover-sqlite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-sqlite.png"; sourceTree = "<group>"; };
+		F3581AAAC46C28A2C33EB951 /* discover-the-unarchiver.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-the-unarchiver.png"; sourceTree = "<group>"; };
+		F37B24A5185027BF4AAE6D8E /* discover-beekeeper-studio.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-beekeeper-studio.png"; sourceTree = "<group>"; };
+		F5084F14440C6AC490FC101D /* discover-nmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-nmap.png"; sourceTree = "<group>"; };
+		F636D3FBB782A5060C8A569D /* discover-popclip.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-popclip.png"; sourceTree = "<group>"; };
+		F819208F45A2D16EFED70EDF /* discover-pdf-expert.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-pdf-expert.png"; sourceTree = "<group>"; };
+		F9CDBD535B2876D145B14576 /* discover-clamav.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-clamav.png"; sourceTree = "<group>"; };
+		FA256CD4F74F83199FA8DA88 /* discover-signal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-signal.png"; sourceTree = "<group>"; };
+		FA6D67F2471AF713DA8C914D /* discover-k9s.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-k9s.png"; sourceTree = "<group>"; };
+		FC35F6B0F959BA24B9E01852 /* discover-kubernetes-cli.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-kubernetes-cli.png"; sourceTree = "<group>"; };
 		FCDA32D50FEC4D1761B3D80C /* DiscoverPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverPackage.swift; sourceTree = "<group>"; };
+		FF092F933C6643886420B07A /* discover-forklift.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-forklift.png"; sourceTree = "<group>"; };
+		FF17025984547D53128222BC /* discover-notion.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-notion.png"; sourceTree = "<group>"; };
+		FFBA64267C2324BA03DF2251 /* discover-wireshark-app.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-wireshark-app.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,9 +514,221 @@
 				16969FF28CA92DA2624C50CF /* ServiceRowView.swift */,
 				DA6511EB48F677664E54300B /* SettingsView.swift */,
 				1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */,
+				B18B498966FAF7B6A6C2F01A /* DiscoverIcons */,
 				696A5C4E733F7045BDAFBB16 /* Theme */,
 			);
 			path = BrewDock;
+			sourceTree = "<group>";
+		};
+		B18B498966FAF7B6A6C2F01A /* DiscoverIcons */ = {
+			isa = PBXGroup;
+			children = (
+				CC4DC3404587635505155EC2 /* discover-1password.png */,
+				B17F973670EE964ECBF9A643 /* discover-aerial.png */,
+				9856A34A2D7CA0E53014E301 /* discover-affinity.png */,
+				EB5ED85C5A8495FBE90F2E27 /* discover-aldente.png */,
+				593100AF60A0CA98C1DF63E0 /* discover-alfred.png */,
+				C3095B5C2FA79ED4E7F3D161 /* discover-alt-tab.png */,
+				24830E593DABE068954D10A0 /* discover-anaconda.png */,
+				03BF54DE3E0C0EEFF86EB06A /* discover-android-studio.png */,
+				9260E49E1131582FB0882FF7 /* discover-ansible.png */,
+				4EDA8B6B874A45BC2CEBC861 /* discover-arc.png */,
+				BE889F6EC7EFFC43640A3BE5 /* discover-audacity.png */,
+				8E4614E74F2F1A4C264A873B /* discover-awscli.png */,
+				F026617991A1B2AAD168459A /* discover-azure-cli.png */,
+				195EA8E03CE007B0D6A5B017 /* discover-bartender.png */,
+				F37B24A5185027BF4AAE6D8E /* discover-beekeeper-studio.png */,
+				A87886819F77401F686F8510 /* discover-betterdisplay.png */,
+				7B8A2DF12F28C42EEB49EAD0 /* discover-bettertouchtool.png */,
+				8A2AEEF365815181D922FADE /* discover-bitwarden.png */,
+				485126610CB2DB39819694CD /* discover-blender.png */,
+				56A8940832961A2021E7C0DA /* discover-blockblock.png */,
+				3BDAF8F5B6590310B51FCC25 /* discover-brave-browser.png */,
+				ABA63C3A8FF8AC50C0006541 /* discover-bruno.png */,
+				D22F6E053E0F22A9007E24E6 /* discover-burp-suite.png */,
+				F109ABF8C22B80263D427D39 /* discover-calibre.png */,
+				2D2A00E91EEEC61EC5DDF241 /* discover-carbon-copy-cloner.png */,
+				40157997D03D7790608F876A /* discover-charles.png */,
+				E526A82D1A9FFEC1E711F6CF /* discover-chatgpt.png */,
+				F9CDBD535B2876D145B14576 /* discover-clamav.png */,
+				AC206B0DAFE591A2860F9B46 /* discover-claude.png */,
+				E2A3C731A9F7E63DDED2443C /* discover-cleanmymac.png */,
+				2E22D2241E264E32431D30B2 /* discover-cleanshot.png */,
+				637714C01140C21399D8B6A4 /* discover-cloudflared.png */,
+				ED59385BC699A711B2153FFA /* discover-cmake.png */,
+				11AC33A055FE03BDF60EBAED /* discover-cocoapods.png */,
+				783F4985264CFB556B6A9424 /* discover-craft.png */,
+				4BDE9F3A2D99304DFF9BA210 /* discover-cursor.png */,
+				8A87BDD63BCF74B79B0A2E8E /* discover-cyberduck.png */,
+				825D4AA37CB1AA682C7AE0B7 /* discover-daisydisk.png */,
+				5BAC4CA480C61F1A819B8543 /* discover-dash.png */,
+				1B8F934C6150D4723E6574E3 /* discover-dbeaver-community.png */,
+				2D66A22605FD9421E27B63DF /* discover-dbgate.png */,
+				58D2550692D5C058BF58CE29 /* discover-deno.png */,
+				E719C8462B8DA99506031C00 /* discover-devin-desktop.png */,
+				355F406FF322D09B9A88FAD0 /* discover-devtoys.png */,
+				54B5B70652E9FA088F2BBC35 /* discover-diffusionbee.png */,
+				643DE2675BB3270E44D7B576 /* discover-direnv.png */,
+				A12EA5DE208587766AA1B89E /* discover-discord.png */,
+				39869B119C34D6CC921261DC /* discover-docker-desktop.png */,
+				EDAC796843798B9D5E0BE8F5 /* discover-doctl.png */,
+				700B755FBFD572ED47ED745E /* discover-downie.png */,
+				42AE6D3BF51870C044805383 /* discover-element.png */,
+				240357F479AACFE826E504D5 /* discover-exiftool.png */,
+				70BB5B7B7E85DD139B3B355D /* discover-expressvpn.png */,
+				4B398B723022522ED71770FA /* discover-eza.png */,
+				9BCAE2A0ACC804A2E8F3DCBE /* discover-fantastical.png */,
+				0DE1013432A16F09E4AD36A4 /* discover-fastlane.png */,
+				CA6C3C64CE8B1459CE75AE6C /* discover-ffmpeg.png */,
+				1A977B7F8980A919A76199B1 /* discover-figma.png */,
+				2AFF3917C167FBDAE379072E /* discover-firefox.png */,
+				68AEED39722A5C0ED8C03275 /* discover-fork.png */,
+				FF092F933C6643886420B07A /* discover-forklift.png */,
+				C3FF45C9D463A1764F05448F /* discover-gcloud-cli.png */,
+				44CD0669A8F74BDFDE6800D3 /* discover-gh.png */,
+				E2DD78076B0FD1D79ADA145C /* discover-ghostty.png */,
+				0C6214CD0CCFC90504AEB0FC /* discover-gimp.png */,
+				6837A63A57B54F7E081B1CE5 /* discover-git.png */,
+				3AB8E4A63C324A28CFB4BE69 /* discover-github.png */,
+				00DDBE3F5689A18BA7D19FD6 /* discover-glow.png */,
+				62ECC8E5793F38718BA543E9 /* discover-go.png */,
+				D6AF0A5E9893175B5ACF8C37 /* discover-google-chrome.png */,
+				2178251A6E2914C0670228A8 /* discover-gpg-suite.png */,
+				072CAE87C8DE05E267B36CDA /* discover-handbrake-app.png */,
+				4E1D434389CA48C678B164C8 /* discover-hazel.png */,
+				8E2E0283029180E283F611EB /* discover-helix.png */,
+				1B30C0EC27A7D7B4F9EE5D3D /* discover-helm.png */,
+				9DB2FC749F9514F5C829161B /* discover-htop.png */,
+				344C3331C0E6A46A39CF89BD /* discover-httpie.png */,
+				7D2D2E3E27E5ED8D76FBF469 /* discover-iina.png */,
+				429D6FAC64FD43941D850CEF /* discover-imagemagick.png */,
+				1CA7ECBF8B22579AD5DB8737 /* discover-imageoptim.png */,
+				9E53EC47FC97BB96F94A5D5E /* discover-inkscape.png */,
+				E4A04122CEAADC48BCF0A2CE /* discover-insomnia.png */,
+				D9A2A7F499EC81719CF3C8EB /* discover-istat-menus.png */,
+				229DC8C758DD6E598483FE8B /* discover-iterm2.png */,
+				82528B3D457F0BB346A02271 /* discover-jan.png */,
+				9B0AAC5687CDCDADA9FD559C /* discover-jetbrains-toolbox.png */,
+				C2E1E506BC0D092A6394F79F /* discover-jordanbaird-ice.png */,
+				25FFBBC2DCD03EE89C9B3938 /* discover-jq.png */,
+				7CCC6A9B50C745DDDC5AB79A /* discover-k3d.png */,
+				FA6D67F2471AF713DA8C914D /* discover-k9s.png */,
+				1126794A76B23B1CB2E02B5A /* discover-kap.png */,
+				6F19FA7223FB6489EA43A781 /* discover-karabiner-elements.png */,
+				295CC78964103ECB6B266855 /* discover-keepassxc.png */,
+				3F3745C3AE6A4388A0C0DFC3 /* discover-keka.png */,
+				17530A20CD37CBC1CDC1115B /* discover-keyboard-maestro.png */,
+				22C9B5968A93BCE1B007DC10 /* discover-kitty.png */,
+				9CB8FB13C6FA70177F1C26E0 /* discover-krisp.png */,
+				FC35F6B0F959BA24B9E01852 /* discover-kubernetes-cli.png */,
+				09BDEBBA8650F9FB963F8BBF /* discover-lens.png */,
+				C951068ED5ACFB6B340EE0A1 /* discover-libreoffice.png */,
+				643FE39BF1C96C7EF755697C /* discover-linear.png */,
+				9CC0340190A784C7CCAAB66B /* discover-lm-studio.png */,
+				5F0F773B19CB09A427B1F29F /* discover-logseq.png */,
+				DE1FF0BB61A1E75C0A414F35 /* discover-loom.png */,
+				DBA87A23FF7C6FED8C5B9ED9 /* discover-losslesscut.png */,
+				BEEB1A06667073B34F14EE47 /* discover-lulu.png */,
+				7008F02D4F1D234ADBA09C28 /* discover-lynis.png */,
+				4D369349BA914575AE673567 /* discover-maccy.png */,
+				C5C7C6EB8C6830441F8DD6E9 /* discover-mariadb.png */,
+				EAA2987BBC0E64484E65E765 /* discover-mattermost.png */,
+				9D15219159B7A9EA38E5CC90 /* discover-microsoft-edge.png */,
+				E2087BA3AD25E130FFEE2FAB /* discover-microsoft-teams.png */,
+				03D98B2ED75BF96DD4C5D032 /* discover-mimestream.png */,
+				46349F36C433D5C9E97752C0 /* discover-miniconda.png */,
+				A1A6CF3D00BAC77A4FBA050D /* discover-minikube.png */,
+				963FCA4FDA1028E3E79C9DC8 /* discover-mise.png */,
+				8A7C7B7A07D88064BD9C91D3 /* discover-mockoon.png */,
+				679FDABB13FBB4F2C55AF97E /* discover-mongodb-compass.png */,
+				76C8E4033919E7A8BF92773B /* discover-mullvad-vpn.png */,
+				99B01C6EF4F73F9E77A96EC0 /* discover-mysql.png */,
+				29504A3163F9EEA1ECFD61DF /* discover-neo4j-desktop.png */,
+				7438D724C1447D8A4BD753A4 /* discover-neovim.png */,
+				EE326DBCD268D4C819F651EB /* discover-netnewswire.png */,
+				53C686493BF421742F907231 /* discover-ngrok.png */,
+				F5084F14440C6AC490FC101D /* discover-nmap.png */,
+				EED94BD786CED764B228A9F2 /* discover-node.png */,
+				3257B38C181CC762C425C6CF /* discover-nordvpn.png */,
+				892BB201C950F8425F6763F5 /* discover-notion-calendar.png */,
+				FF17025984547D53128222BC /* discover-notion.png */,
+				331768B10103072274F62EE2 /* discover-nova.png */,
+				AE042DA98F94A44A0C720E0A /* discover-obs.png */,
+				0F310809F7D8638D734DCA7D /* discover-obsidian.png */,
+				0FDFA4247219801C48BDE01F /* discover-ollama-app.png */,
+				4F49732C85BB145DB621AF40 /* discover-openjdk.png */,
+				DB7A1DF4875BA9AD403E28CF /* discover-opentofu.png */,
+				F1191BAAD02CC3EF06B96AD8 /* discover-opera.png */,
+				2D11D81F84A9918232696A0E /* discover-orbstack.png */,
+				945455C0ED49E92D53BACC08 /* discover-oversight.png */,
+				F819208F45A2D16EFED70EDF /* discover-pdf-expert.png */,
+				0009A3D97C8A0374BCD28A9C /* discover-pgadmin4.png */,
+				C1F96D9DDD9F1E0C3D26E979 /* discover-pnpm.png */,
+				A651A9697E7A6AFDB1CC4CD8 /* discover-podman-desktop.png */,
+				F636D3FBB782A5060C8A569D /* discover-popclip.png */,
+				B419973447DEF862B92CEED1 /* discover-postgresql.png */,
+				879A48B82DCF578EFE9B7B65 /* discover-postico.png */,
+				397C0A4D8E17D4DAD67CB78A /* discover-postman.png */,
+				86E898565E022B056BC7284B /* discover-pre-commit.png */,
+				CEE399F3ACB3DD559C8182BE /* discover-protonvpn.png */,
+				2A06616E9C3E841FEE57444F /* discover-proxifier.png */,
+				4DFC5E67E36329E744B1E5D4 /* discover-proxyman.png */,
+				15A2208A6F98F3BD597DF806 /* discover-pulumi.png */,
+				CA1C59FC764BFA449529C27B /* discover-python.png */,
+				DB793AC7EBEFF314752C3F28 /* discover-rancher.png */,
+				BA969C000483FFAED9E6B3A2 /* discover-raycast.png */,
+				D4A784C77DEA821A3B004E16 /* discover-readdle-spark.png */,
+				3A1AB21923C7B52362B43536 /* discover-rectangle.png */,
+				D3A93DB8915CE4FD5C557A4D /* discover-redis-insight.png */,
+				1481149B2A04AA777353E9B2 /* discover-redis.png */,
+				BEA08CF3AEA36A832E458629 /* discover-ruby.png */,
+				DD2EA9E4033AC4F704FBFC3C /* discover-rust.png */,
+				DF8EDABFF1353EF92FCA7980 /* discover-screenflow.png */,
+				7F51C963186D9C42A0A92BDD /* discover-sequel-ace.png */,
+				FA256CD4F74F83199FA8DA88 /* discover-signal.png */,
+				670ADBB1388C04742067744D /* discover-skaffold.png */,
+				D8E6F60A4C6A039692754DB5 /* discover-sketch.png */,
+				A89F483AF679A1791EEF4F2F /* discover-slack.png */,
+				7B7A02D2C7B704D581D095B1 /* discover-sourcetree.png */,
+				F1A7137D7599BA2FCC5942CF /* discover-sqlite.png */,
+				1EDF9FD16489DB7B4A323DDE /* discover-starship.png */,
+				EA0E70ECC3FF673DD0F29C74 /* discover-stats.png */,
+				6A656DE5EAFFDBD33450FEAB /* discover-stern.png */,
+				5A1DDB88F2891289F7F14B4E /* discover-sublime-text.png */,
+				60603245A0D405B06400DCAD /* discover-superduper.png */,
+				418F6FE16E44D1B530B18397 /* discover-superwhisper.png */,
+				359C0D697DA99818CB4DBB7F /* discover-swish.png */,
+				EC75CC569CF548CFDE8A12D6 /* discover-tableplus.png */,
+				55706D25BF6D88366F8230B5 /* discover-telegram.png */,
+				24B2FF183C0E926E1BE2D07D /* discover-textexpander.png */,
+				F3581AAAC46C28A2C33EB951 /* discover-the-unarchiver.png */,
+				A39F734A7673A9EED64CD32C /* discover-tlrc.png */,
+				A5B3E320BB80D43343F936D6 /* discover-todoist-app.png */,
+				46B4799709349094F1D67B99 /* discover-tor-browser.png */,
+				525DE8787CD4C673FC5DF19A /* discover-tower.png */,
+				548648475463D17254645C1A /* discover-transmission.png */,
+				B7065B5A830AD9781E11A4BC /* discover-transmit.png */,
+				C5B370A8A0DDE84AF5E14842 /* discover-tunnelblick.png */,
+				764C902B7E751B7505EDCBDB /* discover-vagrant.png */,
+				6A8BE0F52D13C159059B4624 /* discover-veracrypt.png */,
+				91DE3D3CAB020C494EB031A8 /* discover-visual-studio-code.png */,
+				89906F98C8EDF80D8C0C91A9 /* discover-vivaldi.png */,
+				91BDE7770A6ECCB35C83A071 /* discover-vlc.png */,
+				07515DEB054BF0B258F3187B /* discover-volta.png */,
+				961FE42AB522DA113241A631 /* discover-warp.png */,
+				B75E69769CB4A59456ED1EB5 /* discover-webex.png */,
+				4A3D50F2E119D21F08DFAF8D /* discover-wezterm.png */,
+				C501D69B50E90E02A3588169 /* discover-whatsapp.png */,
+				FFBA64267C2324BA03DF2251 /* discover-wireshark-app.png */,
+				2BA9528BEE1A977A1D88149C /* discover-xcodes-app.png */,
+				0AA947B846E9D6533DF3A0CF /* discover-yarn.png */,
+				1C1A38CDEA4239AFB090565D /* discover-yazi.png */,
+				B9C6F9CF0F44D9025A529894 /* discover-yt-dlp.png */,
+				9F02C523F2944E329DDCE72C /* discover-zed.png */,
+				7EE7522046B044FCAFCD225B /* discover-zellij.png */,
+				5A08DD0A5E1DCE80DB77D7D7 /* discover-zoom.png */,
+			);
+			path = DiscoverIcons;
 			sourceTree = "<group>";
 		};
 		E36A701CBFF8956828D21571 /* Products */ = {
@@ -223,6 +843,210 @@
 			buildActionMask = 2147483647;
 			files = (
 				98BBD02CA4ABA5A9F7EC0D12 /* Assets.xcassets in Resources */,
+				89D372717A305516F92C85FC /* discover-1password.png in Resources */,
+				CB0CDBD6568C345F29808336 /* discover-aerial.png in Resources */,
+				C962019723FBD6B92976AE13 /* discover-affinity.png in Resources */,
+				383934AA70143F2919F610C8 /* discover-aldente.png in Resources */,
+				62DB75B5448BD2D1DA31FC97 /* discover-alfred.png in Resources */,
+				402FEEBEB13161C51C4421C1 /* discover-alt-tab.png in Resources */,
+				74E0187D00DFAE113CB4757F /* discover-anaconda.png in Resources */,
+				64404C36ED313A0480817358 /* discover-android-studio.png in Resources */,
+				D6CAB348E6D6E7811041882C /* discover-ansible.png in Resources */,
+				5E034D81ADE21EBB9E856266 /* discover-arc.png in Resources */,
+				526A083CD1F090221B820EF4 /* discover-audacity.png in Resources */,
+				76848659DD25046813C71039 /* discover-awscli.png in Resources */,
+				0CB0A49628029E8FF4C6117F /* discover-azure-cli.png in Resources */,
+				A6B2940F392D5B426AA8EB21 /* discover-bartender.png in Resources */,
+				BB45636CED27A62A5588EF5E /* discover-beekeeper-studio.png in Resources */,
+				88617E6DEC39F27EEC26422D /* discover-betterdisplay.png in Resources */,
+				606678E251BF7D06528DEF14 /* discover-bettertouchtool.png in Resources */,
+				6F33330BA1CA602D888829D0 /* discover-bitwarden.png in Resources */,
+				2D0F27A4A03D5E1B8A54778E /* discover-blender.png in Resources */,
+				9339C33194F0CDA910444F7F /* discover-blockblock.png in Resources */,
+				0008F25C124AF9DC4D7D6D07 /* discover-brave-browser.png in Resources */,
+				B75C0FEA77A07D98C14AB515 /* discover-bruno.png in Resources */,
+				31EF24A04E8F6A08977E7723 /* discover-burp-suite.png in Resources */,
+				075E5EEF8754F22AD08AC901 /* discover-calibre.png in Resources */,
+				D87F5235A56F4DDF8EDD5190 /* discover-carbon-copy-cloner.png in Resources */,
+				01F1688308242809CCE49BE3 /* discover-charles.png in Resources */,
+				FE2736BE65F1DC338FB4B9F1 /* discover-chatgpt.png in Resources */,
+				1F93AC7A607CC8CF4EDC257F /* discover-clamav.png in Resources */,
+				D08ECBD31537EC91186A766F /* discover-claude.png in Resources */,
+				0264ABE4C9174E6FF63D9411 /* discover-cleanmymac.png in Resources */,
+				98684CEA78425E236AF839F7 /* discover-cleanshot.png in Resources */,
+				72691ED3EF639AF224B44EF7 /* discover-cloudflared.png in Resources */,
+				954CC05917B85828C72025CF /* discover-cmake.png in Resources */,
+				F6DFEFECC30AA9F99137CF05 /* discover-cocoapods.png in Resources */,
+				D2307A7096D45DC5D9EA2D26 /* discover-craft.png in Resources */,
+				6202A9721E42323275765073 /* discover-cursor.png in Resources */,
+				1D9A0780CB55F51FDA0C1AFF /* discover-cyberduck.png in Resources */,
+				053C302805A739682A4BB55C /* discover-daisydisk.png in Resources */,
+				C9B41A3EDE839D26DF0A531E /* discover-dash.png in Resources */,
+				80C5F7502A10542B3824BF05 /* discover-dbeaver-community.png in Resources */,
+				AD9A33C4107AA4BB5A48F9B3 /* discover-dbgate.png in Resources */,
+				8C806906E071ED3AA8B07FC0 /* discover-deno.png in Resources */,
+				6FDCE2DF4D7DB6D05F223D7C /* discover-devin-desktop.png in Resources */,
+				89D472178D96EB6FE1ECB7DC /* discover-devtoys.png in Resources */,
+				61F99DA000B96E5E8F9F585F /* discover-diffusionbee.png in Resources */,
+				F43C105C0BE176B8EBE055B2 /* discover-direnv.png in Resources */,
+				5F65D5926C542A0DD1C1AFD1 /* discover-discord.png in Resources */,
+				8B5C188A6DF3719B8DB94D1D /* discover-docker-desktop.png in Resources */,
+				8BDDE982A285A9EA006540F8 /* discover-doctl.png in Resources */,
+				1914A917DF70D30EA6B63EA3 /* discover-downie.png in Resources */,
+				4B12E4FD36E9470D20A9A21B /* discover-element.png in Resources */,
+				358E95FAF89443C8A27CF928 /* discover-exiftool.png in Resources */,
+				91A003173AA311ED9A6503F6 /* discover-expressvpn.png in Resources */,
+				9AC53C680FFAB220EAC1D4E9 /* discover-eza.png in Resources */,
+				FA4E2B61B4F3C90CF9B2BD9E /* discover-fantastical.png in Resources */,
+				3A1F89D1D1B3F5321DC37682 /* discover-fastlane.png in Resources */,
+				22AE20E4D130A7E87FD515C9 /* discover-ffmpeg.png in Resources */,
+				4CB71FC20E889AE7868AE865 /* discover-figma.png in Resources */,
+				94F5FE490C71F817EFBCDCF9 /* discover-firefox.png in Resources */,
+				042DE516F3035B34307EBBEE /* discover-fork.png in Resources */,
+				256CDDF51B264C6C6ED5E72F /* discover-forklift.png in Resources */,
+				DE0F292955877A02A3812E0F /* discover-gcloud-cli.png in Resources */,
+				3EC03A43E84E54A095F0FF92 /* discover-gh.png in Resources */,
+				630312953765BB3E59B494C6 /* discover-ghostty.png in Resources */,
+				E162768C20F07C5AFFFDD842 /* discover-gimp.png in Resources */,
+				8CD9660D8170350936C5E6F8 /* discover-git.png in Resources */,
+				08DF92D72D8715A779667659 /* discover-github.png in Resources */,
+				BD55A63B7586F02EF5F85624 /* discover-glow.png in Resources */,
+				39D04C894EB82EB1901E4994 /* discover-go.png in Resources */,
+				6E159BB72E619561B20CB815 /* discover-google-chrome.png in Resources */,
+				82EF1CB1A35869FD6B863195 /* discover-gpg-suite.png in Resources */,
+				CAFDFA1663C4C2F295A69B59 /* discover-handbrake-app.png in Resources */,
+				705B109A7B7D90156B1F4153 /* discover-hazel.png in Resources */,
+				3B713373AB2010BE96883178 /* discover-helix.png in Resources */,
+				1F05271AB1D15D93ADD4EB97 /* discover-helm.png in Resources */,
+				3DB382406C4CCC88868CAD29 /* discover-htop.png in Resources */,
+				DC8182B2ECDA1E5917C597CB /* discover-httpie.png in Resources */,
+				98427099BC70F95C992DA14C /* discover-iina.png in Resources */,
+				503EEDE87CB3B8EA0380FEB4 /* discover-imagemagick.png in Resources */,
+				C4F99E6B4D971A086EB0C1DB /* discover-imageoptim.png in Resources */,
+				DA13CC1DF9A234FB31D6BBAC /* discover-inkscape.png in Resources */,
+				EC14FBAB9EBABBFF9A716440 /* discover-insomnia.png in Resources */,
+				E6B935D6AC3AF809B1814CD9 /* discover-istat-menus.png in Resources */,
+				8E918FD2A7EA68F3A3552DB5 /* discover-iterm2.png in Resources */,
+				555C6A3E643AF04A206247DC /* discover-jan.png in Resources */,
+				765FCCAA95F144F43FE71EAD /* discover-jetbrains-toolbox.png in Resources */,
+				8D41E70CE160E321A7E1D995 /* discover-jordanbaird-ice.png in Resources */,
+				034C268F45D2D1DC80C52EF7 /* discover-jq.png in Resources */,
+				6C2A213A4360971A647AAE8D /* discover-k3d.png in Resources */,
+				43CE8E9247F04CFA419DAACF /* discover-k9s.png in Resources */,
+				B1980CC8A750A3BE2D7E9E9F /* discover-kap.png in Resources */,
+				35E6DABF788D0385804829D2 /* discover-karabiner-elements.png in Resources */,
+				1D8AD0697E0053E5B25C4B97 /* discover-keepassxc.png in Resources */,
+				81FABF6E92F7030D07955832 /* discover-keka.png in Resources */,
+				D752A0D1160FFFC026ACF015 /* discover-keyboard-maestro.png in Resources */,
+				83617A44B322BD8048032E85 /* discover-kitty.png in Resources */,
+				B8524CCF7F68E990EC9B4EF8 /* discover-krisp.png in Resources */,
+				0A1FA5164E1F1691A20C6F2F /* discover-kubernetes-cli.png in Resources */,
+				6C60CFA4BF2464467DBA58E2 /* discover-lens.png in Resources */,
+				169F23983EF314A89580D6E1 /* discover-libreoffice.png in Resources */,
+				7094294CD52D2F464F317751 /* discover-linear.png in Resources */,
+				87E67369B21A358A4AF23149 /* discover-lm-studio.png in Resources */,
+				DD3D15119FCB16BFEF6F0290 /* discover-logseq.png in Resources */,
+				CBB0060294CECD6688F4EECF /* discover-loom.png in Resources */,
+				C0DD91EB3ACCED0E3DA31E3A /* discover-losslesscut.png in Resources */,
+				3F21AFF3C63F7D9E685D312E /* discover-lulu.png in Resources */,
+				412BD7FBE00921581F17C352 /* discover-lynis.png in Resources */,
+				FDCE9C17D81DFB1EA1332FA3 /* discover-maccy.png in Resources */,
+				F70B56C83B7396C1E3706164 /* discover-mariadb.png in Resources */,
+				30D7AFEA1C146F829DB72971 /* discover-mattermost.png in Resources */,
+				50BD27F9A5B37FCBA4251B3E /* discover-microsoft-edge.png in Resources */,
+				51C4DC57FAE5069450D8A749 /* discover-microsoft-teams.png in Resources */,
+				FDC7BFC13CA04DBC11237065 /* discover-mimestream.png in Resources */,
+				57E0F8370D78EEC4B191E93B /* discover-miniconda.png in Resources */,
+				814D5311FC9361B24FBBE29B /* discover-minikube.png in Resources */,
+				47863FC00371AC7B2F90D45F /* discover-mise.png in Resources */,
+				BA9213E5149A6C96089EA737 /* discover-mockoon.png in Resources */,
+				8D5AA9F629B56DCE2AAD3674 /* discover-mongodb-compass.png in Resources */,
+				30B73158C6D0072EE5689F27 /* discover-mullvad-vpn.png in Resources */,
+				532DCD3BB3ECA578957D6443 /* discover-mysql.png in Resources */,
+				58539C7629796947D31135AA /* discover-neo4j-desktop.png in Resources */,
+				6256D89637A3B81787BE1506 /* discover-neovim.png in Resources */,
+				8CFA1A3A5CD58765A2ECD706 /* discover-netnewswire.png in Resources */,
+				1521E9E20EEDB0408C6D3D61 /* discover-ngrok.png in Resources */,
+				34C458B203220364A0236043 /* discover-nmap.png in Resources */,
+				4FF9D09495CB129103A8E4D4 /* discover-node.png in Resources */,
+				766838D22D0FBBEEDF62C8CE /* discover-nordvpn.png in Resources */,
+				6D72DA631478369AC4C6D798 /* discover-notion-calendar.png in Resources */,
+				0EAA28E90B1CF2CDFB192CCF /* discover-notion.png in Resources */,
+				D8BA75EFD495C32C55CCDE7C /* discover-nova.png in Resources */,
+				3FC59E3C8E1E866D4EA84E07 /* discover-obs.png in Resources */,
+				FDE56D2F5BB315D55F2610FB /* discover-obsidian.png in Resources */,
+				F7021617F865224D74BB1EF1 /* discover-ollama-app.png in Resources */,
+				ABE55532B50828BE5EE37337 /* discover-openjdk.png in Resources */,
+				7F0654DD279C043315DDD6A4 /* discover-opentofu.png in Resources */,
+				BE46134C4465889FAA72C219 /* discover-opera.png in Resources */,
+				4C92916EC7E7A992388198A8 /* discover-orbstack.png in Resources */,
+				9D8CDAF21433635F9BF7FD68 /* discover-oversight.png in Resources */,
+				2065ECA993A3953D6A4E8519 /* discover-pdf-expert.png in Resources */,
+				586682CED838EE666FC4E5D8 /* discover-pgadmin4.png in Resources */,
+				A4BAF25E3EC61DEA95458324 /* discover-pnpm.png in Resources */,
+				9A1813659970B1F58EFB893E /* discover-podman-desktop.png in Resources */,
+				DB65657035F947CF070DC8BC /* discover-popclip.png in Resources */,
+				E96451D0BF47A539E7167421 /* discover-postgresql.png in Resources */,
+				38043528D6E10717A4BAE9B8 /* discover-postico.png in Resources */,
+				EF00AA4CEB888C7E0898833E /* discover-postman.png in Resources */,
+				C52F9D1920FEB2A086520753 /* discover-pre-commit.png in Resources */,
+				E99EBB83B375AAF6EE6BC1A6 /* discover-protonvpn.png in Resources */,
+				A6992F8FB9691A35D0B49620 /* discover-proxifier.png in Resources */,
+				E60A5FD7D692D42846C81044 /* discover-proxyman.png in Resources */,
+				8F8C3EC8EF127D4AEAFB8AB9 /* discover-pulumi.png in Resources */,
+				92EA98359A9B7E51D618BF20 /* discover-python.png in Resources */,
+				D41176FB8A0B217551847C0C /* discover-rancher.png in Resources */,
+				9CFEBBA9EF41463BBB398C23 /* discover-raycast.png in Resources */,
+				BEC601C8EE1A4D3A48F10A0D /* discover-readdle-spark.png in Resources */,
+				D7DEC577B8EBB7D30CEE3E11 /* discover-rectangle.png in Resources */,
+				672C336EB07566EC5F348497 /* discover-redis-insight.png in Resources */,
+				4ED2A45A78F005D09EDA8DB6 /* discover-redis.png in Resources */,
+				009CD0C30FFE9B5D3D5B5DD4 /* discover-ruby.png in Resources */,
+				81B4D36BC719943AFD16B130 /* discover-rust.png in Resources */,
+				89013F06E216D65D0C2D351D /* discover-screenflow.png in Resources */,
+				0B2C731BB277F6F738F399F5 /* discover-sequel-ace.png in Resources */,
+				A0F6A750D6F01D8272E1BD99 /* discover-signal.png in Resources */,
+				DF2BB485531A89D28A672367 /* discover-skaffold.png in Resources */,
+				795C8E1A625F71CB6A6E5F0A /* discover-sketch.png in Resources */,
+				368D2FA45C8D45F887E1E0EC /* discover-slack.png in Resources */,
+				26BEF08D82B114501074BF03 /* discover-sourcetree.png in Resources */,
+				2C0E7DB54A5F8D99F1A4D495 /* discover-sqlite.png in Resources */,
+				C8C57EFFF4028CA5AD3C6248 /* discover-starship.png in Resources */,
+				11C23444989D598E1C3D4CB8 /* discover-stats.png in Resources */,
+				2C231C6E2C32CA13733B87B1 /* discover-stern.png in Resources */,
+				CB3FF7DE810E43805CEBC340 /* discover-sublime-text.png in Resources */,
+				9FF823E6F765E6198E1B0783 /* discover-superduper.png in Resources */,
+				93F91B36DDEAF56A0C8D67A5 /* discover-superwhisper.png in Resources */,
+				0BCC5AF9EAEEB5ED2EDED448 /* discover-swish.png in Resources */,
+				F52BBCA4A5079AAA91231D0B /* discover-tableplus.png in Resources */,
+				BB801310C4A2349D41C8A791 /* discover-telegram.png in Resources */,
+				62144DD89EBD58106E1419B0 /* discover-textexpander.png in Resources */,
+				23E27ED6A883BBA3C8740BFD /* discover-the-unarchiver.png in Resources */,
+				EF41DE0ACB9BC58930A64C69 /* discover-tlrc.png in Resources */,
+				DF286EB2731280387A915DBF /* discover-todoist-app.png in Resources */,
+				9E2DBD94B64678A039B832D7 /* discover-tor-browser.png in Resources */,
+				7E18BE36309030D9CCDBEE10 /* discover-tower.png in Resources */,
+				1F28D41C284FB32A34E40C46 /* discover-transmission.png in Resources */,
+				060C6AD35DA0795B8C8DB141 /* discover-transmit.png in Resources */,
+				8DF93504579909DFF156EC86 /* discover-tunnelblick.png in Resources */,
+				54A93EF8094D7535787897D8 /* discover-vagrant.png in Resources */,
+				CC0AAC9EA64036E26A60BC44 /* discover-veracrypt.png in Resources */,
+				71BFFF539190E321155EED51 /* discover-visual-studio-code.png in Resources */,
+				75525D03175B2C87D9A36F47 /* discover-vivaldi.png in Resources */,
+				82E13B27ABA2D76034BAFB78 /* discover-vlc.png in Resources */,
+				D14F9E5BBB32177293D7EEBD /* discover-volta.png in Resources */,
+				E3834A117901E0E6999A06F6 /* discover-warp.png in Resources */,
+				E137461F1A80966FA4CFDD4A /* discover-webex.png in Resources */,
+				FCC8224747546C7AC0C58A8C /* discover-wezterm.png in Resources */,
+				EBAC43DD0E0D283C77252745 /* discover-whatsapp.png in Resources */,
+				4E1447513BC01B169D982E74 /* discover-wireshark-app.png in Resources */,
+				E2E784FF3CDA898F845CE330 /* discover-xcodes-app.png in Resources */,
+				D08EA0AF774E78F40E78F236 /* discover-yarn.png in Resources */,
+				1D2344B3BE102754BAB566AD /* discover-yazi.png in Resources */,
+				7337CD26D1B926226D612561 /* discover-yt-dlp.png in Resources */,
+				A7508917FDB90FADBCEF8A48 /* discover-zed.png in Resources */,
+				669B0D5363445F71259E43CE /* discover-zellij.png in Resources */,
+				7F7E10743B858115FA0A3B21 /* discover-zoom.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

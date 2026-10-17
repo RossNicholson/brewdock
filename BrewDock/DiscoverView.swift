@@ -286,20 +286,13 @@ struct DiscoverPackageRow: View {
             Image(nsImage: appIcon)
                 .resizable()
                 .frame(width: 30, height: 30)
-        } else if let urlString = package.iconURL, let url = URL(string: urlString) {
-            AsyncImage(url: url) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 30, height: 30)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                default:
-                    sfSymbolIcon
-                }
-            }
-            .frame(width: 30, height: 30)
+        } else if let shipped = NSImage(named: "discover-\(package.id)") {
+            // Shipped with the app (make discover-icons), so Discover needs no network
+            Image(nsImage: shipped)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 30, height: 30)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         } else {
             sfSymbolIcon
         }

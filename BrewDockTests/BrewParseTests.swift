@@ -1,3 +1,4 @@
+import AppKit
 import XCTest
 @testable import BrewDock
 
@@ -256,5 +257,16 @@ final class BrewParseTests: XCTestCase {
         XCTAssertEqual(BrewParse.cleanupCandidates(fromOutput: out),
                        ["cowsay", "firefox", "vlc", "someone/tap (tap)"])
         XCTAssertTrue(BrewParse.cleanupCandidates(fromOutput: "Would `brew cleanup`:\nWould remove: /x").isEmpty)
+    }
+}
+
+/// Every Discover entry with an icon source ships its icon (make discover-icons)
+final class DiscoverIconTests: XCTestCase {
+    func testCatalogIconsShip() {
+        let missing = DiscoverCatalog.all
+            .filter { $0.iconURL != nil && $0.bundledIcon == nil }
+            .filter { NSImage(named: "discover-\($0.id)") == nil }
+            .map(\.id)
+        XCTAssertEqual(missing, [], "Run make discover-icons")
     }
 }

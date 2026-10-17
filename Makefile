@@ -1,4 +1,4 @@
-.PHONY: release build test check-catalog screenshots
+.PHONY: release build test check-catalog screenshots discover-icons
 
 # Ship a release: bump version, commit, tag, push -> CI builds/notarizes/publishes.
 #   make release VERSION=1.2.3
@@ -27,3 +27,8 @@ screenshots:
 		xcodebuild test -project BrewDock.xcodeproj -scheme BrewDock -destination 'platform=macOS' \
 		CODE_SIGNING_ALLOWED=NO -only-testing:BrewDockTests/ScreenshotTests -quiet
 	@echo "Screenshots in build/screenshots"
+
+# Downloads the Discover catalog's icons into BrewDock/DiscoverIcons (only the
+# missing ones; ALL=1 fetches every icon again). Run after adding to the catalog.
+discover-icons:
+	swift scripts/fetch-discover-icons.swift $(if $(ALL),--all,)

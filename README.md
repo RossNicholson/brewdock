@@ -117,7 +117,7 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
 
 ## Privacy
 
-BrewDock collects nothing: no analytics, no accounts, no tracking. It runs the `brew` command on your Mac, and Homebrew does the downloading. The only other network requests are for app icons in Discover, which load from [icon.horse](https://icon.horse).
+BrewDock collects nothing: no analytics, no accounts, no tracking. It runs the `brew` command on your Mac, and Homebrew does the downloading. The icons in Discover ship with the app, so browsing it makes no network requests.
 
 ---
 
@@ -159,6 +159,7 @@ The `.xcodeproj` is generated from `project.yml`, so re-run `xcodegen generate` 
 |---|---|
 | `make test` | Run the unit tests |
 | `make check-catalog` | Check the Discover catalog against Homebrew for renamed or retired packages (also runs weekly in CI) |
+| `make discover-icons` | Download icons for new Discover entries into the app (it ships them, so Discover needs no network) |
 | `make screenshots` | Render the panel and popovers with sample packages into `build/screenshots` |
 | `make release VERSION=x.y.z` | Ship a release; see [RELEASING.md](RELEASING.md) |
 
