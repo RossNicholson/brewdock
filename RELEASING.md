@@ -35,4 +35,4 @@ and ClawdBar:
 | `NOTARY_API_KEY_P8_BASE64` | base64 of the App Store Connect `.p8` |
 | `NOTARY_KEY_ID` | the notary key's ID |
 | `NOTARY_ISSUER_ID` | the notary issuer ID |
-| `TAP_PUSH_TOKEN` | fine-grained PAT, `contents:write` on `RossNicholson/homebrew-tap` only |
+| `TAP_PUSH_TOKEN` | fine-grained PAT, `contents:write` on `RossNicholson/homebrew-tap` only. One token, "Homebrew tap push (all apps)", is shared by BrewDock, ClawdBar and Mop Up; it expires 17 Oct 2027 |
