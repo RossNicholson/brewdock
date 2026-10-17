@@ -65,6 +65,10 @@ struct MenuBarView: View {
         }
         .frame(minWidth: 280, minHeight: 300)
         .background(AppColors.ground)
+        .overlay(alignment: .bottomTrailing) {
+            ResizeGrip()
+                .padding(3)
+        }
         .animation(.easeInOut(duration: 0.2), value: showsUpdateBanner)
         .animation(.easeInOut(duration: 0.2), value: brewService.untrusted)
         .alert(
@@ -142,7 +146,7 @@ struct MenuBarView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 18)
             .contentShape(Rectangle())
-            .help("Drag to move · Resize from edges or corners")
+            .help("Drag to move · Drag the corner to resize")
     }
 
     private var header: some View {
@@ -496,7 +500,8 @@ struct MenuBarView: View {
                 .buttonStyle(.plain)
                 .foregroundStyle(AppColors.text)
         }
-        .padding(.horizontal, 16)
+        .padding(.leading, 16)
+        .padding(.trailing, 26)   // clear of the resize grip in the corner
         .padding(.vertical, 9)
         .overlay(alignment: .top) {
             Rectangle().fill(AppColors.hairline).frame(height: 1)
