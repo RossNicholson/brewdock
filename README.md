@@ -88,7 +88,7 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
 - **Homebrew 7 trusted taps:** if Homebrew refuses a package from a tap you haven't trusted, BrewDock tells you which one, and asks before trusting it.
 
 ### Native and light
-100% SwiftUI, with no Electron. It has light and dark mode, VoiceOver support, and a small mug who waves hello.
+100% SwiftUI, with no Electron. It has light and dark mode, VoiceOver support, and a small mug who waves hello. Want more room? Drag the grip in the panel's bottom-right corner to make it bigger.
 
 <table>
   <tr>
