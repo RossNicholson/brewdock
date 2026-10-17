@@ -22,7 +22,13 @@ struct DiscoverTabView: View {
                 $0.id.localizedCaseInsensitiveContains(searchText)
             }
         }
-        return list
+        // Our own apps always come first, whatever the category or search
+        return list.filter(\.isOwnApp) + list.filter { !$0.isOwnApp }
+    }
+
+    /// Our apps get their own heading on the unfiltered All tab
+    private var showsOwnAppsHeading: Bool {
+        selectedCategory == nil && searchText.isEmpty
     }
 
     var body: some View {
@@ -159,7 +165,13 @@ struct DiscoverTabView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 CardList {
+                    if showsOwnAppsHeading {
+                        sectionHeading("From the maker of BrewDock", top: 4)
+                    }
                     ForEach(filtered) { package in
+                        if showsOwnAppsHeading, package.id == filtered.first(where: { !$0.isOwnApp })?.id {
+                            sectionHeading("Popular on Homebrew", top: 10)
+                        }
                         DiscoverPackageRow(package: package)
                             .environmentObject(brewService)
                     }
@@ -190,6 +202,17 @@ struct DiscoverTabView: View {
             }
         }
     }
+}
+
+private func sectionHeading(_ title: String, top: CGFloat) -> some View {
+    Text(title)
+        .font(.display(17, relativeTo: .headline))
+        .textCase(.uppercase)
+        .foregroundStyle(AppColors.text)
+        .accessibilityAddTraits(.isHeader)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 2)
+        .padding(.top, top)
 }
 
 struct DiscoverPackageRow: View {
@@ -237,7 +260,7 @@ struct DiscoverPackageRow: View {
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 8)
-        .card()
+        .modifier(OwnAppCard(isOwnApp: package.isOwnApp, id: package.id))
         .contextMenu {
             Button(isInstalled ? "Installed" : "Install \(package.displayName)") { install() }
                 .disabled(isInstalled || isInstalling)
@@ -253,7 +276,13 @@ struct DiscoverPackageRow: View {
 
     @ViewBuilder
     private var packageIcon: some View {
-        if let appIcon = installedBrewPackage?.appIcon {
+        if let bundled = package.bundledIcon {
+            Image(bundled)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 30, height: 30)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        } else if let appIcon = installedBrewPackage?.appIcon {
             Image(nsImage: appIcon)
                 .resizable()
                 .frame(width: 30, height: 30)
@@ -304,6 +333,23 @@ struct DiscoverPackageRow: View {
             RoundIconButton(symbol: "plus", help: "Install \(package.displayName)") {
                 install()
             }
+        }
+    }
+}
+
+/// Our own apps get a pastel outline so they stand out from the catalog
+private struct OwnAppCard: ViewModifier {
+    let isOwnApp: Bool
+    let id: String
+
+    func body(content: Content) -> some View {
+        if isOwnApp {
+            content
+                .card()
+                .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(AppColors.pastel(for: id), lineWidth: 2))
+        } else {
+            content.card()
         }
     }
 }

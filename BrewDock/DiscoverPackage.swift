@@ -10,6 +10,11 @@ struct DiscoverPackage: Identifiable {
     /// Third-party tap the package lives in, e.g. "rossnicholson/tap". Installing
     /// by the tap-qualified name makes brew tap it automatically.
     var tap: String? = nil
+    /// An icon in the asset catalog, so it shows before the app is installed
+    /// (and offline). Used for our own apps.
+    var bundledIcon: String? = nil
+    /// Made by BrewDock's author: listed first, under its own heading
+    var isOwnApp: Bool { tap == "rossnicholson/tap" }
 
     /// The name to pass to `brew install`.
     var installToken: String {
@@ -85,7 +90,7 @@ struct DiscoverPackage: Identifiable {
 }
 
 private extension DiscoverPackage {
-    init(_ id: String, _ displayName: String, _ description: String, _ category: Category, _ type: BrewPackage.PackageType, _ iconURL: String? = nil, tap: String? = nil) {
+    init(_ id: String, _ displayName: String, _ description: String, _ category: Category, _ type: BrewPackage.PackageType, _ iconURL: String? = nil, tap: String? = nil, bundledIcon: String? = nil) {
         self.id = id
         self.displayName = displayName
         self.description = description
@@ -93,6 +98,7 @@ private extension DiscoverPackage {
         self.type = type
         self.iconURL = iconURL
         self.tap = tap
+        self.bundledIcon = bundledIcon
     }
 }
 
@@ -103,8 +109,9 @@ private func icon(_ domain: String) -> String {
 enum DiscoverCatalog {
     static let all: [DiscoverPackage] = [
 
-        // MARK: Featured
-        .init("clawdbar", "ClawdBar", "macOS menu bar app showing your Claude Code usage limits at a glance", .utilities, .cask, tap: "rossnicholson/tap"),
+        // MARK: Featured: our own apps, always listed first
+        .init("mopup", "Mop Up", "Free Mac cleaner and app uninstaller", .utilities, .cask, tap: "rossnicholson/tap", bundledIcon: "MopUpIcon"),
+        .init("clawdbar", "ClawdBar", "Your Claude Code usage limits in the menu bar", .utilities, .cask, tap: "rossnicholson/tap", bundledIcon: "ClawdBarIcon"),
 
         // MARK: Browsers
         .init("google-chrome",  "Google Chrome",   "Fast, secure web browser by Google",              .browsers, .cask, icon("chrome.google.com")),
