@@ -79,7 +79,7 @@ final class ScreenshotTests: XCTestCase {
             }
         }
         try Snapshot.panel(to: out.appendingPathComponent("panel-about.png")) {
-            AboutPopover(app: .brewDock) { Mascot(size: 56) }
+            AboutPopover(app: .brewDock, hidingInstalledApps: false) { Mascot(size: 56) }
         }
         try Snapshot.panel(to: out.appendingPathComponent("panel-brewfile.png")) {
             BrewfileView().environmentObject(service)
