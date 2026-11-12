@@ -20,6 +20,35 @@ enum BrewParse {
         }
     }
 
+    /// Parse `brew outdated --json=v2` into the outdated formulae and casks, by the
+    /// names `brew list` prints. Formulae come as full names ("user/tap/foo"), and
+    /// the plain-text output even uses the alias they were installed by, so take
+    /// the short name. Nil when brew didn't give valid JSON (it failed).
+    static func outdated(fromJSON json: String) -> (formulae: Set<String>, casks: Set<String>)? {
+        guard let data = json.data(using: .utf8),
+              let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let formulae = obj["formulae"] as? [[String: Any]],
+              let casks = obj["casks"] as? [[String: Any]]
+        else { return nil }
+        func shortNames(_ entries: [[String: Any]]) -> Set<String> {
+            Set(entries.compactMap { ($0["name"] as? String)?.split(separator: "/").last.map(String.init) })
+        }
+        return (shortNames(formulae), shortNames(casks))
+    }
+
+    /// What `brew bundle check --verbose` says is missing. It writes each to
+    /// stderr as "→ Cask foo needs to be installed or updated." (or Formula,
+    /// Tap, Service and so on).
+    static func bundleCheckMissing(fromStderr stderr: String) -> [String] {
+        stderr.lines.compactMap { line in
+            let line = line.trimmingCharacters(in: .whitespaces)
+            guard line.hasPrefix("→ ") else { return nil }
+            let words = line.dropFirst(2).split(separator: " ")
+            guard let needs = words.firstIndex(of: "needs"), needs >= 2 else { return nil }
+            return words[1..<needs].joined(separator: " ")
+        }
+    }
+
     /// Parse `brew services list --json` (far more robust than column-splitting the
     /// human-readable table, which mis-parses when a column is blank).
     static func services(fromJSON json: String) -> [HomebrewService] {

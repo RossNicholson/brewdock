@@ -8,11 +8,11 @@ struct PackageRowView: View {
     @State private var showingUninstallAlert = false
 
     private var isUpdating: Bool {
-        brewService.updatingPackages.contains(package.name)
+        brewService.updatingPackages.contains(package.id)
     }
 
     private var isRemoving: Bool {
-        brewService.removingPackages.contains(package.name)
+        brewService.removingPackages.contains(package.id)
     }
 
     var body: some View {
@@ -144,7 +144,7 @@ struct PackageRowView: View {
     private var actions: some View {
         if isUpdating || isRemoving {
             HStack(spacing: 6) {
-                Text(brewService.progress[package.name] ?? (isUpdating ? "Updating…" : "Removing…"))
+                Text(brewService.progress[package.id] ?? (isUpdating ? "Updating…" : "Removing…"))
                     .font(.mono(9.5))
                     .foregroundStyle(AppColors.secondaryText)
                     .lineLimit(1)

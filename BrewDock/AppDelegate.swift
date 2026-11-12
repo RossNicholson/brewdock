@@ -85,6 +85,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         announceUpdates()
         // Updating BrewDock restarts it, so not while the panel is in use;
         // the next run picks it up.
+        // selfUpdateAvailable is never set while BrewDock is held ("Don't update")
         if brewService.selfUpdateAvailable, !panel.isVisible, !brewService.isBusy,
            UserDefaults.standard.bool(forKey: BrewService.autoUpdateKey) {
             await brewService.updateSelf()

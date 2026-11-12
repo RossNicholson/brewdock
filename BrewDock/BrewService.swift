@@ -77,11 +77,14 @@ class BrewService: ObservableObject {
     @Published var services: [HomebrewService] = []
     @Published var isLoading = false
     @Published var isLoadingServices = false
+    /// Packages being updated or removed, by `BrewPackage.id` ("cask:foo"), so
+    /// a cask and a formula with the same name don't share them
     @Published var updatingPackages: Set<String> = []
     @Published var removingPackages: Set<String> = []
     @Published var installingPackages: Set<String> = []
     @Published var managingServices: Set<String> = []
-    /// Latest progress label per package being installed/updated/removed, e.g.
+    /// Latest progress label per package being installed/updated/removed (by
+    /// `BrewPackage.id`, or `DiscoverPackage.id` for installs), e.g.
     /// "Downloading…". `allUpdatesKey` holds "Update all" progress.
     @Published var progress: [String: String] = [:]
     nonisolated static let allUpdatesKey = "*all*"
@@ -145,7 +148,14 @@ class BrewService: ObservableObject {
     private var untrustedFromActions: [UntrustedTarget] = []
     /// Action to run again once its package is trusted, keyed by full name
     private var retryAfterTrust: [String: @MainActor () async -> Void] = [:]
-    private var outdatedNames: Set<String> = []
+    /// What the last successful `brew outdated` reported, kept when a later one
+    /// fails, so a failed check never looks like "everything's up to date"
+    private var outdatedFormulae: Set<String> = []
+    private var outdatedCasks: Set<String> = []
+    /// Casks pinned on the command line (`brew pin --cask`, Homebrew 7+)
+    private var pinnedCasks: Set<String> = []
+    /// Callers of refresh(force: true) waiting for the refresh already running
+    private var refreshWaiters: [CheckedContinuation<Void, Never>] = []
     /// "Remember my apps": what your other Macs have that this one doesn't
     @Published var otherMacs: [OtherMacGroup] = []
     /// Banner offering "Remember my apps" until the user turns it on or says no
@@ -178,9 +188,13 @@ class BrewService: ObservableObject {
     private var appPathMisses: Set<String> = []
     private static let refreshTTL: TimeInterval = 30
 
+    /// A forced refresh always returns with the list as it is now: if one is
+    /// already running, it waits for that to go round again.
     func refresh(force: Bool = false) async {
         if isLoading {
-            if force { refreshQueued = true }
+            guard force else { return }
+            refreshQueued = true
+            await withCheckedContinuation { refreshWaiters.append($0) }
             return
         }
         // The panel triggers refresh on every open; skip if we refreshed recently
@@ -188,12 +202,19 @@ class BrewService: ObservableObject {
         // install/update/uninstall pass force: true.
         if !force, Date().timeIntervalSince(lastRefresh) < Self.refreshTTL { return }
         isLoading = true
-        defer { isLoading = false }
+        defer {
+            isLoading = false
+            let waiters = refreshWaiters
+            refreshWaiters = []
+            waiters.forEach { $0.resume() }
+        }
         repeat {
-            refreshQueued = false
-            await loadPackages()
+            repeat {
+                refreshQueued = false
+                await loadPackages()
+            } while refreshQueued
+            await syncLibrary()
         } while refreshQueued
-        await syncLibrary()
     }
 
     /// Saves this Mac's list to iCloud Drive if it changed, then reads the other
@@ -310,25 +331,36 @@ class BrewService: ObservableObject {
     private func loadPackages() async {
         async let caskResult    = brew(["list", "--cask", "--versions"])
         async let formulaResult = brew(["list", "--formula", "--versions"])
-        async let outdatedResult = brew(["outdated", "--quiet"] + greedyFlags)
+        // JSON, because the plain list names formulae by tap and alias
+        // ("python" for python@3.13), which `brew list` doesn't
+        async let outdatedResult = brew(["outdated", "--json=v2"] + greedyFlags, timeout: 120)
         async let requestedResult = brew(["list", "--formula", "--installed-on-request"])
-        async let pinnedResult = brew(["list", "--pinned"])
+        async let pinnedFormulaResult = brew(["list", "--pinned", "--formula"])
+        async let pinnedCaskResult = brew(["list", "--pinned", "--cask"])
 
-        let (caskRes, formulaRes, outdatedRes, requestedRes, pinnedRes) =
-            await (caskResult, formulaResult, outdatedResult, requestedResult, pinnedResult)
+        let (caskRes, formulaRes, outdatedRes, requestedRes, pinnedFormulaRes, pinnedCaskRes) =
+            await (caskResult, formulaResult, outdatedResult, requestedResult, pinnedFormulaResult, pinnedCaskResult)
 
         lastListingSucceeded = caskRes.exitCode == 0 && formulaRes.exitCode == 0
-        let held = heldCasks.union(pinnedRes.output.lines)
-        outdatedNames = Set(outdatedRes.output.lines).subtracting(held)
+        if let outdated = BrewParse.outdated(fromJSON: outdatedRes.output) {
+            outdatedFormulae = outdated.formulae
+            outdatedCasks = outdated.casks
+        }
+        let pinnedFormulae = pinnedFormulaRes.exitCode == 0 ? Set(pinnedFormulaRes.output.lines) : []
+        // Older Homebrew can't pin casks and refuses --cask here
+        pinnedCasks = pinnedCaskRes.exitCode == 0 ? Set(pinnedCaskRes.output.lines) : []
+        let allHeldCasks = heldCasks.union(pinnedCasks)
+        let casksToUpdate = outdatedCasks.subtracting(allHeldCasks)
+        let formulaeToUpdate = outdatedFormulae.subtracting(pinnedFormulae)
         let listedUntrusted = [caskRes, formulaRes, outdatedRes]
             .flatMap { BrewParse.untrustedTargets(fromStderr: $0.errorOutput) }
         untrusted = (listedUntrusted + untrustedFromActions).reduce(into: []) { if !$0.contains($1) { $0.append($1) } }
 
-        var parsedCasks = BrewParse.packages(from: caskRes.output, type: .cask, outdated: outdatedNames)
+        var parsedCasks = BrewParse.packages(from: caskRes.output, type: .cask, outdated: casksToUpdate)
         // brew refuses to list any casks while one installed cask is untrusted;
         // read the Caskroom folder instead so the Apps tab still works.
         if caskRes.exitCode != 0 && parsedCasks.isEmpty && !listedUntrusted.isEmpty {
-            parsedCasks = BrewParse.caskroomPackages(caskroomEntries(), outdated: outdatedNames)
+            parsedCasks = BrewParse.caskroomPackages(caskroomEntries(), outdated: casksToUpdate)
         }
 
         if !parsedCasks.isEmpty {
@@ -345,17 +377,22 @@ class BrewService: ObservableObject {
             }
         }
 
-        self.casks = parsedCasks.map { var p = $0; p.isHeld = held.contains(p.name); return p }
+        self.casks = parsedCasks.map { var p = $0; p.isHeld = allHeldCasks.contains(p.name); return p }
         // Keep Settings in step with the list: if the list shows BrewDock as
-        // outdated, offer the update without waiting for the next check.
-        if self.casks.contains(where: { $0.isBrewDock && $0.isOutdated }) { selfUpdateAvailable = true }
-        var parsedFormulae = BrewParse.packages(from: formulaRes.output, type: .formula, outdated: outdatedNames)
+        // outdated, offer the update without waiting for the next check, and
+        // never while it's held.
+        if isSelfHeld {
+            selfUpdateAvailable = false
+        } else if self.casks.contains(where: { $0.isBrewDock && $0.isOutdated }) {
+            selfUpdateAvailable = true
+        }
+        var parsedFormulae = BrewParse.packages(from: formulaRes.output, type: .formula, outdated: formulaeToUpdate)
         // Mark dependencies, unless brew couldn't say (then show everything as yours)
         if requestedRes.exitCode == 0 {
             let requested = Set(requestedRes.output.lines)
             parsedFormulae = parsedFormulae.map { var p = $0; p.isDependency = !requested.contains(p.name); return p }
         }
-        self.formulae = parsedFormulae.map { var p = $0; p.isHeld = held.contains(p.name); return p }
+        self.formulae = parsedFormulae.map { var p = $0; p.isHeld = pinnedFormulae.contains(p.name); return p }
         lastRefresh = Date()
     }
 
@@ -451,6 +488,13 @@ class BrewService: ObservableObject {
             heldCasks.insert(package.name)
         } else {
             heldCasks.remove(package.name)
+            // Pinned on the command line: BrewDock's hold isn't the only one
+            if pinnedCasks.contains(package.name) {
+                let result = await brew(["unpin", "--cask", package.name])
+                if result.exitCode != 0 {
+                    lastError = result.failureMessage("Couldn't release \(package.name)")
+                }
+            }
         }
         await refresh(force: true)
     }
@@ -466,11 +510,11 @@ class BrewService: ObservableObject {
 
     func upgrade(_ package: BrewPackage) async {
         if package.isBrewDock { await updateSelf(); return }
-        updatingPackages.insert(package.name)
-        defer { updatingPackages.remove(package.name) }
+        updatingPackages.insert(package.id)
+        defer { updatingPackages.remove(package.id) }
         let flags = package.type == .cask ? ["--cask"] + greedyFlags : ["--formula"]
         let result = await brew(["upgrade"] + flags + [package.name], timeout: nil,
-                                onLine: reportProgress(to: package.name))
+                                onLine: reportProgress(to: package.id))
         if package.type == .cask { noteAppManagement(result) }
         if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.upgrade(package) }) { return }
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't update \(package.name)") }
@@ -493,11 +537,11 @@ class BrewService: ObservableObject {
             if !launchDetachedSelfBrew(.uninstall) { lastError = "Couldn't start the uninstaller." }
             return
         }
-        removingPackages.insert(package.name)
-        defer { removingPackages.remove(package.name) }
+        removingPackages.insert(package.id)
+        defer { removingPackages.remove(package.id) }
         let flag = package.type == .cask ? "--cask" : "--formula"
         let result = await brew(["uninstall", flag, package.name], timeout: nil,
-                                onLine: reportProgress(to: package.name))
+                                onLine: reportProgress(to: package.id))
         if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.uninstall(package) }) { return }
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't uninstall \(package.name)") }
         await refresh(force: true)
@@ -506,7 +550,7 @@ class BrewService: ObservableObject {
     // Called on launch — quick check against local cache, no network fetch
     func checkSelfUpdateSilent() async {
         let result = await brew(["outdated", "--cask", Self.selfCaskFullName])
-        selfUpdateAvailable = Self.listsSelf(result.output)
+        selfUpdateAvailable = Self.listsSelf(result.output) && !isSelfHeld
     }
 
     // Called when the user explicitly clicks "Check for Updates" — runs brew update first.
@@ -516,7 +560,12 @@ class BrewService: ObservableObject {
         defer { if showProgress { isCheckingSelfUpdate = false } }
         _ = await brew(["update"], timeout: 60)
         let result = await brew(["outdated", "--cask", Self.selfCaskFullName])
-        selfUpdateAvailable = Self.listsSelf(result.output)
+        selfUpdateAvailable = Self.listsSelf(result.output) && !isSelfHeld
+    }
+
+    /// The user chose "Don't update" on BrewDock itself
+    var isSelfHeld: Bool {
+        heldCasks.contains(Self.selfCaskName) || pinnedCasks.contains(Self.selfCaskName)
     }
 
     /// Whether `brew outdated` output names BrewDock (short or full name)
@@ -563,7 +612,10 @@ class BrewService: ObservableObject {
         let pid = ProcessInfo.processInfo.processIdentifier
         let appPath = Bundle.main.bundlePath
         let bundleID = Bundle.main.bundleIdentifier ?? "com.rossnicholson.BrewDock"
-        let onSuccess = command == .upgrade ? "open -b \"\(bundleID)\" || open \"\(appPath)\"" : ":"
+        // The path first: by bundle ID, macOS may pick another copy (an old
+        // download, a dev build) over the one brew just replaced
+        let reopen = "open \"\(appPath)\" || open -b \"\(bundleID)\""
+        let onSuccess = command == .upgrade ? reopen : ":"
 
         // Note: `$(...)`, `$LOG`, `$status` are literal shell — only `\(...)` is
         // interpolated by Swift. Paths are quoted to tolerate spaces.
@@ -585,6 +637,8 @@ class BrewService: ObservableObject {
             \(onSuccess)
         else
             osascript -e 'display notification "BrewDock \(command.rawValue) failed — see \(logURL.path)" with title "BrewDock"' >/dev/null 2>&1 || true
+            # Nothing changed, so bring the menu bar app back
+            \(reopen)
         fi
         """
 
@@ -615,30 +669,40 @@ class BrewService: ObservableObject {
         // Setting it here caused refresh()'s guard to short-circuit, leaving the list stale.
         // Upgrade everything except BrewDock by name: a plain `brew upgrade` would
         // quit us mid-run. BrewDock goes last, through the detached updater.
-        let outdatedCasks = casks.filter { $0.isOutdated && !$0.isBrewDock }.map(\.name)
-        let outdatedFormulae = formulae.filter(\.isOutdated).map(\.name)
+        let outdatedCasks = casks.filter { $0.isOutdated && !$0.isBrewDock }
+        let outdatedFormulae = formulae.filter(\.isOutdated)
         let selfOutdated = casks.contains { $0.isOutdated && $0.isBrewDock }
-        updatingPackages.formUnion(outdatedCasks + outdatedFormulae)
+        let ids = (outdatedCasks + outdatedFormulae).map(\.id)
+        updatingPackages.formUnion(ids)
         var failure: BrewResult? = nil
+        var needsTrust = false
+        let retry: @MainActor () async -> Void = { [weak self] in await self?.upgradeAll() }
+        /// Notes a failed batch: untrusted packages go to the banner (and are
+        /// retried once trusted), anything else is the failure to report
+        func note(_ result: BrewResult) {
+            guard result.exitCode != 0 else { return }
+            if noteUntrusted(result, retry: retry) {
+                needsTrust = true
+            } else {
+                failure = failure ?? result
+            }
+        }
         if !outdatedFormulae.isEmpty {
-            let result = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil,
-                                    onLine: reportProgress(to: Self.allUpdatesKey))
-            if result.exitCode != 0 { failure = result }
+            note(await brew(["upgrade", "--formula"] + outdatedFormulae.map(\.name), timeout: nil,
+                            onLine: reportProgress(to: Self.allUpdatesKey)))
         }
         if !outdatedCasks.isEmpty {
-            let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
+            let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks.map(\.name), timeout: nil,
                                     onLine: reportProgress(to: Self.allUpdatesKey))
             noteAppManagement(result)
-            if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.upgradeAll() }) {
-                updatingPackages.subtract(outdatedCasks + outdatedFormulae)
-                return
-            }
-            if result.exitCode != 0 { failure = failure ?? result }
+            note(result)
         }
-        updatingPackages.subtract(outdatedCasks + outdatedFormulae)
-        let failed = failure != nil
-        if let failure { lastError = failure.failureMessage("Some updates failed") }
-        if selfOutdated && !failed {
+        updatingPackages.subtract(ids)
+        if let failure {
+            lastError = failure.failureMessage("Some updates failed")
+                + (needsTrust ? ". A package also needs trusting — see the banner" : "")
+        }
+        if selfOutdated && failure == nil && !needsTrust {
             await updateSelf()
             return
         }
@@ -667,35 +731,37 @@ class BrewService: ObservableObject {
         await refresh(force: true)
         guard !isBusy else { return [] }
 
-        let untrustedNames = Set(untrusted.map(\.shortName))
+        func isUntrusted(_ package: BrewPackage) -> Bool {
+            untrusted.contains { $0.kind == package.type && $0.shortName == package.name }
+        }
         let outdatedCasks = casks.filter {
-            $0.isOutdated && !$0.isBrewDock && !untrustedNames.contains($0.name) && $0.runningApplication == nil
-        }.map(\.name)
-        let outdatedFormulae = formulae.filter { $0.isOutdated && !untrustedNames.contains($0.name) }.map(\.name)
+            $0.isOutdated && !$0.isBrewDock && !isUntrusted($0) && $0.runningApplication == nil
+        }
+        let outdatedFormulae = formulae.filter { $0.isOutdated && !isUntrusted($0) }
         let attempted = outdatedCasks + outdatedFormulae
         guard !attempted.isEmpty else { return [] }
 
-        updatingPackages.formUnion(attempted)
+        updatingPackages.formUnion(attempted.map(\.id))
         if !outdatedFormulae.isEmpty {
-            _ = await brew(["upgrade", "--formula"] + outdatedFormulae, timeout: nil,
+            _ = await brew(["upgrade", "--formula"] + outdatedFormulae.map(\.name), timeout: nil,
                            onLine: reportProgress(to: Self.allUpdatesKey))
         }
         if !outdatedCasks.isEmpty {
-            let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
+            let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks.map(\.name), timeout: nil,
                                     onLine: reportProgress(to: Self.allUpdatesKey))
             noteAppManagement(result)
         }
-        updatingPackages.subtract(attempted)
+        updatingPackages.subtract(attempted.map(\.id))
         await refresh(force: true)
         // Brew carries on past a failed package, so check what actually updated
-        let stillOutdated = Set((casks + formulae).filter(\.isOutdated).map(\.name))
-        return attempted.filter { !stillOutdated.contains($0) }
+        let stillOutdated = Set((casks + formulae).filter(\.isOutdated).map(\.id))
+        return attempted.filter { !stillOutdated.contains($0.id) }.map(\.name)
     }
 
     func brewfileDump(to path: String) async -> (success: Bool, message: String) {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }
-        let result = await brew(["bundle", "dump", "--file=\(path)", "--force"])
+        let result = await brew(["bundle", "dump", "--file=\(path)", "--force"], timeout: 300)
         guard result.exitCode == 0 else { return (false, result.failureMessage("Couldn't export the Brewfile")) }
         return (true, "Brewfile saved.")
     }
@@ -714,15 +780,24 @@ class BrewService: ObservableObject {
         defer { isBrewfileWorking = false }
         let result = await brew(["bundle", "check", "--file=\(path)", "--verbose"], timeout: 120)
         if result.exitCode == 0 { return (true, "All packages are installed.") }
-        let missing = result.output.lines.filter { $0.hasPrefix("x ") }.map { String($0.dropFirst(2)) }
-        return (false, missing.isEmpty ? "Some packages are missing." : "Missing: \(missing.joined(separator: ", "))")
+        let missing = BrewParse.bundleCheckMissing(fromStderr: result.errorOutput)
+        if !missing.isEmpty { return (false, "Missing: \(missing.joined(separator: ", "))") }
+        // Exit 1 with no list: brew couldn't check at all (a bad file, a timeout)
+        return (false, result.failureMessage("Couldn't check the Brewfile"))
     }
 
-    func brewfileCleanupPreview(at path: String) async -> [String] {
+    /// What "Remove unlisted" would remove, or why brew couldn't say. The dry
+    /// run exits 1 when it finds something, so only an error line or a
+    /// timeout counts as failing.
+    func brewfileCleanupPreview(at path: String) async -> (packages: [String], error: String?) {
         isBrewfileWorking = true
         defer { isBrewfileWorking = false }
-        let result = await brew(["bundle", "cleanup", "--file=\(path)"])
-        return BrewParse.cleanupCandidates(fromOutput: result.output)
+        let result = await brew(["bundle", "cleanup", "--file=\(path)"], timeout: 300)
+        let packages = BrewParse.cleanupCandidates(fromOutput: result.output)
+        if result.timedOut || (packages.isEmpty && result.errorOutput.contains("Error:")) {
+            return ([], result.failureMessage("Couldn't read the Brewfile"))
+        }
+        return (packages, nil)
     }
 
     func brewfileCleanup(at path: String) async -> (success: Bool, message: String) {
@@ -810,17 +885,49 @@ private struct BrewResult {
     let output: String
     var errorOutput: String = ""
     let exitCode: Int32
+    /// Killed for running past its timeout
+    var timedOut = false
 
     /// "Couldn't update git: <brew's error>", or just the first part when brew
     /// gave no reason
     func failureMessage(_ base: String) -> String {
-        BrewParse.errorSummary(fromStderr: errorOutput).map { "\(base): \($0)" } ?? base
+        if timedOut { return "\(base): Homebrew took too long" }
+        return BrewParse.errorSummary(fromStderr: errorOutput).map { "\(base): \($0)" } ?? base
     }
 }
 
-/// Collects stderr on one thread while stdout is read on another.
-private final class StderrBox: @unchecked Sendable {
-    var data = Data()
+/// Output collected by a reading thread. Locked, because a timed-out run reads
+/// it while a child brew left behind may still be writing.
+private final class OutputBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stored = Data()
+    var data: Data {
+        get { lock.withLock { stored } }
+        set { lock.withLock { stored = newValue } }
+    }
+}
+
+/// Every process started by `pid`, and theirs, deepest last
+private func descendants(of pid: pid_t) -> [pid_t] {
+    var buffer = [pid_t](repeating: 0, count: 256)
+    let count = Int(proc_listchildpids(pid, &buffer, Int32(buffer.count * MemoryLayout<pid_t>.size)))
+    guard count > 0 else { return [] }
+    let children = buffer.prefix(min(count, buffer.count)).filter { $0 > 0 }
+    return children + children.flatMap { descendants(of: $0) }
+}
+
+/// Stops brew and whatever it started (git, curl): those inherit its output
+/// pipes, so killing brew alone leaves the pipes open and the read hanging
+private func stop(_ process: Process, exited: DispatchSemaphore) {
+    let pid = process.processIdentifier
+    // Collected first: once brew is gone, its children belong to launchd
+    for child in descendants(of: pid) { kill(child, SIGTERM) }
+    process.terminate()
+    if exited.wait(timeout: .now() + 3) == .timedOut {
+        for child in descendants(of: pid) { kill(child, SIGKILL) }
+        kill(pid, SIGKILL)
+        exited.wait()
+    }
 }
 
 /// Deterministic environment for every `brew` invocation. A Finder-launched app
@@ -871,50 +978,68 @@ private func drain(_ handle: FileHandle, onLine: (@Sendable (String) -> Void)?) 
 /// download progress on stderr), for live progress.
 private func brew(_ args: [String], timeout: TimeInterval? = 30,
                   onLine: (@Sendable (String) -> Void)? = nil) async -> BrewResult {
+    // Its own thread, as it blocks while brew runs
     await withCheckedContinuation { continuation in
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: brewPath)
-        process.arguments = args
-        process.environment = brewEnvironment
-        let pipe = Pipe()
-        let errPipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = errPipe
-
-        do {
-            try process.run()
-        } catch {
-            continuation.resume(returning: BrewResult(output: "", errorOutput: "Error: Couldn't run \(brewPath)", exitCode: 1))
-            return
-        }
-
-        if let timeout {
-            DispatchQueue.global().asyncAfter(deadline: .now() + timeout) {
-                if process.isRunning { process.terminate() }
-            }
-        }
-
-        // Drain stdout and stderr while brew runs. Reading only after it exits
-        // deadlocks once either passes the 64 KB pipe buffer (e.g. `brew info` over
-        // ~15 casks): brew blocks writing, so it never exits until the timeout.
-        let stderrBox = StderrBox()
-        let stderrDone = DispatchGroup()
-        stderrDone.enter()
-        DispatchQueue.global().async {
-            stderrBox.data = drain(errPipe.fileHandleForReading, onLine: onLine)
-            stderrDone.leave()
-        }
-        DispatchQueue.global().async {
-            let data = drain(pipe.fileHandleForReading, onLine: onLine)
-            stderrDone.wait()
-            process.waitUntilExit()
-            continuation.resume(returning: BrewResult(
-                output: String(data: data, encoding: .utf8) ?? "",
-                errorOutput: String(data: stderrBox.data, encoding: .utf8) ?? "",
-                exitCode: process.terminationStatus
-            ))
+        Thread.detachNewThread {
+            continuation.resume(returning: runBrew(args, timeout: timeout, onLine: onLine))
         }
     }
+}
+
+private func runBrew(_ args: [String], timeout: TimeInterval?,
+                     onLine: (@Sendable (String) -> Void)?) -> BrewResult {
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: brewPath)
+    process.arguments = args
+    process.environment = brewEnvironment
+    let pipe = Pipe()
+    let errPipe = Pipe()
+    process.standardOutput = pipe
+    process.standardError = errPipe
+    let exited = DispatchSemaphore(value: 0)
+    process.terminationHandler = { _ in exited.signal() }
+
+    do {
+        try process.run()
+    } catch {
+        return BrewResult(output: "", errorOutput: "Error: Couldn't run \(brewPath)", exitCode: 1)
+    }
+
+    // Drain stdout and stderr while brew runs. Reading only after it exits
+    // deadlocks once either passes the 64 KB pipe buffer (e.g. `brew info` over
+    // ~15 casks): brew blocks writing, so it never exits until the timeout.
+    let outBox = OutputBox()
+    let errBox = OutputBox()
+    let read = DispatchSemaphore(value: 0)
+    Thread.detachNewThread {
+        outBox.data = drain(pipe.fileHandleForReading, onLine: onLine)
+        read.signal()
+    }
+    Thread.detachNewThread {
+        errBox.data = drain(errPipe.fileHandleForReading, onLine: onLine)
+        read.signal()
+    }
+
+    var timedOut = false
+    if let timeout {
+        if exited.wait(timeout: .now() + timeout) == .timedOut {
+            timedOut = true
+            stop(process, exited: exited)
+        }
+    } else {
+        exited.wait()
+    }
+    // The output ends when brew exits, unless something it started is still
+    // holding the pipes, so don't wait on that forever
+    let grace: TimeInterval = timedOut ? 2 : 10
+    _ = read.wait(timeout: .now() + grace)
+    _ = read.wait(timeout: .now() + grace)
+    return BrewResult(
+        output: String(data: outBox.data, encoding: .utf8) ?? "",
+        errorOutput: String(data: errBox.data, encoding: .utf8) ?? "",
+        exitCode: timedOut ? -1 : process.terminationStatus,
+        timedOut: timedOut
+    )
 }
 
 extension String {

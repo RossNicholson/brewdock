@@ -114,8 +114,12 @@ struct BrewfileView: View {
         guard panel.runModal() == .OK, let url = panel.url else { return }
         statusMessage = nil
         Task {
-            let packages = await brewService.brewfileCleanupPreview(at: url.path)
-            if packages.isEmpty {
+            let (packages, error) = await brewService.brewfileCleanupPreview(at: url.path)
+            if let error {
+                statusIsSuccess = false
+                statusMessage = error
+                brewService.report((false, error))
+            } else if packages.isEmpty {
                 statusIsSuccess = true
                 statusMessage = "Nothing to clean up."
                 brewService.report((true, "Nothing to clean up."))

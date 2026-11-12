@@ -26,6 +26,65 @@ final class BrewParseTests: XCTestCase {
         XCTAssertTrue(BrewParse.lacksAppManagement(source))
     }
 
+    // MARK: brew outdated --json=v2
+
+    func testOutdatedJSONUsesShortNames() throws {
+        let json = """
+        {
+          "formulae": [
+            {"name": "mongodb/brew/mongodb-community", "installed_versions": ["8.0.1"], "current_version": "8.0.4", "pinned": false, "pinned_version": null},
+            {"name": "python@3.13", "installed_versions": ["3.13.1"], "current_version": "3.13.2", "pinned": false, "pinned_version": null}
+          ],
+          "casks": [
+            {"name": "ollama", "installed_versions": ["0.5.1"], "current_version": "0.5.4", "pinned": false, "pinned_version": null}
+          ]
+        }
+        """
+        let outdated = try XCTUnwrap(BrewParse.outdated(fromJSON: json))
+        XCTAssertEqual(outdated.formulae, ["mongodb-community", "python@3.13"], "names as brew list prints them")
+        XCTAssertEqual(outdated.casks, ["ollama"], "kept apart from formulae")
+        // Matched by type: the ollama formula isn't outdated just because the cask is
+        let formulae = BrewParse.packages(from: "ollama 0.5.4\nmongodb-community 8.0.1", type: .formula, outdated: outdated.formulae)
+        XCTAssertEqual(formulae.map(\.isOutdated), [false, true])
+    }
+
+    func testOutdatedJSONEmptyAndFailed() {
+        XCTAssertEqual(BrewParse.outdated(fromJSON: "{\n  \"formulae\": [],\n  \"casks\": []\n}")?.formulae, [])
+        XCTAssertNil(BrewParse.outdated(fromJSON: ""), "a failed run isn't 'nothing outdated'")
+        XCTAssertNil(BrewParse.outdated(fromJSON: "Error: Refusing to load cask"))
+    }
+
+    /// The installed Homebrew still names formulae by full name in the JSON
+    func testInstalledHomebrewOutdatedJSON() throws {
+        let file = "/opt/homebrew/Library/Homebrew/cmd/outdated.rb"
+        let source = try XCTUnwrap(try? String(contentsOfFile: file, encoding: .utf8), "no Homebrew at /opt/homebrew")
+        XCTAssertTrue(source.contains("f.full_name"))
+        XCTAssertTrue(source.contains("formulae: json_info(formulae)"))
+    }
+
+    // MARK: brew bundle check
+
+    func testBundleCheckMissing() {
+        let stderr = """
+        brew bundle can't satisfy your Brewfile's dependencies.
+        → Cask zed needs to be installed or updated.
+        → Formula cowsay needs to be installed or updated.
+        → Tap user/tools needs to be tapped.
+        → Service postgresql@16 needs to be started.
+        Satisfy missing dependencies with `brew bundle install`.
+        """
+        XCTAssertEqual(BrewParse.bundleCheckMissing(fromStderr: stderr), ["zed", "cowsay", "user/tools", "postgresql@16"])
+        XCTAssertEqual(BrewParse.bundleCheckMissing(fromStderr: "Error: Invalid Brewfile: syntax error found"), [])
+    }
+
+    func testInstalledHomebrewBundleCheckWording() throws {
+        let file = "/opt/homebrew/Library/Homebrew/cmd/bundle/subcommand/check.rb"
+        let alt = "/opt/homebrew/Library/Homebrew/bundle/subcommand/check.rb"
+        let source = try XCTUnwrap((try? String(contentsOfFile: file, encoding: .utf8)) ?? (try? String(contentsOfFile: alt, encoding: .utf8)),
+                                   "no Homebrew at /opt/homebrew")
+        XCTAssertTrue(source.contains(#"$stderr.puts "→ #{error}""#))
+    }
+
     // MARK: brew list --versions
 
     func testPackagesParsesNameAndVersion() {
