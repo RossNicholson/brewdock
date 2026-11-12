@@ -113,6 +113,9 @@ final class BrewParseTests: XCTestCase {
         let clawdbar = DiscoverCatalog.all.first { $0.id == "clawdbar" }!
         XCTAssertEqual(clawdbar.installToken, "rossnicholson/tap/clawdbar")
         XCTAssertTrue(clawdbar.matches(installedName: "clawdbar"))
+        let keybar = DiscoverCatalog.all.first { $0.id == "keybar" }!
+        XCTAssertEqual(keybar.installToken, "rossnicholson/tap/keybar")
+        XCTAssertNotNil(keybar.bundledIcon)
         XCTAssertEqual(DiscoverCatalog.all.first { $0.id == "git" }?.installToken, "git")
     }
 

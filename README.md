@@ -80,7 +80,7 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
 - **230+ hand-picked apps and tools** in 10 categories: browsers, development, AI, databases, DevOps, design, productivity, communication, security and utilities.
 - **Search all of Homebrew:** type two or more letters and BrewDock also searches Homebrew's full catalogue.
 - **One-click install,** with live progress.
-- **From the maker of BrewDock:** [Mop Up](https://rossnicholson.dev/mopup) (a free Mac cleaner) and [ClawdBar](https://rossnicholson.dev/clawdbar) (Claude Code usage in the menu bar) are listed first.
+- **From the maker of BrewDock:** [Mop Up](https://rossnicholson.dev/mopup) (a free Mac cleaner), [ClawdBar](https://rossnicholson.dev/clawdbar) (Claude Code usage in the menu bar) and [KeyBar](https://rossnicholson.dev/keybar) (API keys for Claude Code, kept in your Keychain) are listed first.
 
 ### Housekeeping
 - **Brewfile:** back up your setup, restore it on a new Mac, see what's missing, or remove anything not in the file.
@@ -181,4 +181,4 @@ If BrewDock saves you time, you can [buy me a coffee](https://buymeacoffee.com/r
 
 GPL-3.0. See [LICENSE](LICENSE).
 
-The look and the menu bar panel come from [HouseStyle](https://github.com/RossNicholson/mac-house-style) (MIT), shared with my other Mac apps, ClawdBar and Mop Up. Its bundled fonts, Barlow Condensed and Geist Mono, are under the SIL Open Font License. Homebrew is a separate project and isn't affiliated with BrewDock.
+The look and the menu bar panel come from [HouseStyle](https://github.com/RossNicholson/mac-house-style) (MIT), shared with my other Mac apps, ClawdBar, Mop Up and KeyBar. Its bundled fonts, Barlow Condensed and Geist Mono, are under the SIL Open Font License. Homebrew is a separate project and isn't affiliated with BrewDock.
