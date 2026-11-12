@@ -141,6 +141,17 @@ class BrewService: ObservableObject {
     private var outdatedNames: Set<String> = []
     /// "Remember my apps": what your other Macs have that this one doesn't
     @Published var otherMacs: [OtherMacGroup] = []
+    /// Banner offering "Remember my apps" until the user turns it on or says no
+    @Published var libraryOffer: LibraryOffer = .none
+    enum LibraryOffer: Equatable {
+        case none
+        /// Lists from your other Macs are already in iCloud Drive (a new Mac)
+        case welcome(from: String, count: Int)
+        /// Nothing found yet: offer to start keeping this Mac's list
+        case invite
+    }
+    /// A re-read queued while iCloud Drive downloads another Mac's list
+    private var libraryRecheck: Task<Void, Never>? = nil
     /// Why this Mac's list couldn't be saved to iCloud Drive, for Settings
     @Published var libraryError: String? = nil
     /// Packages in the list last saved to iCloud Drive, so it's only rewritten
@@ -181,15 +192,19 @@ class BrewService: ObservableObject {
     /// Saves this Mac's list to iCloud Drive if it changed, then reads the other
     /// Macs' lists. Runs after every refresh while "Remember my apps" is on.
     func syncLibrary(force: Bool = false) async {
-        guard UserDefaults.standard.bool(forKey: MacLibrary.enabledKey) else {
-            otherMacs = []
-            return
-        }
+        let enabled = UserDefaults.standard.bool(forKey: MacLibrary.enabledKey)
         guard MacLibrary.isICloudDriveOn else {
             otherMacs = []
-            libraryError = "Turn on iCloud Drive in System Settings → Apple Account → iCloud."
+            libraryOffer = .none
+            if enabled { libraryError = "Turn on iCloud Drive in System Settings → Apple Account → iCloud." }
             return
         }
+        guard enabled else {
+            otherMacs = []
+            await offerLibrary()
+            return
+        }
+        libraryOffer = .none
         let names = Set(casks.map { "cask:\($0.name)" } + formulae.filter { !$0.isDependency }.map { "formula:\($0.name)" })
         if lastListingSucceeded, force || names != savedLibraryNames {
             let info = await brew(["info", "--json=v2", "--installed"], timeout: 60)
@@ -203,11 +218,58 @@ class BrewService: ObservableObject {
                 }
             }
         }
-        otherMacs = MacLibrary.missing(
-            from: MacLibrary.otherSnapshots(),
+        otherMacs = readOtherMacs()
+    }
+
+    /// What the other Macs' lists in iCloud Drive offer this one
+    private func readOtherMacs() -> [OtherMacGroup] {
+        let (snapshots, stillDownloading) = MacLibrary.otherSnapshots()
+        if stillDownloading { recheckLibrarySoon() }
+        return MacLibrary.missing(
+            from: snapshots,
             installedCasks: Set(casks.map(\.name)),
             installedFormulae: Set(formulae.map(\.name)),
             dismissed: Set(UserDefaults.standard.stringArray(forKey: MacLibrary.dismissedKey) ?? []))
+    }
+
+    /// iCloud Drive is still fetching another Mac's list: look again in a bit,
+    /// so a new Mac's banner appears without reopening the panel
+    private func recheckLibrarySoon() {
+        guard libraryRecheck == nil else { return }
+        libraryRecheck = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(15))
+            guard let self, !Task.isCancelled else { return }
+            self.libraryRecheck = nil
+            await self.syncLibrary()
+        }
+    }
+
+    /// While "Remember my apps" is off and the user hasn't said no: if other
+    /// Macs' lists are in iCloud Drive (a new Mac), offer them; otherwise offer
+    /// to start keeping this Mac's list. Only reads, never writes.
+    private func offerLibrary() async {
+        guard !UserDefaults.standard.bool(forKey: MacLibrary.decidedKey), lastListingSucceeded else {
+            libraryOffer = .none
+            return
+        }
+        let groups = readOtherMacs()
+        let count = groups.reduce(0) { $0 + $1.packages.count }
+        libraryOffer = groups.isEmpty ? .invite
+            : .welcome(from: groups.count == 1 ? groups[0].macName : "your other Macs", count: count)
+    }
+
+    /// The banner's "Turn on" / "Show me"
+    func acceptLibraryOffer() async {
+        UserDefaults.standard.set(true, forKey: MacLibrary.enabledKey)
+        UserDefaults.standard.set(true, forKey: MacLibrary.decidedKey)
+        libraryOffer = .none
+        await syncLibrary(force: true)
+    }
+
+    /// The banner's ×: don't offer again (Settings still has the toggle)
+    func declineLibraryOffer() {
+        UserDefaults.standard.set(true, forKey: MacLibrary.decidedKey)
+        libraryOffer = .none
     }
 
     /// Turning "Remember my apps" off removes this Mac's list, so the other Macs

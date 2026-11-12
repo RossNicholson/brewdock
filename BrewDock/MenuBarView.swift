@@ -155,33 +155,82 @@ struct MenuBarView: View {
     }
 
     private var showsOtherMacsBanner: Bool {
-        !brewService.otherMacs.isEmpty && (selectedTab == .apps || selectedTab == .tools)
+        (!brewService.otherMacs.isEmpty || brewService.libraryOffer != .none)
+            && (selectedTab == .apps || selectedTab == .tools)
     }
 
-    /// Periwinkle block pointing to Discover when your other Macs have apps or
-    /// tools this one doesn't ("Remember my apps")
+    /// "Remember my apps": what your other Macs have that this one doesn't, or,
+    /// while it's off, an offer to turn it on
+    @ViewBuilder
     private var otherMacsBanner: some View {
         let groups = brewService.otherMacs
-        let count = groups.reduce(0) { $0 + $1.packages.count }
-        let from = groups.count == 1 ? groups[0].macName : "your other Macs"
-        return HStack(spacing: 10) {
+        if !groups.isEmpty {
+            let count = groups.reduce(0) { $0 + $1.packages.count }
+            libraryBanner(title: "\(count) to install",
+                          detail: "From \(groups.count == 1 ? groups[0].macName : "your other Macs")",
+                          fill: AppColors.periwinkle, dismissHelp: "Don't suggest these on this Mac",
+                          onDismiss: { brewService.dismissFromOtherMacs(groups.flatMap { $0.packages.map(\.token) }) }) {
+                RoundIconButton(symbol: "arrow.right", size: 30, fill: AppColors.ink, foreground: .white, help: "Show them in Discover") {
+                    showDiscover()
+                }
+            }
+        } else if case .welcome(let from, let count) = brewService.libraryOffer {
+            // A new Mac: your other Macs' lists are already in iCloud Drive
+            libraryBanner(title: "Welcome back",
+                          detail: "\(plural(count, "app")) from \(from)",
+                          fill: AppColors.periwinkle, dismissHelp: "No thanks",
+                          onDismiss: { brewService.declineLibraryOffer() }) {
+                RoundIconButton(symbol: "arrow.right", size: 30, fill: AppColors.ink, foreground: .white,
+                                help: "Turn on Remember my apps and show them in Discover") {
+                    Task { await brewService.acceptLibraryOffer() }
+                    showDiscover()
+                }
+            }
+        } else if brewService.libraryOffer == .invite {
+            libraryBanner(title: "On every Mac",
+                          detail: "Remember your apps in iCloud",
+                          fill: AppColors.mint, dismissHelp: "No thanks",
+                          onDismiss: { brewService.declineLibraryOffer() }) {
+                Button {
+                    Task { await brewService.acceptLibraryOffer() }
+                } label: {
+                    Text("Turn on")
+                        .font(.mono(10.5, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(AppColors.ink, in: Capsule())
+                }
+                .buttonStyle(PressableStyle())
+                .help("Keep a list of your apps in iCloud Drive, so a new Mac can install them")
+            }
+        }
+    }
+
+    private func showDiscover() {
+        selectedTab = .discover
+        searchText = ""
+    }
+
+    private func libraryBanner<Action: View>(title: String, detail: String, fill: Color, dismissHelp: String,
+                                             onDismiss: @escaping () -> Void,
+                                             @ViewBuilder action: () -> Action) -> some View {
+        HStack(spacing: 10) {
             Image(systemName: "laptopcomputer.and.arrow.down")
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundStyle(AppColors.ink)
             VStack(alignment: .leading, spacing: 1) {
-                Text("\(count) to install")
+                Text(title)
                     .font(.display(18, relativeTo: .headline))
                     .textCase(.uppercase)
-                Text("From \(from)")
+                Text(detail)
                     .lineLimit(1)
                     .font(.mono(9.5))
                     .opacity(0.75)
             }
             .foregroundStyle(AppColors.ink)
             .frame(maxWidth: .infinity, alignment: .leading)
-            Button {
-                brewService.dismissFromOtherMacs(groups.flatMap { $0.packages.map(\.token) })
-            } label: {
+            Button(action: onDismiss) {
                 Image(systemName: "xmark")
                     .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(AppColors.ink.opacity(0.6))
@@ -189,17 +238,14 @@ struct MenuBarView: View {
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help("Don't suggest these on this Mac")
-            .accessibilityLabel("Don't suggest these on this Mac")
-            RoundIconButton(symbol: "arrow.right", size: 30, fill: AppColors.ink, foreground: .white, help: "Show them in Discover") {
-                selectedTab = .discover
-                searchText = ""
-            }
+            .help(dismissHelp)
+            .accessibilityLabel(dismissHelp)
+            action()
         }
         .padding(.leading, 14)
         .padding(.trailing, 10)
         .padding(.vertical, 6)
-        .background(AppColors.periwinkle, in: RoundedRectangle(cornerRadius: Radius.block, style: .continuous))
+        .background(fill, in: RoundedRectangle(cornerRadius: Radius.block, style: .continuous))
     }
 
     /// Lilac block shown when Homebrew 7 refuses a package from an untrusted tap

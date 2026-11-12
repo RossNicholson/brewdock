@@ -33,6 +33,8 @@ struct OtherMacGroup: Identifiable, Equatable {
 enum MacLibrary {
     /// Settings toggle, off by default
     static let enabledKey = "rememberApps"
+    /// Set once the user turns it on or says no thanks, so BrewDock stops offering
+    static let decidedKey = "rememberAppsDecided"
     /// Tokens the user said not to suggest on this Mac
     static let dismissedKey = "otherMacsDismissed"
     private static let macIDKey = "macLibraryID"
@@ -81,18 +83,20 @@ enum MacLibrary {
     }
 
     /// Every other Mac's list. iCloud Drive can leave a file in the cloud as a
-    /// ".name.json.icloud" placeholder; those are asked to download, and show up
-    /// on a later refresh.
-    static func otherSnapshots() -> [MacSnapshot] {
+    /// ".name.json.icloud" placeholder; those are asked to download, and
+    /// `stillDownloading` says to look again shortly.
+    static func otherSnapshots() -> (snapshots: [MacSnapshot], stillDownloading: Bool) {
         let fm = FileManager.default
         let names = (try? fm.contentsOfDirectory(atPath: folder.path)) ?? []
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         var snapshots: [MacSnapshot] = []
+        var stillDownloading = false
         for name in names where name != "\(macID).json" && name != ".\(macID).json.icloud" {
             if name.hasPrefix("."), name.hasSuffix(".json.icloud") {
                 let real = String(name.dropFirst().dropLast(".icloud".count))
                 try? fm.startDownloadingUbiquitousItem(at: folder.appendingPathComponent(real))
+                stillDownloading = true
                 continue
             }
             guard name.hasSuffix(".json"),
@@ -101,7 +105,7 @@ enum MacLibrary {
                   Date().timeIntervalSince(snapshot.updated) < staleAfter else { continue }
             snapshots.append(snapshot)
         }
-        return snapshots
+        return (snapshots, stillDownloading)
     }
 
     /// This Mac's list from `brew info --json=v2 --installed`: every cask except

@@ -54,6 +54,8 @@ struct SettingsView: View {
                 }
             }
             .onChange(of: rememberApps) { enabled in
+                UserDefaults.standard.set(true, forKey: MacLibrary.decidedKey)
+                brewService.libraryOffer = .none
                 if enabled {
                     Task { await brewService.syncLibrary(force: true) }
                 } else {

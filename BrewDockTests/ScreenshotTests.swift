@@ -92,6 +92,22 @@ final class ScreenshotTests: XCTestCase {
         }
     }
 
+    /// "Remember my apps" offers while it's off: on a new Mac, and the invite
+    func testRenderLibraryOffers() throws {
+        let size = NSSize(width: AppDelegate.panelDefaultSize.width, height: 560)
+        let offers: [(BrewService.LibraryOffer, String)] = [
+            (.welcome(from: "Ross's MacBook Air", count: 12), "panel-welcome-back"), (.invite, "panel-invite")]
+        for (offer, name) in offers {
+            let service = sampleService()
+            service.casks = service.casks.map { var p = $0; p.isOutdated = false; return p }
+            service.formulae = service.formulae.map { var p = $0; p.isOutdated = false; return p }
+            service.libraryOffer = offer
+            try Snapshot.panel(size: size, to: out.appendingPathComponent("\(name).png")) {
+                MenuBarView().environmentObject(service)
+            }
+        }
+    }
+
     func testRenderPopovers() throws {
         let service = sampleService()
         for dark in [false, true] {
