@@ -83,7 +83,7 @@ final class ScreenshotTests: XCTestCase {
             service.formulae = service.formulae.map { var p = $0; p.isOutdated = false; return p }
             service.otherMacs = [OtherMacGroup(macName: "Ross's MacBook Air", packages: [
                 entry("firefox", "Firefox", "Web browser"),
-                entry("rossnicholson/tap/clawdbar", "ClawdBar", "Menu bar app showing Claude Code usage"),
+                entry("visual-studio-code", "Visual Studio Code", "Open-source code editor"),
                 entry("ripgrep", "ripgrep", "Search tool like grep and The Silver Searcher", cask: false),
             ])]
             try Snapshot.panel(size: size, to: out.appendingPathComponent("\(name).png")) {
