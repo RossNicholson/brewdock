@@ -132,6 +132,7 @@ enum DiscoverCatalog {
         .init("mopup", "Mop Up", "Free Mac cleaner and app uninstaller", .utilities, .cask, tap: "rossnicholson/tap", bundledIcon: "MopUpIcon"),
         .init("clawdbar", "ClawdBar", "Your Claude Code usage limits in the menu bar", .utilities, .cask, tap: "rossnicholson/tap", bundledIcon: "ClawdBarIcon"),
         .init("keybar", "KeyBar", "API keys for Claude Code, kept in your Keychain", .utilities, .cask, tap: "rossnicholson/tap", bundledIcon: "KeyBarIcon"),
+        .init("reporadar", "RepoRadar", "Your repos with work you haven't committed or pushed", .utilities, .cask, tap: "rossnicholson/tap", bundledIcon: "RepoRadarIcon"),
 
         // MARK: Browsers
         .init("google-chrome",  "Google Chrome",   "Fast, secure web browser by Google",              .browsers, .cask, icon("https://www.gstatic.com/images/branding/product/2x/chrome_96dp.png")),
