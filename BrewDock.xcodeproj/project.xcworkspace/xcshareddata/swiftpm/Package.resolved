@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RossNicholson/mac-house-style",
       "state" : {
-        "revision" : "2b26a153f980fd2b061f2d0537111038b59c296a",
-        "version" : "1.1.0"
+        "revision" : "b9fd3dd92aab94b59d0d6a8c1b378cccc4b8985d",
+        "version" : "1.2.0"
       }
     }
   ],
