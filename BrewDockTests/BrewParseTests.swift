@@ -198,6 +198,9 @@ final class BrewParseTests: XCTestCase {
         let reporadar = DiscoverCatalog.all.first { $0.id == "reporadar" }!
         XCTAssertEqual(reporadar.installToken, "rossnicholson/tap/reporadar")
         XCTAssertNotNil(reporadar.bundledIcon)
+        let macping = DiscoverCatalog.all.first { $0.id == "macping" }!
+        XCTAssertEqual(macping.installToken, "rossnicholson/tap/macping")
+        XCTAssertNotNil(macping.bundledIcon)
         XCTAssertEqual(DiscoverCatalog.all.first { $0.id == "git" }?.installToken, "git")
     }
 
