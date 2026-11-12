@@ -71,6 +71,27 @@ final class ScreenshotTests: XCTestCase {
         }
     }
 
+    /// "Remember my apps": the banner on Apps and the section in Discover
+    func testRenderOtherMacs() throws {
+        let size = NSSize(width: AppDelegate.panelDefaultSize.width, height: 560)
+        func entry(_ token: String, _ name: String, _ desc: String, cask: Bool = true) -> MacSnapshot.Entry {
+            .init(token: token, name: name, desc: desc, isCask: cask)
+        }
+        for (tab, name) in [(MenuBarView.Tab.apps, "panel-other-macs"), (.discover, "panel-discover-other-macs")] {
+            let service = sampleService()
+            service.casks = service.casks.map { var p = $0; p.isOutdated = false; return p }
+            service.formulae = service.formulae.map { var p = $0; p.isOutdated = false; return p }
+            service.otherMacs = [OtherMacGroup(macName: "Ross's MacBook Air", packages: [
+                entry("firefox", "Firefox", "Web browser"),
+                entry("rossnicholson/tap/clawdbar", "ClawdBar", "Menu bar app showing Claude Code usage"),
+                entry("ripgrep", "ripgrep", "Search tool like grep and The Silver Searcher", cask: false),
+            ])]
+            try Snapshot.panel(size: size, to: out.appendingPathComponent("\(name).png")) {
+                MenuBarView(initialTab: tab).environmentObject(service)
+            }
+        }
+    }
+
     func testRenderPopovers() throws {
         let service = sampleService()
         for dark in [false, true] {

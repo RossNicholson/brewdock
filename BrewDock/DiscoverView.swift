@@ -166,7 +166,10 @@ struct DiscoverTabView: View {
             } else {
                 CardList {
                     if showsOwnAppsHeading {
-                        sectionHeading("From the maker of BrewDock", top: 4)
+                        ForEach(Array(brewService.otherMacs.enumerated()), id: \.element.id) { index, group in
+                            OtherMacSection(group: group, top: index == 0 ? 4 : 10)
+                        }
+                        sectionHeading("From the maker of BrewDock", top: brewService.otherMacs.isEmpty ? 4 : 10)
                     }
                     ForEach(filtered) { package in
                         if showsOwnAppsHeading, package.id == filtered.first(where: { !$0.isOwnApp })?.id {
@@ -215,8 +218,52 @@ private func sectionHeading(_ title: String, top: CGFloat) -> some View {
         .padding(.top, top)
 }
 
+/// "Remember my apps": what one of your other Macs has that this one doesn't
+private struct OtherMacSection: View {
+    let group: OtherMacGroup
+    let top: CGFloat
+    @EnvironmentObject var brewService: BrewService
+
+    private var packages: [DiscoverPackage] { group.packages.map(DiscoverPackage.init(otherMac:)) }
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text("From \(group.macName)")
+                .font(.display(17, relativeTo: .headline))
+                .textCase(.uppercase)
+                .foregroundStyle(AppColors.text)
+                .lineLimit(1)
+                .accessibilityAddTraits(.isHeader)
+            Spacer()
+            Button {
+                Task { await brewService.installAll(packages) }
+            } label: {
+                Text(group.packages.count == 1 ? "Install" : "Install all \(group.packages.count)")
+                    .font(.mono(9.5, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(AppColors.ink, in: Capsule())
+            }
+            .buttonStyle(PressableStyle())
+            .disabled(!brewService.installingPackages.isEmpty)
+            .help("Install everything from \(group.macName) that isn't on this Mac")
+        }
+        .padding(.horizontal, 2)
+        .padding(.top, top)
+        ForEach(Array(zip(group.packages, packages)), id: \.0.token) { entry, package in
+            DiscoverPackageRow(package: package) {
+                brewService.dismissFromOtherMacs([entry.token])
+            }
+            .environmentObject(brewService)
+        }
+    }
+}
+
 struct DiscoverPackageRow: View {
     let package: DiscoverPackage
+    /// "Don't suggest this", for packages from your other Macs
+    var onDismiss: (() -> Void)? = nil
     @EnvironmentObject var brewService: BrewService
 
     var isInstalled: Bool {
@@ -264,6 +311,9 @@ struct DiscoverPackageRow: View {
         .contextMenu {
             Button(isInstalled ? "Installed" : "Install \(package.displayName)") { install() }
                 .disabled(isInstalled || isInstalling)
+            if let onDismiss {
+                Button("Don't suggest this on this Mac", action: onDismiss)
+            }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(package.displayName), \(package.type == .cask ? "app" : "tool"), \(package.description)\(isInstalled ? ", installed" : "")")

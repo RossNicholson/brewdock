@@ -12,6 +12,7 @@ struct SettingsView: View {
     @AppStorage(BrewService.includeAutoUpdatingKey) private var includeAutoUpdating = false
     @AppStorage(BrewService.autoUpdateKey) private var autoUpdate = false
     @AppStorage(GlobalHotKey.enabledKey) private var shortcutEnabled = true
+    @AppStorage(MacLibrary.enabledKey) private var rememberApps = false
     @State private var shortcutError: String? = nil
 
     private enum CleanupState: Equatable {
@@ -44,6 +45,21 @@ struct SettingsView: View {
                 .onChange(of: includeAutoUpdating) { _ in
                     Task { await brewService.refresh(force: true) }
                 }
+
+            SettingToggle(title: "Remember my apps",
+                          detail: "Keep a list of your apps and tools in iCloud Drive, so your other Macs can install them too",
+                          isOn: $rememberApps) {
+                if rememberApps, let error = brewService.libraryError {
+                    SettingNote(error)
+                }
+            }
+            .onChange(of: rememberApps) { enabled in
+                if enabled {
+                    Task { await brewService.syncLibrary(force: true) }
+                } else {
+                    brewService.stopRememberingApps()
+                }
+            }
 
             SettingToggle(title: "Shortcut \(GlobalHotKey.displayName)", detail: "Open BrewDock from any app. Esc closes it.",
                           isOn: $shortcutEnabled) {

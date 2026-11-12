@@ -82,6 +82,7 @@
 		57E0F8370D78EEC4B191E93B /* discover-miniconda.png in Resources */ = {isa = PBXBuildFile; fileRef = 46349F36C433D5C9E97752C0 /* discover-miniconda.png */; };
 		58539C7629796947D31135AA /* discover-neo4j-desktop.png in Resources */ = {isa = PBXBuildFile; fileRef = 29504A3163F9EEA1ECFD61DF /* discover-neo4j-desktop.png */; };
 		586682CED838EE666FC4E5D8 /* discover-pgadmin4.png in Resources */ = {isa = PBXBuildFile; fileRef = 0009A3D97C8A0374BCD28A9C /* discover-pgadmin4.png */; };
+		5AF26FE46F25792E09D39969 /* MacLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E315590A877E3C8B3CA64F2 /* MacLibraryTests.swift */; };
 		5E034D81ADE21EBB9E856266 /* discover-arc.png in Resources */ = {isa = PBXBuildFile; fileRef = 4EDA8B6B874A45BC2CEBC861 /* discover-arc.png */; };
 		5F65D5926C542A0DD1C1AFD1 /* discover-discord.png in Resources */ = {isa = PBXBuildFile; fileRef = A12EA5DE208587766AA1B89E /* discover-discord.png */; };
 		606678E251BF7D06528DEF14 /* discover-bettertouchtool.png in Resources */ = {isa = PBXBuildFile; fileRef = 7B8A2DF12F28C42EEB49EAD0 /* discover-bettertouchtool.png */; };
@@ -167,6 +168,7 @@
 		AD6C949DD52CB525A59ED6EA /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA6511EB48F677664E54300B /* SettingsView.swift */; };
 		AD9A33C4107AA4BB5A48F9B3 /* discover-dbgate.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D66A22605FD9421E27B63DF /* discover-dbgate.png */; };
 		B1980CC8A750A3BE2D7E9E9F /* discover-kap.png in Resources */ = {isa = PBXBuildFile; fileRef = 1126794A76B23B1CB2E02B5A /* discover-kap.png */; };
+		B3B91A24ED178663C23FCCF1 /* MacLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B050EEDA6D32020EB86880F /* MacLibrary.swift */; };
 		B75C0FEA77A07D98C14AB515 /* discover-bruno.png in Resources */ = {isa = PBXBuildFile; fileRef = ABA63C3A8FF8AC50C0006541 /* discover-bruno.png */; };
 		B7A0F3CB7CEDDF1035CDDA9B /* UpdateNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D683F0F3BBE999A7340728D /* UpdateNotifier.swift */; };
 		B8524CCF7F68E990EC9B4EF8 /* discover-krisp.png in Resources */ = {isa = PBXBuildFile; fileRef = 9CB8FB13C6FA70177F1C26E0 /* discover-krisp.png */; };
@@ -265,6 +267,7 @@
 		17530A20CD37CBC1CDC1115B /* discover-keyboard-maestro.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-keyboard-maestro.png"; sourceTree = "<group>"; };
 		195EA8E03CE007B0D6A5B017 /* discover-bartender.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-bartender.png"; sourceTree = "<group>"; };
 		1A977B7F8980A919A76199B1 /* discover-figma.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-figma.png"; sourceTree = "<group>"; };
+		1B050EEDA6D32020EB86880F /* MacLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacLibrary.swift; sourceTree = "<group>"; };
 		1B30C0EC27A7D7B4F9EE5D3D /* discover-helm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-helm.png"; sourceTree = "<group>"; };
 		1B8F934C6150D4723E6574E3 /* discover-dbeaver-community.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-dbeaver-community.png"; sourceTree = "<group>"; };
 		1C1A38CDEA4239AFB090565D /* discover-yazi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-yazi.png"; sourceTree = "<group>"; };
@@ -319,6 +322,7 @@
 		4D369349BA914575AE673567 /* discover-maccy.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-maccy.png"; sourceTree = "<group>"; };
 		4DFC5E67E36329E744B1E5D4 /* discover-proxyman.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-proxyman.png"; sourceTree = "<group>"; };
 		4E1D434389CA48C678B164C8 /* discover-hazel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-hazel.png"; sourceTree = "<group>"; };
+		4E315590A877E3C8B3CA64F2 /* MacLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacLibraryTests.swift; sourceTree = "<group>"; };
 		4EDA8B6B874A45BC2CEBC861 /* discover-arc.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-arc.png"; sourceTree = "<group>"; };
 		4F49732C85BB145DB621AF40 /* discover-openjdk.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "discover-openjdk.png"; sourceTree = "<group>"; };
 		503440E86E47889F134F948C /* FormulaIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormulaIcons.swift; sourceTree = "<group>"; };
@@ -509,6 +513,7 @@
 				503440E86E47889F134F948C /* FormulaIcons.swift */,
 				BC29FB61D6384D788DBD8FD7 /* GlobalHotKey.swift */,
 				7CDD1D41DE8EB6E1E2E6722C /* Info.plist */,
+				1B050EEDA6D32020EB86880F /* MacLibrary.swift */,
 				8A346F38852F4B702A7A516C /* MenuBarView.swift */,
 				341FE46FCDDD8CD2EEF85137 /* PackageRowView.swift */,
 				16969FF28CA92DA2624C50CF /* ServiceRowView.swift */,
@@ -744,6 +749,7 @@
 			isa = PBXGroup;
 			children = (
 				3999942A157B537C78219A00 /* BrewParseTests.swift */,
+				4E315590A877E3C8B3CA64F2 /* MacLibraryTests.swift */,
 				50F54518697019DB3A89116B /* ScreenshotTests.swift */,
 			);
 			path = BrewDockTests;
@@ -1058,6 +1064,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				99F875975481F8F426760A1A /* BrewParseTests.swift in Sources */,
+				5AF26FE46F25792E09D39969 /* MacLibraryTests.swift in Sources */,
 				629F0FBE22FFC80C5EF221D5 /* ScreenshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1076,6 +1083,7 @@
 				0340713FE26CEDF0E4EDD2A0 /* FormulaIcons.swift in Sources */,
 				7F00D81CA723FFF931934C7C /* GlobalHotKey.swift in Sources */,
 				D015DADD4B014BF2A4BA9B62 /* HouseStyle.swift in Sources */,
+				B3B91A24ED178663C23FCCF1 /* MacLibrary.swift in Sources */,
 				98FF896CC5AF0A88DB210E26 /* Mascot.swift in Sources */,
 				20DE48E19430760FBA2321E3 /* MenuBarView.swift in Sources */,
 				14E6F6389CC75707C9F058BC /* PackageRowView.swift in Sources */,

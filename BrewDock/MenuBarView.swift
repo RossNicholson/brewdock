@@ -56,6 +56,11 @@ struct MenuBarView: View {
                     .padding(.horizontal, 14)
                     .padding(.bottom, 10)
                     .transition(.move(edge: .top).combined(with: .opacity))
+            } else if showsOtherMacsBanner {
+                otherMacsBanner
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 10)
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
             searchBar
             tabPicker
@@ -65,6 +70,7 @@ struct MenuBarView: View {
         .menuBarPanel(width: AppDelegate.panelMinimumSize.width)
         .animation(.easeInOut(duration: 0.2), value: showsUpdateBanner)
         .animation(.easeInOut(duration: 0.2), value: brewService.untrusted)
+        .animation(.easeInOut(duration: 0.2), value: showsOtherMacsBanner)
         .alert(
             "Remove \(plural(brewService.cleanupProposal?.packages.count ?? 0, "package"))?",
             isPresented: Binding(get: { brewService.cleanupProposal != nil },
@@ -146,6 +152,54 @@ struct MenuBarView: View {
 
     private var showsUpdateBanner: Bool {
         outdatedCount > 0 && (selectedTab == .apps || selectedTab == .tools)
+    }
+
+    private var showsOtherMacsBanner: Bool {
+        !brewService.otherMacs.isEmpty && (selectedTab == .apps || selectedTab == .tools)
+    }
+
+    /// Periwinkle block pointing to Discover when your other Macs have apps or
+    /// tools this one doesn't ("Remember my apps")
+    private var otherMacsBanner: some View {
+        let groups = brewService.otherMacs
+        let count = groups.reduce(0) { $0 + $1.packages.count }
+        let from = groups.count == 1 ? groups[0].macName : "your other Macs"
+        return HStack(spacing: 10) {
+            Image(systemName: "laptopcomputer.and.arrow.down")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(AppColors.ink)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("\(count) to install")
+                    .font(.display(18, relativeTo: .headline))
+                    .textCase(.uppercase)
+                Text("From \(from)")
+                    .lineLimit(1)
+                    .font(.mono(9.5))
+                    .opacity(0.75)
+            }
+            .foregroundStyle(AppColors.ink)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                brewService.dismissFromOtherMacs(groups.flatMap { $0.packages.map(\.token) })
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(AppColors.ink.opacity(0.6))
+                    .frame(width: 22, height: 22)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Don't suggest these on this Mac")
+            .accessibilityLabel("Don't suggest these on this Mac")
+            RoundIconButton(symbol: "arrow.right", size: 30, fill: AppColors.ink, foreground: .white, help: "Show them in Discover") {
+                selectedTab = .discover
+                searchText = ""
+            }
+        }
+        .padding(.leading, 14)
+        .padding(.trailing, 10)
+        .padding(.vertical, 6)
+        .background(AppColors.periwinkle, in: RoundedRectangle(cornerRadius: Radius.block, style: .continuous))
     }
 
     /// Lilac block shown when Homebrew 7 refuses a package from an untrusted tap

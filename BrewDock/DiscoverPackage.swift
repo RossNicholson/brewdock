@@ -89,6 +89,19 @@ struct DiscoverPackage: Identifiable {
     }
 }
 
+extension DiscoverPackage {
+    /// A package from one of your other Macs. Uses the catalog's entry when
+    /// there is one, for its icon.
+    init(otherMac entry: MacSnapshot.Entry) {
+        if let curated = DiscoverCatalog.all.first(where: { $0.installToken == entry.token }) {
+            self = curated
+        } else {
+            self.init(searchResult: entry.token, displayName: entry.name, description: entry.desc,
+                      type: entry.isCask ? .cask : .formula)
+        }
+    }
+}
+
 private extension DiscoverPackage {
     init(_ id: String, _ displayName: String, _ description: String, _ category: Category, _ type: BrewPackage.PackageType, _ iconURL: String? = nil, tap: String? = nil, bundledIcon: String? = nil) {
         self.id = id

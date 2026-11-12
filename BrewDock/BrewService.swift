@@ -139,6 +139,16 @@ class BrewService: ObservableObject {
     /// Action to run again once its package is trusted, keyed by full name
     private var retryAfterTrust: [String: @MainActor () async -> Void] = [:]
     private var outdatedNames: Set<String> = []
+    /// "Remember my apps": what your other Macs have that this one doesn't
+    @Published var otherMacs: [OtherMacGroup] = []
+    /// Why this Mac's list couldn't be saved to iCloud Drive, for Settings
+    @Published var libraryError: String? = nil
+    /// Packages in the list last saved to iCloud Drive, so it's only rewritten
+    /// when something was installed or removed
+    private var savedLibraryNames: Set<String>? = nil
+    /// Whether the last refresh listed casks and formulae without errors. A
+    /// failed listing must never be saved as "this Mac has nothing".
+    private var lastListingSucceeded = false
     private var lastRefresh: Date = .distantPast
     /// A forced refresh requested while one was already running; it runs again
     /// afterwards so the list reflects changes made mid-refresh.
@@ -165,6 +175,67 @@ class BrewService: ObservableObject {
             refreshQueued = false
             await loadPackages()
         } while refreshQueued
+        await syncLibrary()
+    }
+
+    /// Saves this Mac's list to iCloud Drive if it changed, then reads the other
+    /// Macs' lists. Runs after every refresh while "Remember my apps" is on.
+    func syncLibrary(force: Bool = false) async {
+        guard UserDefaults.standard.bool(forKey: MacLibrary.enabledKey) else {
+            otherMacs = []
+            return
+        }
+        guard MacLibrary.isICloudDriveOn else {
+            otherMacs = []
+            libraryError = "Turn on iCloud Drive in System Settings → Apple Account → iCloud."
+            return
+        }
+        let names = Set(casks.map { "cask:\($0.name)" } + formulae.filter { !$0.isDependency }.map { "formula:\($0.name)" })
+        if lastListingSucceeded, force || names != savedLibraryNames {
+            let info = await brew(["info", "--json=v2", "--installed"], timeout: 60)
+            if info.exitCode == 0, let entries = MacLibrary.entries(fromInstalledJSON: info.output) {
+                do {
+                    try MacLibrary.write(MacSnapshot(macName: MacLibrary.macName, updated: Date(), packages: entries))
+                    savedLibraryNames = names
+                    libraryError = nil
+                } catch {
+                    libraryError = "Couldn't save to iCloud Drive: \(error.localizedDescription)"
+                }
+            }
+        }
+        otherMacs = MacLibrary.missing(
+            from: MacLibrary.otherSnapshots(),
+            installedCasks: Set(casks.map(\.name)),
+            installedFormulae: Set(formulae.map(\.name)),
+            dismissed: Set(UserDefaults.standard.stringArray(forKey: MacLibrary.dismissedKey) ?? []))
+    }
+
+    /// Turning "Remember my apps" off removes this Mac's list, so the other Macs
+    /// stop suggesting its apps
+    func stopRememberingApps() {
+        MacLibrary.removeOwnSnapshot()
+        savedLibraryNames = nil
+        libraryError = nil
+        otherMacs = []
+    }
+
+    /// "Don't suggest this": hides packages from other Macs on this one
+    func dismissFromOtherMacs(_ tokens: [String]) {
+        let key = MacLibrary.dismissedKey
+        let dismissed = Set(UserDefaults.standard.stringArray(forKey: key) ?? []).union(tokens)
+        UserDefaults.standard.set(dismissed.sorted(), forKey: key)
+        otherMacs = otherMacs.compactMap { group in
+            let left = group.packages.filter { !dismissed.contains($0.token) }
+            return left.isEmpty ? nil : OtherMacGroup(macName: group.macName, packages: left)
+        }
+    }
+
+    /// "Install all" for one of your other Macs. One at a time: brew installs
+    /// can't run side by side.
+    func installAll(_ packages: [DiscoverPackage]) async {
+        for package in packages where !Task.isCancelled {
+            await install(package)
+        }
     }
 
     private func loadPackages() async {
@@ -177,6 +248,7 @@ class BrewService: ObservableObject {
         let (caskRes, formulaRes, outdatedRes, requestedRes, pinnedRes) =
             await (caskResult, formulaResult, outdatedResult, requestedResult, pinnedResult)
 
+        lastListingSucceeded = caskRes.exitCode == 0 && formulaRes.exitCode == 0
         let held = heldCasks.union(pinnedRes.output.lines)
         outdatedNames = Set(outdatedRes.output.lines).subtracting(held)
         let listedUntrusted = [caskRes, formulaRes, outdatedRes]

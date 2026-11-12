@@ -82,6 +82,11 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
 - **One-click install,** with live progress.
 - **From the maker of BrewDock:** [Mop Up](https://rossnicholson.dev/mopup) (a free Mac cleaner), [ClawdBar](https://rossnicholson.dev/clawdbar) (Claude Code usage in the menu bar) and [KeyBar](https://rossnicholson.dev/keybar) (API keys for Claude Code, kept in your Keychain) are listed first.
 
+### Your apps on every Mac
+- **Remember my apps:** turn it on in Settings on each of your Macs. Each one keeps a list of the apps and tools you installed in your iCloud Drive. Set up a new Mac and BrewDock shows what your other Macs have that this one doesn't, under "From <your Mac's name>" in Discover, with one-click install or Install all.
+- Nothing installs without you asking. Right-click anything you don't want on this Mac and choose "Don't suggest this on this Mac".
+- Uninstalling on one Mac never removes anything from the others.
+
 ### Housekeeping
 - **Brewfile:** back up your setup, restore it on a new Mac, see what's missing, or remove anything not in the file.
 - **Free up space:** see how much room old versions and cached downloads take, and clear them in one click.
@@ -118,6 +123,8 @@ BrewDock checks for new versions of itself. Open **Settings → Check for update
 ## Privacy
 
 BrewDock collects nothing: no analytics, no accounts, no tracking. It runs the `brew` command on your Mac, and Homebrew does the downloading. The icons in Discover ship with the app, so browsing it makes no network requests.
+
+If you turn on **Remember my apps**, BrewDock saves the names of your installed apps and tools, and your Mac's name, to `iCloud Drive/BrewDock/Macs/` in your own iCloud Drive. Apple syncs that folder between your Macs; nothing goes anywhere else. Turning it off deletes this Mac's list.
 
 ---
 
