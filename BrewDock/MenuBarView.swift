@@ -51,6 +51,12 @@ struct MenuBarView: View {
                     .padding(.bottom, 10)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
+            if brewService.needsAppManagement {
+                appManagementBanner
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 10)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+            }
             if showsUpdateBanner {
                 updateBanner
                     .padding(.horizontal, 14)
@@ -70,6 +76,7 @@ struct MenuBarView: View {
         .menuBarPanel(width: AppDelegate.panelMinimumSize.width)
         .animation(.easeInOut(duration: 0.2), value: showsUpdateBanner)
         .animation(.easeInOut(duration: 0.2), value: brewService.untrusted)
+        .animation(.easeInOut(duration: 0.2), value: brewService.needsAppManagement)
         .animation(.easeInOut(duration: 0.2), value: showsOtherMacsBanner)
         .alert(
             "Remove \(plural(brewService.cleanupProposal?.packages.count ?? 0, "package"))?",
@@ -281,6 +288,55 @@ struct MenuBarView: View {
         .padding(.trailing, 10)
         .padding(.vertical, 10)
         .background(AppColors.lilac, in: RoundedRectangle(cornerRadius: Radius.block, style: .continuous))
+    }
+
+    /// Butter block asking for App Management, after macOS made Homebrew
+    /// reinstall an app to update it
+    private var appManagementBanner: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "hand.raised.fill")
+                .font(.system(size: 20, weight: .semibold))
+                .foregroundStyle(AppColors.ink)
+            VStack(alignment: .leading, spacing: 1) {
+                Text("Let BrewDock update apps")
+                    .font(.display(18, relativeTo: .headline))
+                    .textCase(.uppercase)
+                Text("macOS stopped updates changing apps in place, so they were reinstalled, which can reset their settings. Turn on BrewDock in App Management.")
+                    .font(.mono(9.5))
+                    .opacity(0.75)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .foregroundStyle(AppColors.ink)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button {
+                NSWorkspace.shared.open(BrewService.appManagementSettingsURL)
+            } label: {
+                Text("Open")
+                    .font(.mono(10.5, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(AppColors.ink, in: Capsule())
+            }
+            .buttonStyle(PressableStyle())
+            .help("Open Privacy & Security → App Management in System Settings")
+            Button {
+                brewService.dismissAppManagement()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(AppColors.ink.opacity(0.6))
+                    .frame(width: 22, height: 22)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help("Don't show this again")
+            .accessibilityLabel("Don't show this again")
+        }
+        .padding(.leading, 14)
+        .padding(.trailing, 10)
+        .padding(.vertical, 10)
+        .background(AppColors.butter, in: RoundedRectangle(cornerRadius: Radius.block, style: .continuous))
     }
 
     /// Peach colour block offering to update everything, like the big call-to-action

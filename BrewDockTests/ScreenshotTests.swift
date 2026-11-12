@@ -92,6 +92,16 @@ final class ScreenshotTests: XCTestCase {
         }
     }
 
+    /// The App Management card, after macOS made Homebrew reinstall an app
+    func testRenderAppManagement() throws {
+        let service = sampleService()
+        service.needsAppManagement = true
+        try Snapshot.panel(size: NSSize(width: AppDelegate.panelDefaultSize.width, height: 560),
+                           to: out.appendingPathComponent("panel-app-management.png")) {
+            MenuBarView().environmentObject(service)
+        }
+    }
+
     /// "Remember my apps" offers while it's off: on a new Mac, and the invite
     func testRenderLibraryOffers() throws {
         let size = NSSize(width: AppDelegate.panelDefaultSize.width, height: 560)

@@ -156,6 +156,13 @@ enum BrewParse {
         return result
     }
 
+    /// Whether Homebrew said it had to delete and reinstall an app to update
+    /// it, because macOS's App Management setting stopped it changing the app
+    /// in place. Homebrew only says so with HOMEBREW_NO_APP_MANAGEMENT_PERMISSIONS_PROMPT set.
+    static func lacksAppManagement(_ output: String) -> Bool {
+        output.contains("does not have App Management permissions")
+    }
+
     /// Packages Homebrew 7 refused to load because their tap isn't trusted:
     /// "Refusing to load cask user/tap/foo from untrusted tap user/tap."
     static func untrustedTargets(fromStderr stderr: String) -> [UntrustedTarget] {

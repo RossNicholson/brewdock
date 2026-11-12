@@ -6,6 +6,26 @@ import XCTest
 /// most likely things to silently break when Homebrew changes its formatting.
 final class BrewParseTests: XCTestCase {
 
+    // MARK: App Management
+
+    func testSpotsTheAppManagementWarning() {
+        let stderr = """
+        Warning: Your terminal does not have App Management permissions, so Homebrew will delete and reinstall the app.
+        This may result in some configurations (like notification settings or location in the Dock/Launchpad) being lost.
+        """
+        XCTAssertTrue(BrewParse.lacksAppManagement(stderr))
+        XCTAssertFalse(BrewParse.lacksAppManagement("==> Upgrading keybar\n==> Moving App 'KeyBar.app' to '/Applications/KeyBar.app'"))
+    }
+
+    /// The installed Homebrew still prints that warning, and still behind the
+    /// variable BrewDock sets
+    func testInstalledHomebrewStillSaysIt() throws {
+        let file = "/opt/homebrew/Library/Homebrew/cask/quarantine.rb"
+        let source = try XCTUnwrap(try? String(contentsOfFile: file, encoding: .utf8), "no Homebrew at /opt/homebrew")
+        XCTAssertTrue(source.contains("HOMEBREW_NO_APP_MANAGEMENT_PERMISSIONS_PROMPT"))
+        XCTAssertTrue(BrewParse.lacksAppManagement(source))
+    }
+
     // MARK: brew list --versions
 
     func testPackagesParsesNameAndVersion() {

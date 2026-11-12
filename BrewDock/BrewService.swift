@@ -134,6 +134,13 @@ class BrewService: ObservableObject {
     nonisolated static let selfCaskFullName = "rossnicholson/tap/brewdock"
     /// Packages Homebrew refused to load until their tap is trusted (Homebrew 7+)
     @Published var untrusted: [UntrustedTarget] = []
+    /// macOS stopped an update changing an app in place, so Homebrew deleted
+    /// and reinstalled it, which can reset that app's settings. Turning on
+    /// BrewDock in App Management fixes it.
+    @Published var needsAppManagement = false
+    nonisolated static let appManagementDismissedKey = "appManagementCardDismissed"
+    nonisolated static let appManagementSettingsURL =
+        URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AppBundles")!
     /// Untrusted packages found by a failed action (kept across refreshes)
     private var untrustedFromActions: [UntrustedTarget] = []
     /// Action to run again once its package is trusted, keyed by full name
@@ -376,6 +383,21 @@ class BrewService: ObservableObject {
         return true
     }
 
+    /// After a cask update: show the App Management card if Homebrew had to
+    /// reinstall an app, and hide it once an update goes through in place
+    private func noteAppManagement(_ result: BrewResult) {
+        if BrewParse.lacksAppManagement(result.errorOutput + result.output) {
+            needsAppManagement = !UserDefaults.standard.bool(forKey: Self.appManagementDismissedKey)
+        } else if result.exitCode == 0 {
+            needsAppManagement = false
+        }
+    }
+
+    func dismissAppManagement() {
+        UserDefaults.standard.set(true, forKey: Self.appManagementDismissedKey)
+        needsAppManagement = false
+    }
+
     /// Runs `brew trust` for one package (the user confirmed in the banner), then
     /// refreshes and retries whatever action was refused.
     func trust(_ target: UntrustedTarget) async {
@@ -449,6 +471,7 @@ class BrewService: ObservableObject {
         let flags = package.type == .cask ? ["--cask"] + greedyFlags : ["--formula"]
         let result = await brew(["upgrade"] + flags + [package.name], timeout: nil,
                                 onLine: reportProgress(to: package.name))
+        if package.type == .cask { noteAppManagement(result) }
         if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.upgrade(package) }) { return }
         if result.exitCode != 0 { lastError = result.failureMessage("Couldn't update \(package.name)") }
         await refresh(force: true)
@@ -605,6 +628,7 @@ class BrewService: ObservableObject {
         if !outdatedCasks.isEmpty {
             let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
                                     onLine: reportProgress(to: Self.allUpdatesKey))
+            noteAppManagement(result)
             if result.exitCode != 0, noteUntrusted(result, retry: { [weak self] in await self?.upgradeAll() }) {
                 updatingPackages.subtract(outdatedCasks + outdatedFormulae)
                 return
@@ -657,8 +681,9 @@ class BrewService: ObservableObject {
                            onLine: reportProgress(to: Self.allUpdatesKey))
         }
         if !outdatedCasks.isEmpty {
-            _ = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
-                           onLine: reportProgress(to: Self.allUpdatesKey))
+            let result = await brew(["upgrade", "--cask"] + greedyFlags + outdatedCasks, timeout: nil,
+                                    onLine: reportProgress(to: Self.allUpdatesKey))
+            noteAppManagement(result)
         }
         updatingPackages.subtract(attempted)
         await refresh(force: true)
@@ -812,6 +837,9 @@ private let brewEnvironment: [String: String] = {
     if env["LANG"] == nil { env["LANG"] = "en_US.UTF-8" }
     env["HOMEBREW_NO_AUTO_UPDATE"] = "1"   // explicit `brew update` still works
     env["HOMEBREW_NO_ENV_HINTS"] = "1"
+    // Makes Homebrew say when macOS's App Management setting stops it updating
+    // an app in place, so BrewDock can explain (see needsAppManagement)
+    env["HOMEBREW_NO_APP_MANAGEMENT_PERMISSIONS_PROMPT"] = "1"
     return env
 }()
 

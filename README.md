@@ -142,6 +142,9 @@ Those apps update themselves, so Homebrew skips them by default. Turn on **Setti
 **Can BrewDock keep everything updated automatically?**
 Yes. Turn on **Settings → Auto-update** (it's off by default) and BrewDock runs `brew update` and upgrades all your apps and tools every 10 minutes. Apps that are open are updated once you quit them, and anything set to **Don't update** is left alone.
 
+**macOS says "BrewDock was prevented from modifying apps on your Mac".**
+macOS's App Management setting stops apps changing other apps unless you allow it. Updates still install, but Homebrew has to delete and reinstall each app to do it, and that can reset the app's notification settings or its place in the Dock. BrewDock shows a *Let BrewDock update apps* card when this happens: click **Open**, then turn on BrewDock in **System Settings → Privacy & Security → App Management**.
+
 **An update or install failed.**
 The message at the bottom of the panel includes Homebrew's reason. If BrewDock's own update fails, its log is at `~/Library/Application Support/BrewDock/brewdock-self-upgrade.log`.
 
