@@ -191,4 +191,4 @@ If BrewDock saves you time, you can [buy me a coffee](https://buymeacoffee.com/r
 
 GPL-3.0. See [LICENSE](LICENSE).
 
-The look and the menu bar panel come from [HouseStyle](https://github.com/RossNicholson/mac-house-style) (MIT), shared with my other Mac apps, ClawdBar, Mop Up and KeyBar. Its bundled fonts, Barlow Condensed and Geist Mono, are under the SIL Open Font License. Homebrew is a separate project and isn't affiliated with BrewDock.
+The look and the menu bar panel come from [HouseStyle](https://github.com/RossNicholson/mac-house-style) (MIT), shared with my other Mac apps, ClawdBar, Mop Up, KeyBar and Repo Radar. Its bundled fonts, Barlow Condensed and Geist Mono, are under the SIL Open Font License. Homebrew is a separate project and isn't affiliated with BrewDock.
